@@ -1,0 +1,8 @@
+marble fit (np.float64(0.5396430758222165), (0.0, np.float64(-0.600220422390818), np.float64(-0.09962579454582823), 1.0))
+button fit (np.float64(0.6263628479772294), (np.float64(2.0943951023931953), np.float64(0.35085300796527985), np.float64(0.848562086231258), 1.0))
+hex_key fit (np.float64(0.6056915037328496), (np.float64(1.7715091907742444), np.float64(-4.610738360940251), np.float64(-5.624903877680553), 1.0))
+edge fit (np.float32(0.49713635), (np.float64(-3.115412714809878), np.float64(1.5249999999999986), np.float64(-8.075000000000001), 1.0))
+marble   score 0.540  theta_off   +0.00 deg  bx  -0.60  by  -0.10 mm  p0 1.00 mm  (918 frames)
+button   score 0.626  theta_off +120.00 deg  bx  +0.35  by  +0.85 mm  p0 1.00 mm  (594 frames)
+hex_key  score 0.606  theta_off +101.50 deg  bx  -4.61  by  -5.62 mm  p0 1.00 mm  (766 frames)
+edge     score 0.497  theta_off -178.50 deg  bx  +1.52  by  -8.08 mm  p0 1.00 mm  (878 frames)

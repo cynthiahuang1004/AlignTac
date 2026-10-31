@@ -1,0 +1,482 @@
+{
+ "pattern_01_2_lines_angles_1/1": {
+  "frame_id": 71,
+  "file": "pattern_01_2_lines_angles_1/1/tactile_images/000071.jpg",
+  "status": "ok",
+  "n_cand": 50,
+  "n_gray": 0,
+  "n_contact_like": 23,
+  "sat": 168.62123325892858,
+  "grad_area": 0.01873405612244898
+ },
+ "pattern_01_2_lines_angles_1/2": {
+  "frame_id": 61,
+  "file": "pattern_01_2_lines_angles_1/2/tactile_images/000061.jpg",
+  "status": "ok",
+  "n_cand": 52,
+  "n_gray": 0,
+  "n_contact_like": 1,
+  "sat": 165.9060905612245,
+  "grad_area": 0.014807876275510204
+ },
+ "pattern_01_2_lines_angles_1/3": {
+  "frame_id": 71,
+  "file": "pattern_01_2_lines_angles_1/3/tactile_images/000071.jpg",
+  "status": "ok",
+  "n_cand": 93,
+  "n_gray": 0,
+  "n_contact_like": 13,
+  "sat": 169.9040377869898,
+  "grad_area": 0.016222895408163265
+ },
+ "pattern_01_2_lines_angles_1/4": {
+  "frame_id": 74,
+  "file": "pattern_01_2_lines_angles_1/4/tactile_images/000074.jpg",
+  "status": "ok",
+  "n_cand": 90,
+  "n_gray": 0,
+  "n_contact_like": 17,
+  "sat": 166.9990832270408,
+  "grad_area": 0.017996651785714284
+ },
+ "pattern_01_2_lines_angles_2/1": {
+  "frame_id": 322,
+  "file": "pattern_01_2_lines_angles_2/1/tactile_images/000322.jpg",
+  "status": "ok",
+  "n_cand": 92,
+  "n_gray": 0,
+  "n_contact_like": 10,
+  "sat": 167.26167889030611,
+  "grad_area": 0.01988998724489796
+ },
+ "pattern_01_2_lines_angles_2/2": {
+  "frame_id": 68,
+  "file": "pattern_01_2_lines_angles_2/2/tactile_images/000068.jpg",
+  "status": "ok",
+  "n_cand": 92,
+  "n_gray": 0,
+  "n_contact_like": 15,
+  "sat": 168.1507493622449,
+  "grad_area": 0.01837531887755102
+ },
+ "pattern_01_2_lines_angles_2/3": {
+  "frame_id": 385,
+  "file": "pattern_01_2_lines_angles_2/3/tactile_images/000385.jpg",
+  "status": "ok",
+  "n_cand": 90,
+  "n_gray": 0,
+  "n_contact_like": 10,
+  "sat": 167.62346540178572,
+  "grad_area": 0.015625
+ },
+ "pattern_01_2_lines_angles_2/4": {
+  "frame_id": 352,
+  "file": "pattern_01_2_lines_angles_2/4/tactile_images/000352.jpg",
+  "status": "ok",
+  "n_cand": 84,
+  "n_gray": 0,
+  "n_contact_like": 18,
+  "sat": 169.04886798469389,
+  "grad_area": 0.01988998724489796
+ },
+ "pattern_01_2_lines_angles_3/1": {
+  "frame_id": 140,
+  "file": "pattern_01_2_lines_angles_3/1/tactile_images/000140.jpg",
+  "status": "ok",
+  "n_cand": 89,
+  "n_gray": 1,
+  "n_contact_like": 7,
+  "sat": 169.51638233418367,
+  "grad_area": 0.014967315051020409
+ },
+ "pattern_01_2_lines_angles_3/2": {
+  "frame_id": 83,
+  "file": "pattern_01_2_lines_angles_3/2/tactile_images/000083.jpg",
+  "status": "ok",
+  "n_cand": 95,
+  "n_gray": 2,
+  "n_contact_like": 10,
+  "sat": 168.8563855229592,
+  "grad_area": 0.017558195153061226
+ },
+ "pattern_01_2_lines_angles_3/3": {
+  "frame_id": 227,
+  "file": "pattern_01_2_lines_angles_3/3/tactile_images/000227.jpg",
+  "status": "ok",
+  "n_cand": 70,
+  "n_gray": 1,
+  "n_contact_like": 7,
+  "sat": 172.05034279336735,
+  "grad_area": 0.0186344068877551
+ },
+ "pattern_01_2_lines_angles_3/4": {
+  "frame_id": 226,
+  "file": "pattern_01_2_lines_angles_3/4/tactile_images/000226.jpg",
+  "status": "ok",
+  "n_cand": 94,
+  "n_gray": 1,
+  "n_contact_like": 14,
+  "sat": 167.44240274234693,
+  "grad_area": 0.017418686224489797
+ },
+ "pattern_04_3_lines_angles_1/1": {
+  "frame_id": 67,
+  "file": "pattern_04_3_lines_angles_1/1/tactile_images/000067.jpg",
+  "status": "ok",
+  "n_cand": 93,
+  "n_gray": 0,
+  "n_contact_like": 19,
+  "sat": 168.69810267857142,
+  "grad_area": 0.0196109693877551
+ },
+ "pattern_04_3_lines_angles_1/2": {
+  "frame_id": 73,
+  "file": "pattern_04_3_lines_angles_1/2/tactile_images/000073.jpg",
+  "status": "ok",
+  "n_cand": 89,
+  "n_gray": 0,
+  "n_contact_like": 12,
+  "sat": 169.39002710459184,
+  "grad_area": 0.017857142857142856
+ },
+ "pattern_04_3_lines_angles_1/3": {
+  "frame_id": 73,
+  "file": "pattern_04_3_lines_angles_1/3/tactile_images/000073.jpg",
+  "status": "ok",
+  "n_cand": 90,
+  "n_gray": 1,
+  "n_contact_like": 10,
+  "sat": 169.42839205994898,
+  "grad_area": 0.018933354591836735
+ },
+ "pattern_04_3_lines_angles_1/4": {
+  "frame_id": 68,
+  "file": "pattern_04_3_lines_angles_1/4/tactile_images/000068.jpg",
+  "status": "ok",
+  "n_cand": 87,
+  "n_gray": 1,
+  "n_contact_like": 11,
+  "sat": 170.0481106505102,
+  "grad_area": 0.018893494897959183
+ },
+ "pattern_04_3_lines_angles_2/1": {
+  "frame_id": 250,
+  "file": "pattern_04_3_lines_angles_2/1/tactile_images/000250.jpg",
+  "status": "ok",
+  "n_cand": 106,
+  "n_gray": 3,
+  "n_contact_like": 26,
+  "sat": 132.02194276147958,
+  "grad_area": 0.01707987882653061
+ },
+ "pattern_04_3_lines_angles_2/2": {
+  "frame_id": 347,
+  "file": "pattern_04_3_lines_angles_2/2/tactile_images/000347.jpg",
+  "status": "ok",
+  "n_cand": 88,
+  "n_gray": 1,
+  "n_contact_like": 6,
+  "sat": 130.04490194515307,
+  "grad_area": 0.01650191326530612
+ },
+ "pattern_04_3_lines_angles_2/3": {
+  "frame_id": 112,
+  "file": "pattern_04_3_lines_angles_2/3/tactile_images/000112.jpg",
+  "status": "ok",
+  "n_cand": 87,
+  "n_gray": 2,
+  "n_contact_like": 7,
+  "sat": 128.89548788265307,
+  "grad_area": 0.017717633928571428
+ },
+ "pattern_04_3_lines_angles_2/4": {
+  "frame_id": 263,
+  "file": "pattern_04_3_lines_angles_2/4/tactile_images/000263.jpg",
+  "status": "ok",
+  "n_cand": 85,
+  "n_gray": 2,
+  "n_contact_like": 6,
+  "sat": 122.49019451530613,
+  "grad_area": 0.017717633928571428
+ },
+ "pattern_06_5_lines_angle_1/1": {
+  "frame_id": 109,
+  "file": "pattern_06_5_lines_angle_1/1/tactile_images/000109.jpg",
+  "status": "ok",
+  "n_cand": 98,
+  "n_gray": 3,
+  "n_contact_like": 15,
+  "sat": 120.59048150510205,
+  "grad_area": 0.018674266581632654
+ },
+ "pattern_06_5_lines_angle_1/2": {
+  "frame_id": 107,
+  "file": "pattern_06_5_lines_angle_1/2/tactile_images/000107.jpg",
+  "status": "ok",
+  "n_cand": 78,
+  "n_gray": 0,
+  "n_contact_like": 8,
+  "sat": 120.61892139668367,
+  "grad_area": 0.016222895408163265
+ },
+ "pattern_06_5_lines_angle_1/3": {
+  "frame_id": 181,
+  "file": "pattern_06_5_lines_angle_1/3/tactile_images/000181.jpg",
+  "status": "ok",
+  "n_cand": 96,
+  "n_gray": 1,
+  "n_contact_like": 14,
+  "sat": 134.32110969387756,
+  "grad_area": 0.01789700255102041
+ },
+ "pattern_06_5_lines_angle_1/4": {
+  "frame_id": 31,
+  "file": "pattern_06_5_lines_angle_1/4/tactile_images/000031.jpg",
+  "status": "ok",
+  "n_cand": 96,
+  "n_gray": 0,
+  "n_contact_like": 14,
+  "sat": 131.4396524234694,
+  "grad_area": 0.01739875637755102
+ },
+ "pattern_31_rod/1": {
+  "frame_id": 193,
+  "file": "pattern_31_rod/1/tactile_images/000193.jpg",
+  "status": "ok",
+  "n_cand": 88,
+  "n_gray": 1,
+  "n_contact_like": 7,
+  "sat": 127.1832350127551,
+  "grad_area": 0.021464445153061226
+ },
+ "pattern_31_rod/2": {
+  "frame_id": 53,
+  "file": "pattern_31_rod/2/tactile_images/000053.jpg",
+  "status": "ok",
+  "n_cand": 80,
+  "n_gray": 2,
+  "n_contact_like": 8,
+  "sat": 154.97502790178572,
+  "grad_area": 0.02090640943877551
+ },
+ "pattern_31_rod/3": {
+  "frame_id": 318,
+  "file": "pattern_31_rod/3/tactile_images/000318.jpg",
+  "status": "ok",
+  "n_cand": 89,
+  "n_gray": 2,
+  "n_contact_like": 14,
+  "sat": 123.44774394132654,
+  "grad_area": 0.020348373724489797
+ },
+ "pattern_31_rod/4": {
+  "frame_id": 96,
+  "file": "pattern_31_rod/4/tactile_images/000096.jpg",
+  "status": "ok",
+  "n_cand": 81,
+  "n_gray": 4,
+  "n_contact_like": 7,
+  "sat": 125.33966438137755,
+  "grad_area": 0.019591039540816327
+ },
+ "pattern_32/1": {
+  "frame_id": 231,
+  "file": "pattern_32/1/tactile_images/000231.jpg",
+  "status": "ok",
+  "n_cand": 65,
+  "n_gray": 4,
+  "n_contact_like": 11,
+  "sat": 119.73921795280613,
+  "grad_area": 0.019411670918367346
+ },
+ "pattern_32/2": {
+  "frame_id": 107,
+  "file": "pattern_32/2/tactile_images/000107.jpg",
+  "status": "ok",
+  "n_cand": 84,
+  "n_gray": 3,
+  "n_contact_like": 6,
+  "sat": 129.92976721938774,
+  "grad_area": 0.019989636479591837
+ },
+ "pattern_32/3": {
+  "frame_id": 31,
+  "file": "pattern_32/3/tactile_images/000031.jpg",
+  "status": "ok",
+  "n_cand": 87,
+  "n_gray": 10,
+  "n_contact_like": 7,
+  "sat": 135.7433633609694,
+  "grad_area": 0.018753985969387755
+ },
+ "pattern_32/4": {
+  "frame_id": 22,
+  "file": "pattern_32/4/tactile_images/000022.jpg",
+  "status": "ok",
+  "n_cand": 87,
+  "n_gray": 2,
+  "n_contact_like": 9,
+  "sat": 121.38588169642857,
+  "grad_area": 0.020129145408163265
+ },
+ "pattern_33/1": {
+  "frame_id": 25,
+  "file": "pattern_33/1/tactile_images/000025.jpg",
+  "status": "ok",
+  "n_cand": 83,
+  "n_gray": 1,
+  "n_contact_like": 8,
+  "sat": 128.6682278380102,
+  "grad_area": 0.020786830357142856
+ },
+ "pattern_33/2": {
+  "frame_id": 252,
+  "file": "pattern_33/2/tactile_images/000252.jpg",
+  "status": "ok",
+  "n_cand": 81,
+  "n_gray": 1,
+  "n_contact_like": 8,
+  "sat": 121.15009167729592,
+  "grad_area": 0.02068718112244898
+ },
+ "pattern_33/3": {
+  "frame_id": 327,
+  "file": "pattern_33/3/tactile_images/000327.jpg",
+  "status": "ok",
+  "n_cand": 80,
+  "n_gray": 2,
+  "n_contact_like": 7,
+  "sat": 121.23234215561224,
+  "grad_area": 0.022660235969387755
+ },
+ "pattern_33/4": {
+  "frame_id": 101,
+  "file": "pattern_33/4/tactile_images/000101.jpg",
+  "status": "ok",
+  "n_cand": 78,
+  "n_gray": 2,
+  "n_contact_like": 5,
+  "sat": 125.55367107780613,
+  "grad_area": 0.01881377551020408
+ },
+ "pattern_35/10": {
+  "frame_id": 107,
+  "file": "pattern_35/10/tactile_images/000107.jpg",
+  "status": "ok",
+  "n_cand": 87,
+  "n_gray": 4,
+  "n_contact_like": 5,
+  "sat": 128.12300701530611,
+  "grad_area": 0.01767777423469388
+ },
+ "pattern_35/11": {
+  "frame_id": 273,
+  "file": "pattern_35/11/tactile_images/000273.jpg",
+  "status": "ok",
+  "n_cand": 90,
+  "n_gray": 1,
+  "n_contact_like": 7,
+  "sat": 126.0921556122449,
+  "grad_area": 0.015784438775510203
+ },
+ "pattern_35/12": {
+  "frame_id": 110,
+  "file": "pattern_35/12/tactile_images/000110.jpg",
+  "status": "ok",
+  "n_cand": 84,
+  "n_gray": 2,
+  "n_contact_like": 4,
+  "sat": 123.81407445790816,
+  "grad_area": 0.01580436862244898
+ },
+ "pattern_36/1": {
+  "frame_id": 137,
+  "file": "pattern_36/1/tactile_images/000137.jpg",
+  "status": "ok",
+  "n_cand": 90,
+  "n_gray": 3,
+  "n_contact_like": 20,
+  "sat": 166.9130261479592,
+  "grad_area": 0.01931202168367347
+ },
+ "pattern_36/2": {
+  "frame_id": 110,
+  "file": "pattern_36/2/tactile_images/000110.jpg",
+  "status": "ok",
+  "n_cand": 84,
+  "n_gray": 2,
+  "n_contact_like": 6,
+  "sat": 131.4296875,
+  "grad_area": 0.0174984056122449
+ },
+ "pattern_36/3": {
+  "frame_id": 179,
+  "file": "pattern_36/3/tactile_images/000179.jpg",
+  "status": "ok",
+  "n_cand": 85,
+  "n_gray": 3,
+  "n_contact_like": 11,
+  "sat": 127.9581074617347,
+  "grad_area": 0.018893494897959183
+ },
+ "pattern_36/4": {
+  "frame_id": 357,
+  "file": "pattern_36/4/tactile_images/000357.jpg",
+  "status": "ok",
+  "n_cand": 79,
+  "n_gray": 0,
+  "n_contact_like": 8,
+  "sat": 164.97999043367346,
+  "grad_area": 0.02072704081632653
+ },
+ "pattern_37/3": {
+  "frame_id": 65,
+  "file": "pattern_37/3/tactile_images/000065.jpg",
+  "status": "ok",
+  "n_cand": 45,
+  "n_gray": 0,
+  "n_contact_like": 2,
+  "sat": 166.76713966836735,
+  "grad_area": 0.019989636479591837
+ },
+ "pattern_37/4": {
+  "frame_id": 93,
+  "file": "pattern_37/4/tactile_images/000093.jpg",
+  "status": "ok",
+  "n_cand": 26,
+  "n_gray": 0,
+  "n_contact_like": 1,
+  "sat": 174.0098254145408,
+  "grad_area": 0.018355389030612245
+ },
+ "pattern_37/5": {
+  "frame_id": 50,
+  "file": "pattern_37/5/tactile_images/000050.jpg",
+  "status": "ok",
+  "n_cand": 30,
+  "n_gray": 0,
+  "n_contact_like": 2,
+  "sat": 165.30470742984693,
+  "grad_area": 0.01873405612244898
+ },
+ "pattern_37/6": {
+  "frame_id": 90,
+  "file": "pattern_37/6/tactile_images/000090.jpg",
+  "status": "ok",
+  "n_cand": 25,
+  "n_gray": 0,
+  "n_contact_like": 1,
+  "sat": 175.25203284438774,
+  "grad_area": 0.0165218431122449
+ },
+ "pattern_37/7": {
+  "frame_id": 66,
+  "file": "pattern_37/7/tactile_images/000066.jpg",
+  "status": "ok",
+  "n_cand": 51,
+  "n_gray": 0,
+  "n_contact_like": 1,
+  "sat": 166.5798190369898,
+  "grad_area": 0.017598054846938774
+ }
+}

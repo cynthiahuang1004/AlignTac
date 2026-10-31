@@ -1,0 +1,13 @@
+10-23 21:04 [p4v3] teachers seed 1 (GPU 2), seed 2 (GPU 3)
+10-23 21:04 [p4v3] waiting for teacher seed 0 (GPU 1)
+10-23 23:48 [p4v3] teacher labels + pose (aligner source)
+10-23 23:56 [p4v3] self-training (GPU 0)
+10-23 23:56 [p4v3] aligner
+10-24 00:03 [p4v3] aligned mesh labels
+labels                   n    IoU   cMAE    rot
+teacher (all)         5617  0.463  0.285   6.95
+mesh (kept)           5617  0.730  0.228   3.71
+teacher (kept)        5617  0.463  0.285   6.95
+10-24 00:07 [p4v3] AlignTac seed 0 (GPU 1); seeds 1, 2 start on GPUs 2, 3 when their teachers are done
+10-24 06:37 [p4v3] evaluation
+10-24 06:43 [p4v3] chain done

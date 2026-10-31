@@ -1,0 +1,9 @@
+{
+ "date": "2026-09-24",
+ "source": "curated_pred (per-iter 4)",
+ "decisions": {
+  "pattern_04_3_lines_angle_2": "all wrong -> removed",
+  "pattern_01_2_lines_angle_3": "frame 32 (run 4) removed",
+  "others": "ok"
+ }
+}

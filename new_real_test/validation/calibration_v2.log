@@ -1,0 +1,12 @@
+pattern_01_2_lines_angles_1    IoU 0.043 -> 0.132  dth= +17.0 dx=+1.50 dy=+3.00 n=19
+pattern_01_2_lines_angles_2    IoU 0.062 -> 0.129  dth=  +5.0 dx=-1.00 dy=+2.75 n=17
+pattern_01_2_lines_angles_3    IoU 0.064 -> 0.124  dth= +15.2 dx=+0.25 dy=+4.25 n=18
+pattern_04_3_lines_angles_1    IoU 0.097 -> 0.212  dth=  +6.0 dx=-0.75 dy=+2.25 n=18
+pattern_04_3_lines_angles_2    IoU 0.102 -> 0.171  dth= -29.5 dx=+3.25 dy=+2.00 n=19
+pattern_06_5_lines_angle_1     IoU 0.134 -> 0.316  dth= +22.2 dx=+1.00 dy=+0.75 n=16
+pattern_31_rod                 IoU 0.087 -> 0.274  dth=  +3.2 dx=+8.00 dy=+2.00 n=15
+pattern_32                     IoU 0.300 -> 0.349  dth= +10.8 dx=+0.50 dy=+1.50 n=14
+pattern_33                     IoU 0.207 -> 0.263  dth=  +5.5 dx=+0.75 dy=-1.25 n=9
+pattern_35                     IoU 0.280 -> 0.328  dth=  +4.0 dx=-0.25 dy=+0.50 n=12
+pattern_36                     IoU 0.219 -> 0.271  dth=  +6.0 dx=+0.25 dy=+0.25 n=19
+pattern_37                     IoU 0.149 -> 0.185  dth= +11.0 dx=+1.00 dy=-0.25 n=20

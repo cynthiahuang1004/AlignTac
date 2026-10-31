@@ -1,0 +1,10 @@
+10-21 03:01 [p4] teacher / real-only
+10-21 05:22 [p4] teacher labels + pose (aligner source)
+10-21 05:28 [p4] aligner
+10-21 05:33 [p4] aligned mesh labels
+labels                   n    IoU   cMAE    rot
+teacher (all)         5617  0.559  0.250   7.04
+mesh (kept)           5617  0.783  0.195   3.73
+teacher (kept)        5617  0.559  0.250   7.04
+10-21 05:35 [p4] student
+10-21 05:37 [p4] student FAILED
