@@ -326,3 +326,23 @@ Paper: zero-shot AlignTac vs real only 14-21% (was 15-20%); + learned synth. K=1
 - 2026-10-27 (cleanup): `paper_RoboSoft/video/` reduced to the author's deck, the rendered mp4, `clips_in_deck/` and `plots/` (old generated decks, render dirs and raw clip outputs removed; `video_deck.py` / `video_render.py` deleted, `video_render_pptx.py` is the renderer). Unused runs: `CLEANUP_PLAN_2026-10-27.md` lists what the table/figure builders read (access-logged run of `build_tables.py --force` with `tables.tex` redirected, plus `make_paper_figs.py`). Tier 1 deleted (34 run dirs on hdd2: facemin, bugview, rcp00/25/75, al2u25/u50, al2_r2, semi/semi_pseudo, 3dcal, dav2/t3, bgsub, 50-epoch ganloo; `robosoft_qual/bak`, `qual_P4_facemin.npz`, `aligner_p4_k25_realonly_facemin`, `tactile_gan40m_al_k25_bugview`, the facemin p4 pseudo sets, aligntac_newobj facemin files, their yamls). Renderer/aligner model dirs (C) are kept.
 - 2026-10-27 (cleanup, cont.): tier 2 deleted as well (37 run dirs, 37 GB: 50-epoch pilot_A_* protocol runs, pilot_B_k10/k50 sweeps and seeds, superseded sensor-B seeds) with their now-orphaned yamls; pseudo-label sets (B) and renderer/aligner models (C) kept. 229 paper runs remain on hdd2.
 - 2026-10-28: the marker-free sensor is now named GelSlim 5.0 (arXiv:2610.31334, `wang2026gelslim`; `\sensor` macro = "GelSlim~5.0"); sensor B stays "dot-marker GelSlim~4.0". Wording "two GelSlim sensors" / "both sensors" replaces "GelSlim 4.0 variants"; Sec. V-C title "Robustness Across Sessions, Sensors and Objects"; "Cross-sensor applicability". Bibliography: 30 records, new entry tied in `bibliography_layout.tex`. Co-author Overleaf edits merged first (abstract/intro wording, Sec. V-D moved before V-E, Fig. 1/2 PDFs). Video deck text updated the same way and the mp4 re-rendered.
+
+## 2026-11-01 — RSS experiments, round 1 (ICP / optimization baselines, calibration-free initialization, new-object labeling)
+Scripts: `scripts/tactile_render/fit_baselines.py` (teacher-pose init -> grid / ICP / gradient descent / aligner / global search; `--perturb`
+basin-of-convergence sweep from the GT state), `ablation/pilot_robosoft/make_loo3_split.py` (held-out objects pattern_04_3_lines_angle_2,
+pattern_31_rod, pattern_33: odd frame index = unlabeled pool, even = TEST, roots `gs_blender/real_loo3{,_test}`), `chain_loo3.sh`
+(teacher pilot150_A_bgcondloo -> aligner `outputs/aligner_loo9` trained on the 9 seen objects, all their labels, GAN-LOO sim -> roots
+`real_pseudo_loo3_{ng,al,tp}` -> merged roots `real_loo3_merge_{al,tp,oracle}` + `data_A_loo3_*.yaml`), `train_loo3.sh` (150 ep, eval on
+`real_loo3_test`, json `loo3_results.json`, tags loo3test / loo3test_bp). Logs in `outputs/rss_logs/`.
+- Optimization baselines (K=25, teacher B_k25_realonly, 650 of the 3,897 unlabeled session-1 frames, `fit_baselines_k25.json`), IoU / cMAE / rot:
+  mesh @ teacher pose 0.476 / 0.400 / 5.7; local grid search on the teacher depth 0.627 / 0.303 / 2.8; point-to-point ICP 0.601 / 0.348 / 3.0;
+  Adam on the dense depth L1 0.638 / 0.337 / 2.3; learned aligner 0.712 / 0.241 / 1.0.  Global search (360 deg x +-7 mm, no initial pose)
+  0.634 / 0.302; global + aligner 0.706 / 0.246 (pose only up to the mesh symmetry: symmetry-aware rot 4.5, median 0.9).
+- Basin of convergence (325 frames, GT state rotated by +-d, 0.5 mm shift): aligner IoU 0.71 / 0.71 / 0.70 / 0.70 / 0.67 at 10/15/20/25/30 deg;
+  grid 0.64 / 0.64 / 0.55 / 0.42 / 0.32; ICP 0.62 / 0.55 / 0.49 / 0.46 / 0.43; gradient descent 0.64 / 0.62 / 0.58 / 0.53 / 0.46.
+- Session 2 (162 pool frames with a curated label, `fit_baselines_s2_k25.json`): mesh @ teacher pose 0.291 / 0.548 / 17.0; grid 0.484 / 0.404;
+  ICP 0.494 / 0.425; GD 0.511 / 0.442; aligner 0.580 / 0.326 / 8.6 (median 2.7); global + aligner 0.601 / 0.320 (no teacher pose at all).
+  Two-line patterns remain hard for every method (IoU 0.4); the aligner holds IoU 0.60 up to 25 deg of initial error, ICP drops from 15 deg.
+- New-object label quality (1,118 train-split frames of the three held-out objects, aligner never saw them): teacher depth 0.575 / 0.322 / 4.9;
+  mesh @ teacher pose 0.409 / 0.472 / 4.9; mesh @ aligner_loo9 0.594 / 0.331 / 1.4.  Students (al / tp / oracle) training; reference models
+  on the 635 TEST frames: A_bgcondloo cMAE 0.327 / IoU 0.631 / rot 4.6; A_ganloo 0.335 / 0.616 / 5.6; A_realonly 0.363 / 0.578 / 54.
