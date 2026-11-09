@@ -12,6 +12,6 @@ Layout
 - `aligntac_newobj/` — calibration, GT and evaluation of the four additional objects.
 - `new_real_test/` — session-2 raw captures (ignored) and the curated selections (`validation/*.json`, tracked).
 - `notes/` — side notes (literature review, checkpoint lists); `paper/overleaf_backups/` — Overleaf snapshots.
-- Local only (ignored): `runs/` (training runs; `/media/hdd2/ihsuan/VisTacFusion/AlignTac/runs` is a symlink to it), `outputs/` (aligners, renderer models, qualitative dumps, logs), `data -> /media/hdd2/ihsuan/gs_blender` (datasets, meshes, pseudo-label sets), `weights -> ../weights` (frozen encoder checkpoints).
+- Local only (ignored): `runs/` (training runs; `/media/hdd/ihsuan/VisTacFusion/AlignTac/runs` is a symlink to it), `outputs/` (aligners, renderer models, qualitative dumps, logs), `data -> /media/hdd/ihsuan/gs_blender` (datasets, meshes, pseudo-label sets), `weights -> ../weights` (frozen encoder checkpoints).
 
 Environment: conda env `vistacfusion` (Python 3.11, PyTorch 2.5.1+cu121). Run everything from this directory, e.g. `python paper/scripts/make_paper_figs.py paper/figures`, `python paper/build.py`.

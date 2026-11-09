@@ -1,6 +1,6 @@
 #!/bin/bash
 # Evaluation chain for the runs finished on 2026-09-23 (K=50, seeds) + remaining GT-free cross-session rows.
-cd /media/hdd2/ihsuan/VisTacFusion
+cd /media/hdd/ihsuan/VisTacFusion
 PY=/home/shared/miniconda3/envs/vistacfusion/bin/python
 D=cuda:0
 echo "== masked eval =="

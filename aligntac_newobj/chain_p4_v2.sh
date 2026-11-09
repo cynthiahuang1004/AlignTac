@@ -3,10 +3,10 @@
 # usage: chain_p4_v2.sh <gpu>      (run after calibrate_newobj.py and build_newobj.py)
 # teachers (real only, seeds 0-2) -> teacher labels -> aligner -> aligned mesh labels -> students (AlignTac seeds 0-2, self-training seed 0)
 # All outputs on /media/hdd2 (the root disk is full); the earlier runs were renamed *_facemin.
-GPU=$1; cd /media/hdd2/ihsuan/VisTacFusion
+GPU=$1; cd /media/hdd/ihsuan/VisTacFusion
 export CUDA_VISIBLE_DEVICES=$GPU PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
-G=/media/hdd2/ihsuan/gs_blender; L=outputs/pilot_logs; PY="conda run --no-capture-output -n vistacfusion python"; P=ablation/pilot_robosoft
-M=ablation/encoder/tac_sitr_single.yaml; O=/media/hdd2/ihsuan/VisTacFusion/AlignTac/runs; K=25
+G=/media/hdd/ihsuan/gs_blender; L=outputs/pilot_logs; PY="conda run --no-capture-output -n vistacfusion python"; P=ablation/pilot_robosoft
+M=ablation/encoder/tac_sitr_single.yaml; O=/media/hdd/ihsuan/VisTacFusion/AlignTac/runs; K=25
 step() { echo "$(date '+%m-%d %H:%M') [p4v2] $*"; }
 train() {  # <run name> <train yaml> <data yaml>
   [ -f $O/pilot150_$1/final.pt ] && return 0

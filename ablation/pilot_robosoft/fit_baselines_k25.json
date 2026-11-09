@@ -1816,8 +1816,8 @@
   }
  },
  "args": {
-  "al_root": "/media/hdd2/ihsuan/gs_blender/real_pseudo_k25_ro_al",
-  "real_root": "/media/hdd2/ihsuan/gs_blender/real_filtered",
+  "al_root": "/media/hdd/ihsuan/gs_blender/real_pseudo_k25_ro_al",
+  "real_root": "/media/hdd/ihsuan/gs_blender/real_filtered",
   "gt_root": null,
   "aligner": "outputs/aligner_k25_realonly/aligner.pt",
   "step": 6,

@@ -2,9 +2,9 @@
 # Formal 150-epoch runs for the paper's final method set (2026-09-23).
 # Skips runs whose history already has 150 epochs, resumes runs that have latest.pt,
 # keeps at most $MAXPER of our runs per GPU and only launches on GPUs with < 40 GB used.
-cd /media/hdd2/ihsuan/VisTacFusion
+cd /media/hdd/ihsuan/VisTacFusion
 PY=/home/shared/miniconda3/envs/vistacfusion/bin/python
-OUT=/media/hdd2/ihsuan/VisTacFusion/AlignTac/runs
+OUT=/media/hdd/ihsuan/VisTacFusion/AlignTac/runs
 MAXPER=${MAXPER:-3}
 RUNS="B_k25_realonly B_k25_gank B_k50_realonly B_k50_gank B_k10_gank \
       A_bgcondloo A_blender_cov1 A_blender_cov2 A_ganloo_gr \

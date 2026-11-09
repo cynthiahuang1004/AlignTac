@@ -19,7 +19,7 @@ import os.path as osp
 import re
 import statistics as st
 
-OUT = "/media/hdd2/ihsuan/VisTacFusion/AlignTac/runs"
+OUT = "/media/hdd/ihsuan/VisTacFusion/AlignTac/runs"
 P = "ablation/pilot_robosoft"
 MASKED = json.load(open(f"{P}/masked_results.json"))
 # Clean protocol (2026-10-09): sensor-A runs T_* trained without the 530 held-out frames; dense metrics from best_depth.pt
@@ -187,7 +187,7 @@ T["seeds"] = "\n".join(sd)
 # ---------------- verification ablation (K=25, 50 ep): label quality vs downstream ----------------
 def labq(root, parts):
     """Quality of a label set against the withheld labels (pseudo_label_rc.py --eval-gt): mean over the given parts."""
-    p = f"/media/hdd2/ihsuan/gs_blender/{root}/pseudo_manifest.json"
+    p = f"/media/hdd/ihsuan/gs_blender/{root}/pseudo_manifest.json"
     if not osp.exists(p):
         return None
     q = json.load(open(p))["stats"]

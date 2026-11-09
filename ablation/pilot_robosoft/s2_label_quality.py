@@ -1,7 +1,7 @@
 """Pseudo-label quality on the session-2 unlabeled pool, measured ONLY on pool frames that also have a curated label
 (real_s2_poolcheck; matched by object/session/raw frame id). Curated labels are never used for training."""
 import glob, json, math, os.path as osp, sys, numpy as np
-G = "/media/hdd2/ihsuan/gs_blender"
+G = "/media/hdd/ihsuan/gs_blender"
 gt = {}
 for pj in glob.glob(f"{G}/real_s2_poolcheck/*/session_*/sensor_0000/raw_data/*_pose.json"):
     d = json.load(open(pj)); gt[(pj.split("/")[-5], pj.split("/")[-4], int(d["source"]["frame"]))] = (pj, d)

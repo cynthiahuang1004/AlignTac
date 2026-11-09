@@ -22,7 +22,7 @@ ROOT = osp.dirname(osp.dirname(osp.dirname(osp.abspath(__file__))))
 sys.path.insert(0, osp.join(ROOT, "scripts")); sys.path.insert(0, osp.dirname(osp.abspath(__file__)))
 import build_real_filtered_new as B  # noqa: E402
 
-REAL_B = "/media/hdd2/ihsuan/gs_blender/real_gelslim40_train"
+REAL_B = "/media/hdd/ihsuan/gs_blender/real_gelslim40_train"
 VIEW_B = 0.012
 _zt = {}
 

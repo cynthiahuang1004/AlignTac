@@ -20,7 +20,7 @@ import build_real_filtered_new as B          # noqa: E402
 from calibrate_newobj import RAW, load, robot_state   # noqa: E402
 
 B.VIEW = 0.017502
-G = "/media/hdd2/ihsuan/gs_blender"; OLD = f"{G}/real_filtered"; OUT = f"{G}/real_filtered_plus4"
+G = "/media/hdd/ihsuan/gs_blender"; OLD = f"{G}/real_filtered"; OUT = f"{G}/real_filtered_plus4"
 Z_ANCHOR = B.Z_ANCHOR
 cal = json.load(open("aligntac_newobj/calib_newobj.json"))
 os.makedirs(OUT, exist_ok=True)

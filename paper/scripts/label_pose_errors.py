@@ -2,7 +2,7 @@
 mean |rotation| (deg) and mean translation error (mm, (|dx|+|dy|)/2 as for the student metric).  -> ablation/pilot_robosoft/label_pose_errors.json"""
 import json, math, os.path as osp
 import numpy as np
-G = "/media/hdd2/ihsuan/gs_blender"
+G = "/media/hdd/ihsuan/gs_blender"
 ROOTS = {"tp": "real_pseudo_k25_tp", "ro_tp0": "real_pseudo_k25_ro_tp0", "rcp": "real_pseudo_k25_rcp", "ro_al": "real_pseudo_k25_ro_al", "al": "real_pseudo_k25_al", "rc100": "real_pseudo_k25_rc100"}
 out = {}
 for tag, root in ROOTS.items():

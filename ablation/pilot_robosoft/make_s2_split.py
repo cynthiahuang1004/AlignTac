@@ -6,7 +6,7 @@ gs_blender/real_s2_testhalf (symlinks, re-indexed), and s2_poolcheck root (curat
 import collections, glob, json, os, os.path as osp, shutil, sys
 sys.path.insert(0, "scripts")
 import build_real_filtered_new as B
-T = "/media/hdd2/ihsuan/VisTacFusion/AlignTac/new_real_test"; G = "/media/hdd2/ihsuan/gs_blender"; FV = f"{G}/real_filtered_new_curated_pred_r2_fv"
+T = "/media/hdd/ihsuan/VisTacFusion/AlignTac/new_real_test"; G = "/media/hdd/ihsuan/gs_blender"; FV = f"{G}/real_filtered_new_curated_pred_r2_fv"
 sim2real = {v[0]: k for k, v in B.OBJ_MAP.items()}
 allp = collections.defaultdict(set)                       # real_name -> {(run, iteration)} with at least one contact frame
 for real_name in sorted(B.OBJ_MAP):

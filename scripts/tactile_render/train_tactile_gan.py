@@ -27,10 +27,10 @@ from PIL import Image
 from torch.nn.utils import spectral_norm
 from torch.utils.data import DataLoader, Dataset
 
-REAL_ROOT = "/media/hdd2/ihsuan/gs_blender/real_filtered"
+REAL_ROOT = "/media/hdd/ihsuan/gs_blender/real_filtered"
 BG_ROOT = osp.join(osp.dirname(osp.dirname(osp.dirname(osp.abspath(__file__)))), "outputs", "session_bg")
-SIM_ROOT = "/media/hdd2/ihsuan/gs_blender/renders_v3"
-PHYS_ROOT = "/media/hdd2/ihsuan/gs_blender/real_filtered_phys"  # Blender tactile rendered at the real GT poses
+SIM_ROOT = "/media/hdd/ihsuan/gs_blender/renders_v3"
+PHYS_ROOT = "/media/hdd/ihsuan/gs_blender/real_filtered_phys"  # Blender tactile rendered at the real GT poses
 DEPTH_SCALE = 0.0012  # max press depth (m); normalizes depth to ~[0, 1]
 VAL_EVERY = 10
 
@@ -134,7 +134,7 @@ class SimPairs(RealPairs):
         self.items = items[:max_pairs]
 
 
-SITR_ROOT = "/media/hdd2/ihsuan/gsrl/datasets/renders"
+SITR_ROOT = "/media/hdd/ihsuan/gsrl/datasets/renders"
 SITR_PRESS_M = 0.001   # SITR dmaps are per-frame min-max normalised PNGs; assume a 1 mm indentation
 
 

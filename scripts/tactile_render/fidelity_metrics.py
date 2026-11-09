@@ -22,7 +22,7 @@ from torch.utils.data import DataLoader
 sys.path.insert(0, osp.dirname(osp.abspath(__file__)))
 from train_tactile_gan import REAL_ROOT, RealPairs, UNetG  # noqa: E402
 
-OUT = "/media/hdd2/ihsuan/VisTacFusion/AlignTac/runs"
+OUT = "/media/hdd/ihsuan/VisTacFusion/AlignTac/runs"
 # tag -> (generator dir, downstream run whose synthetic data came from it)
 GENS = {
     "k10": ("tactile_gan_k10", "B_k10_gank"), "k25": ("tactile_gan_k25", "B_k25_gank"),

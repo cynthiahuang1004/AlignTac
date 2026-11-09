@@ -1,8 +1,8 @@
 #!/bin/bash
 # usage: launch.sh <gpu> <name> [name...]   — single-GPU SITR tactile-only pilot runs
-cd /media/hdd2/ihsuan/VisTacFusion
+cd /media/hdd/ihsuan/VisTacFusion
 PY=/home/shared/miniconda3/envs/vistacfusion/bin/python
-OUT=/media/hdd2/ihsuan/VisTacFusion/AlignTac/runs
+OUT=/media/hdd/ihsuan/VisTacFusion/AlignTac/runs
 gpu=$1; shift
 for n in "$@"; do
   CUDA_VISIBLE_DEVICES=$gpu nohup $PY -m vistacfusion.engine.train \

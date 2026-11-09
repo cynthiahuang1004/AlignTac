@@ -9,7 +9,7 @@ from matplotlib.patches import FancyArrowPatch
 sys.path.insert(0, "scripts")
 import build_real_filtered_new as B
 B.VIEW = 0.017502
-G = "/media/hdd2/ihsuan/gs_blender"; REAL = f"{G}/real_filtered"; K = 25
+G = "/media/hdd/ihsuan/gs_blender"; REAL = f"{G}/real_filtered"; K = 25
 OBJ = "pattern_06_5_lines_angle_1"; SIM = f"{G}/renders_v3/{OBJ}/session_000/sensor_0000"
 plt.rcParams.update({"font.family": "DejaVu Sans", "axes.titlesize": 5.6, "font.size": 5.6})
 

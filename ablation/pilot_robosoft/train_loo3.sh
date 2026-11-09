@@ -1,8 +1,8 @@
 #!/bin/bash
 # Train one new-object student and evaluate it on the held-out TEST frames.  usage: train_loo3.sh <gpu> <variant: al|tp|oracle> [train yaml]
-GPU=$1; V=$2; T=${3:-ablation/pilot_robosoft/train_pilot_e150.yaml}; cd /media/hdd2/ihsuan/VisTacFusion/AlignTac
+GPU=$1; V=$2; T=${3:-ablation/pilot_robosoft/train_pilot_e150.yaml}; cd /media/hdd/ihsuan/VisTacFusion/AlignTac
 export CUDA_VISIBLE_DEVICES=$GPU PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
-G=/media/hdd2/ihsuan/gs_blender; L=outputs/rss_logs; PY="conda run --no-capture-output -n vistacfusion python"; P=ablation/pilot_robosoft
+G=/media/hdd/ihsuan/gs_blender; L=outputs/rss_logs; PY="conda run --no-capture-output -n vistacfusion python"; P=ablation/pilot_robosoft
 M=ablation/encoder/tac_sitr_single.yaml; R=A_loo3_$V; OUT=runs/pilot150_$R
 step() { echo "$(date '+%m-%d %H:%M') [loo3 $V] $*"; }
 step "train $R on GPU $GPU"

@@ -696,7 +696,7 @@ def main():
 
     ap.add_argument("--rgb", help="Single RGB image path (pair with --tactile)")
     ap.add_argument("--real-dir-path",
-                    default="/media/hdd2/ihsuan/VisTacFusion/datasets/real_data",
+                    default="/media/hdd/ihsuan/VisTacFusion/datasets/real_data",
                     help="Real data path for --eval-all mode")
     ap.add_argument("--suffix", default="best",
                     help="Output folder suffix (e.g. best, last, epoch050)")

@@ -1,13 +1,13 @@
 """Merge locally rendered physics tactile images (phys_upload/) into real_filtered_phys/ and verify
 every frame in phys_frames/<obj>.json exists, is a valid 224x224 PNG, and nothing extra is present.
-usage: python scripts/tactile_render/merge_phys_upload.py [--src /media/hdd2/ihsuan/gs_blender/phys_upload]
+usage: python scripts/tactile_render/merge_phys_upload.py [--src /media/hdd/ihsuan/gs_blender/phys_upload]
 """
 import argparse, glob, json, os, os.path as osp, shutil
 from PIL import Image
 ap = argparse.ArgumentParser()
-ap.add_argument("--src", default="/media/hdd2/ihsuan/gs_blender/phys_upload")
-ap.add_argument("--dst", default="/media/hdd2/ihsuan/gs_blender/real_filtered_phys")
-ap.add_argument("--lists", default="/media/hdd2/ihsuan/gs_blender/phys_frames")
+ap.add_argument("--src", default="/media/hdd/ihsuan/gs_blender/phys_upload")
+ap.add_argument("--dst", default="/media/hdd/ihsuan/gs_blender/real_filtered_phys")
+ap.add_argument("--lists", default="/media/hdd/ihsuan/gs_blender/phys_frames")
 a = ap.parse_args()
 # tolerate one extra nesting level (scp -r into an existing dir)
 src = a.src

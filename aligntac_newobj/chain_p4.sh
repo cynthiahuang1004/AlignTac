@@ -2,10 +2,10 @@
 # K=25 AlignTac pipeline on the 16-object root (12 session-1 objects + edge/hex_key/marble/button), clean protocol
 # (test frames in testA_plus4_frames.json are excluded from every component). usage: chain_p4.sh <gpu>
 # teacher = real-only baseline -> teacher labels (+pose) -> aligner -> aligned mesh labels -> student
-GPU=$1; cd /media/hdd2/ihsuan/VisTacFusion
+GPU=$1; cd /media/hdd/ihsuan/VisTacFusion
 export CUDA_VISIBLE_DEVICES=$GPU PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
-G=/media/hdd2/ihsuan/gs_blender; L=outputs/pilot_logs; PY="conda run -n vistacfusion python"; P=ablation/pilot_robosoft
-M=ablation/encoder/tac_sitr_single.yaml; OUTT=/home/shared/vtf_outputs_T; LINK=/media/hdd2/ihsuan/VisTacFusion/AlignTac/runs; K=25
+G=/media/hdd/ihsuan/gs_blender; L=outputs/pilot_logs; PY="conda run -n vistacfusion python"; P=ablation/pilot_robosoft
+M=ablation/encoder/tac_sitr_single.yaml; OUTT=/home/shared/vtf_outputs_T; LINK=/media/hdd/ihsuan/VisTacFusion/AlignTac/runs; K=25
 step() { echo "$(date '+%m-%d %H:%M') [p4] $*"; }
 if [ ! -f $OUTT/pilot150_P4_k25_realonly/final.pt ]; then
   step "teacher / real-only"; $PY -m vistacfusion.engine.train --model $M --train $P/train_pilot_e150.yaml --data $P/data_P4_k25_realonly.yaml --output-dir $OUTT/pilot150_P4_k25_realonly > $L/150ep_P4_k25_realonly.log 2>&1 || { step "teacher FAILED"; exit 1; }

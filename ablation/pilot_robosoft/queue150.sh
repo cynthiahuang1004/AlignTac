@@ -1,8 +1,8 @@
 #!/bin/bash
 # Formal 150-epoch runs: keep at most $MAXPER of our runs per GPU, launch from the list in order.
-cd /media/hdd2/ihsuan/VisTacFusion
+cd /media/hdd/ihsuan/VisTacFusion
 PY=/home/shared/miniconda3/envs/vistacfusion/bin/python
-OUT=/media/hdd2/ihsuan/VisTacFusion/AlignTac/runs
+OUT=/media/hdd/ihsuan/VisTacFusion/AlignTac/runs
 MAXPER=${MAXPER:-3}
 RUNS="A_blender A_ganloo_9obj A_ganfull A_blender_bgsub A_diffloo \
       B_k10_realonly B_k10_blender B_k10_gank B_k25_realonly B_k25_blender B_k25_gank \

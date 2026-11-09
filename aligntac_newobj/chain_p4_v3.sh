@@ -4,10 +4,10 @@
 #   GPU 2: real-only seed 1 -> AlignTac seed 1         GPU 3: real-only seed 2 -> AlignTac seed 2
 #   GPU 0: self-training (as soon as the teacher labels exist)
 # Teammates' jobs share GPUs 0, 2, 3; nothing of theirs is touched. usage: bash aligntac_newobj/chain_p4_v3.sh
-cd /media/hdd2/ihsuan/VisTacFusion
+cd /media/hdd/ihsuan/VisTacFusion
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
-G=/media/hdd2/ihsuan/gs_blender; L=outputs/pilot_logs; PY="conda run --no-capture-output -n vistacfusion python"; P=ablation/pilot_robosoft
-M=ablation/encoder/tac_sitr_single.yaml; O=/media/hdd2/ihsuan/VisTacFusion/AlignTac/runs; K=25
+G=/media/hdd/ihsuan/gs_blender; L=outputs/pilot_logs; PY="conda run --no-capture-output -n vistacfusion python"; P=ablation/pilot_robosoft
+M=ablation/encoder/tac_sitr_single.yaml; O=/media/hdd/ihsuan/VisTacFusion/AlignTac/runs; K=25
 step() { echo "$(date '+%m-%d %H:%M') [p4v3] $*"; }
 train() {  # <gpu> <run name> <train yaml> <data yaml>
   [ -f $O/pilot150_$2/final.pt ] && return 0

@@ -19,10 +19,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 
-OUT_RUNS = "/media/hdd2/ihsuan/VisTacFusion/AlignTac/runs"
+OUT_RUNS = "/media/hdd/ihsuan/VisTacFusion/AlignTac/runs"
 MASKED = json.load(open("ablation/pilot_robosoft/masked_results.json"))
-SIM = "/media/hdd2/ihsuan/gs_blender/renders_v3"
-REAL = "/media/hdd2/ihsuan/gs_blender/real_filtered"
+SIM = "/media/hdd/ihsuan/gs_blender/renders_v3"
+REAL = "/media/hdd/ihsuan/gs_blender/real_filtered"
 
 # series -> (color, marker, linestyle); gray baseline + categorical slots 1-3
 STY = {

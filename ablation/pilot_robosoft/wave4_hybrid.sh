@@ -1,6 +1,6 @@
 #!/bin/bash
 # Hybrid renderer: Blender-pretrained G/D -> fine-tune on K real pairs -> fidelity -> render sim -> downstream
-cd /media/hdd2/ihsuan/VisTacFusion
+cd /media/hdd/ihsuan/VisTacFusion
 PY=/home/shared/miniconda3/envs/vistacfusion/bin/python
 HELD="pattern_04_3_lines_angle_2 pattern_31_rod pattern_33"
 OBJS=$($PY -c "import yaml;print(' '.join(yaml.safe_load(open('ablation/pilot_robosoft/data_A_blender.yaml'))['sim']['include_objects']))")

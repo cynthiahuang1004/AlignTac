@@ -2,7 +2,7 @@
 
 Method: ran build_tables.py and make_paper_figs.py with access logging; a run is *used* if a builder read its history.json or a cached result keyed by its name, or if it feeds the hand-maintained Table III (session-2 runs), Fig. 6 / the video (qual dumps), or the new-object numbers. Families mentioned in the long version's text (classification study `_cls`, rotation coverage `cov1/cov2`) are kept. ICRA outputs, eval_results and outputs/old are never touched. Symlinks into /home/shared/vtf_outputs_T are left alone.
 
-# A. Run directories on /media/hdd2/ihsuan/VisTacFusion/AlignTac/runs not used by the paper
+# A. Run directories on /media/hdd/ihsuan/VisTacFusion/AlignTac/runs not used by the paper
 
 ## tier1  (44.4 GB)
 - pilot150_B_k100_semi  (996 MB)

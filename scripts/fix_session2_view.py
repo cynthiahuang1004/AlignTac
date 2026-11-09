@@ -26,7 +26,7 @@ import build_real_filtered_new as B  # noqa: E402
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--root", default="/media/hdd2/ihsuan/gs_blender/real_filtered_new_curated_pred_r2")
+    ap.add_argument("--root", default="/media/hdd/ihsuan/gs_blender/real_filtered_new_curated_pred_r2")
     args = ap.parse_args()
     out = args.root.rstrip("/") + "_fv"
     n = 0; chk = []

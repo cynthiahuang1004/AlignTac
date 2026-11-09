@@ -1,6 +1,6 @@
 """Pilot summary: best-by-val-depth epoch per run; A reports held-out test at that epoch."""
 import glob, json, os.path as osp
-OUT = "/media/hdd2/ihsuan/VisTacFusion/AlignTac/runs"
+OUT = "/media/hdd/ihsuan/VisTacFusion/AlignTac/runs"
 print(f"{'run':28s} {'ep':>3s} | {'val_depth':>9s} {'val_rot':>7s} {'val_tr':>7s} | {'TEST_depth':>10s} {'TEST_rot':>8s} {'TEST_tr':>7s}")
 for p in sorted(glob.glob(f"{OUT}/pilot_*/history.json")):
     h = json.load(open(p))

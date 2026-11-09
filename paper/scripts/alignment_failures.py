@@ -3,7 +3,7 @@ per-frame rotation / translation error of the aligned pose against the withheld 
 usage: python paper/scripts/alignment_failures.py [root=real_pseudo_k25_al]
 """
 import json, math, os.path as osp, sys, collections, numpy as np
-G = "/media/hdd2/ihsuan/gs_blender"; root = sys.argv[1] if len(sys.argv) > 1 else "real_pseudo_k25_al"
+G = "/media/hdd/ihsuan/gs_blender"; root = sys.argv[1] if len(sys.argv) > 1 else "real_pseudo_k25_al"
 fits = json.load(open(f"{G}/{root}/rc_fits.json"))
 rows = collections.defaultdict(list)
 for tac, f in fits.items():

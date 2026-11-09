@@ -9,7 +9,7 @@ Writes: gs_blender/real_loo3 (symlink root with the three objects only, all fram
         ablation/pilot_robosoft/loo3_test_frames.json (exclude_frames for the merged training roots).
 """
 import glob, json, os, os.path as osp, shutil
-G = "/media/hdd2/ihsuan/gs_blender"; REAL = f"{G}/real_filtered"
+G = "/media/hdd/ihsuan/gs_blender"; REAL = f"{G}/real_filtered"
 HELD = ["pattern_04_3_lines_angle_2", "pattern_31_rod", "pattern_33"]
 os.chdir(osp.dirname(osp.dirname(osp.dirname(osp.abspath(__file__)))))
 def mirror(root, keep):

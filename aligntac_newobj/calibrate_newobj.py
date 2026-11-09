@@ -27,7 +27,7 @@ sys.path.insert(0, "scripts")
 import build_real_filtered_new as B          # noqa: E402  (gt_depth_mm, get_zmap; VIEW = full gel view)
 
 B.VIEW = 0.017502
-RAW = "/media/hdd2/ihsuan/gs_blender/real_new_objects_raw"
+RAW = "/media/hdd/ihsuan/gs_blender/real_new_objects_raw"
 OUT = "aligntac_newobj"
 OBJS = {"button": "button_v2", "edge": "edge_v2", "hex_key": "hex_key_v2", "marble": "marble_v2"}
 N_FIT = 40          # frames used for the fit (evenly spaced)

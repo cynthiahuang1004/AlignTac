@@ -26,7 +26,7 @@ from vistacfusion.engine.train import load_checkpoint
 from vistacfusion.models.model import build_model
 from vistacfusion.utils.config import merge_configs
 
-OUT = "/media/hdd2/ihsuan/VisTacFusion/AlignTac/runs"
+OUT = "/media/hdd/ihsuan/VisTacFusion/AlignTac/runs"
 MODEL = "ablation/encoder/tac_sitr_single.yaml"
 TRAIN = "ablation/pilot_robosoft/train_pilot_e50.yaml"
 IOU_THR = 0.05  # mm

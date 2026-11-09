@@ -9,7 +9,7 @@ true labels.  Only train-split frames (idx % 10 != 0) are written: validation fr
 renderer, as in every other protocol of the paper.
 
 usage: python scripts/tactile_render/pseudo_label.py --run B_k25_gank --k 25 \
-           --out-root /media/hdd2/ihsuan/gs_blender/real_pseudo_k25 --device cuda:0
+           --out-root /media/hdd/ihsuan/gs_blender/real_pseudo_k25 --device cuda:0
 """
 import argparse
 import contextlib
@@ -36,7 +36,7 @@ from vistacfusion.engine.train import load_checkpoint  # noqa: E402
 from vistacfusion.models.model import build_model  # noqa: E402
 from vistacfusion.utils.config import merge_configs  # noqa: E402
 
-OUT = "/media/hdd2/ihsuan/VisTacFusion/AlignTac/runs"
+OUT = "/media/hdd/ihsuan/VisTacFusion/AlignTac/runs"
 MODEL = "ablation/encoder/tac_sitr_single.yaml"
 TRAIN = "ablation/pilot_robosoft/train_pilot_e50.yaml"
 

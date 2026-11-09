@@ -16,7 +16,7 @@ from vistacfusion.engine.train import load_checkpoint
 from vistacfusion.models.model import build_model
 from vistacfusion.utils.config import merge_configs
 
-OUT = "/media/hdd2/ihsuan/VisTacFusion/AlignTac/runs"; P = "ablation/pilot_robosoft"; G = "/media/hdd2/ihsuan/gs_blender"
+OUT = "/media/hdd/ihsuan/VisTacFusion/AlignTac/runs"; P = "ablation/pilot_robosoft"; G = "/media/hdd/ihsuan/gs_blender"
 MODEL = "ablation/encoder/tac_sitr_single.yaml"; TRAIN = f"{P}/train_pilot_e50.yaml"
 ROOTS = {"new": f"{G}/real_filtered_testP4", "old": f"{G}/real_filtered_testA"}
 HALF_MM = 41.0; IOU_THR = 0.05

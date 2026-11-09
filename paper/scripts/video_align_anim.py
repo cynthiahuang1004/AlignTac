@@ -17,7 +17,7 @@ from vistacfusion.engine.train import load_checkpoint  # noqa: E402
 from vistacfusion.models.model import build_model  # noqa: E402
 from vistacfusion.utils.config import merge_configs  # noqa: E402
 
-OUT = "/media/hdd2/ihsuan/VisTacFusion/AlignTac/runs"; TEST = "/media/hdd2/ihsuan/gs_blender/real_filtered_testA"
+OUT = "/media/hdd/ihsuan/VisTacFusion/AlignTac/runs"; TEST = "/media/hdd/ihsuan/gs_blender/real_filtered_testA"
 VID = osp.join(ROOT, "paper", "video", "align_anim"); T = 6; UP = 3          # 224 px -> 672 px tiles
 OBJS = ["pattern_06_5_lines_angle_1", "pattern_32", "pattern_36", "pattern_04_3_lines_angle_1"]
 

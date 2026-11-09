@@ -4,7 +4,7 @@ Contact MAE (mm, over GT contact pixels), IoU (contact > 0.05 mm) and rotation e
 usage (cwd = VisTacFusion): python aligntac_newobj/label_quality_newobj.py"""
 import glob, json, math, os
 import numpy as np
-G = "/media/hdd2/ihsuan/gs_blender"; GT = f"{G}/real_filtered_plus4"
+G = "/media/hdd/ihsuan/gs_blender"; GT = f"{G}/real_filtered_plus4"
 ROOTS = {"teacher": f"{G}/real_pseudo_p4_k25_ro_ng", "aligned": f"{G}/real_pseudo_p4_k25_ro_al"}
 res = {}
 for obj in ("button_v2", "edge_v2", "hex_key_v2", "marble_v2"):

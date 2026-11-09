@@ -121,7 +121,7 @@ def put(draw, xy, txt, size=26, color=(0, 0, 0), bold=True, anchor="la"):
 
 def align_toggle(K=25):
     import build_real_filtered_new as B
-    B.VIEW = 0.017502; G = "/media/hdd2/ihsuan/gs_blender"; fits = json.load(open(f"{G}/real_pseudo_k{K}_ro_al/rc_fits.json"))
+    B.VIEW = 0.017502; G = "/media/hdd/ihsuan/gs_blender"; fits = json.load(open(f"{G}/real_pseudo_k{K}_ro_al/rc_fits.json"))
     rows = []
     for o in ["pattern_01_2_lines_angle_1_2", "pattern_06_5_lines_angle_1", "pattern_36"]:      # the same frames as paper Fig. 3
         cand = sorted(t for t in fits if f"/{o}/" in t)

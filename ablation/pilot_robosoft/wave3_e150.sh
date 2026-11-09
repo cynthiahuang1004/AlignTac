@@ -1,8 +1,8 @@
 #!/bin/bash
 # 150-epoch confirmation of the 4 key comparisons, after the 50-epoch pilot drains
-cd /media/hdd2/ihsuan/VisTacFusion
+cd /media/hdd/ihsuan/VisTacFusion
 PY=/home/shared/miniconda3/envs/vistacfusion/bin/python
-OUT=/media/hdd2/ihsuan/VisTacFusion/AlignTac/runs
+OUT=/media/hdd/ihsuan/VisTacFusion/AlignTac/runs
 until [ $(ps -u shared -o cmd | grep -c '[e]ngine.train --model') -le 1 ]; do sleep 300; done
 g=0
 for n in A_realonly A_ganloo B_k100_realonly B_k100_gank; do

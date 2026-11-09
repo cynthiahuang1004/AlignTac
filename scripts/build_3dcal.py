@@ -12,14 +12,14 @@ clamped to [0, penetration_depth].  Normal = normalised gradient of depth.
 Each (x, y, depth) location has 30 repeated images; we use one for train, one for val, one for test.
 
 usage:
-  python scripts/build_3dcal.py --sensor digit  --out /media/hdd2/ihsuan/gs_blender/real_3dcal_digit
-  python scripts/build_3dcal.py --sensor gsmini --out /media/hdd2/ihsuan/gs_blender/real_3dcal_gsmini
+  python scripts/build_3dcal.py --sensor digit  --out /media/hdd/ihsuan/gs_blender/real_3dcal_digit
+  python scripts/build_3dcal.py --sensor gsmini --out /media/hdd/ihsuan/gs_blender/real_3dcal_gsmini
 """
 import argparse, csv, json, math, os, os.path as osp
 import cv2, numpy as np
 from PIL import Image
 
-ROOT = "/media/hdd2/ihsuan/3dcal"
+ROOT = "/media/hdd/ihsuan/3dcal"
 SENSOR_DIRS = {"digit": "digit/digit_calibration_data", "gsmini": "gsmini/gsmini_calibration_data"}
 # output image size (our pipeline expects 224x224)
 OUT_SIZE = 224

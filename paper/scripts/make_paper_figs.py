@@ -19,10 +19,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 from PIL import Image
 
-OUT_RUNS = "/media/hdd2/ihsuan/VisTacFusion/AlignTac/runs"
+OUT_RUNS = "/media/hdd/ihsuan/VisTacFusion/AlignTac/runs"
 MASKED = json.load(open("ablation/pilot_robosoft/masked_results.json"))
-SIM = "/media/hdd2/ihsuan/gs_blender/renders_v3"
-REAL = "/media/hdd2/ihsuan/gs_blender/real_filtered"
+SIM = "/media/hdd/ihsuan/gs_blender/renders_v3"
+REAL = "/media/hdd/ihsuan/gs_blender/real_filtered"
 
 LW, MS, MS_STAR = 0.9, 2.6, 4.4   # shared line width / marker size of every line plot
 # series -> (color, marker, linestyle); gray baseline + categorical slots 1-3
@@ -309,7 +309,7 @@ def fig_align(out, K=25):
     sys.path.insert(0, "scripts")
     import build_real_filtered_new as B
     B.VIEW = 0.017502
-    G = "/media/hdd2/ihsuan/gs_blender"
+    G = "/media/hdd/ihsuan/gs_blender"
     fits = json.load(open(f"{G}/real_pseudo_k{K}_ro_al/rc_fits.json"))
     objs = ["pattern_01_2_lines_angle_1_2", "pattern_06_5_lines_angle_1", "pattern_36"]
     rows = []

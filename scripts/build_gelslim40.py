@@ -9,8 +9,8 @@ Pose: rotation_euler[2] = in_hand_pose theta (rad); sample_x/y = in_hand_pose y/
 origin differs from our object frames by a per-object constant -> evaluate rotation after removing the
 per-object median offset (eval option) or use it as-is for a pessimistic number.
 
-usage: python scripts/build_gelslim40.py --split test --out /media/hdd2/ihsuan/gs_blender/real_gelslim40_test
-       python scripts/build_gelslim40.py --split train --per-obj 300 --out /media/hdd2/ihsuan/gs_blender/real_gelslim40_train
+usage: python scripts/build_gelslim40.py --split test --out /media/hdd/ihsuan/gs_blender/real_gelslim40_test
+       python scripts/build_gelslim40.py --split train --per-obj 300 --out /media/hdd/ihsuan/gs_blender/real_gelslim40_train
 """
 import argparse
 import json
@@ -22,7 +22,7 @@ import numpy as np
 import torch
 from PIL import Image
 
-SRC = "/media/hdd2/ihsuan/gelslim_depth/datasets"
+SRC = "/media/hdd/ihsuan/gelslim_depth/datasets"
 OBJ_MAP = {  # GelSlim 4.0 dataset name -> our name
     "pattern_01_2_lines_angle_1": "pattern_01_2_lines_angle_1_2",
     "pattern_02_2_lines_angle_2": "pattern_01_2_lines_angle_2",

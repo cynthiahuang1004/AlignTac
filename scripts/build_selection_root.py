@@ -2,10 +2,10 @@
 frames).  Every component of the paper selects its K labeled frames as the first K evenly spaced TRAIN frames of each
 unit, so pointing the configs at this root re-runs the whole pipeline with a different random K-frame selection
 while keeping the validation split identical.
-usage: python scripts/build_selection_root.py <seed>   -> /media/hdd2/ihsuan/gs_blender/real_filtered_sel<seed>
+usage: python scripts/build_selection_root.py <seed>   -> /media/hdd/ihsuan/gs_blender/real_filtered_sel<seed>
 """
 import glob, os, os.path as osp, random, sys
-SRC = "/media/hdd2/ihsuan/gs_blender/real_filtered"; seed = int(sys.argv[1]); DST = f"{SRC}_sel{seed}"
+SRC = "/media/hdd/ihsuan/gs_blender/real_filtered"; seed = int(sys.argv[1]); DST = f"{SRC}_sel{seed}"
 rng = random.Random(seed); n_units = 0
 for unit in sorted(glob.glob(f"{SRC}/*/session_*/sensor_0000")):
     out = unit.replace(SRC, DST); os.makedirs(f"{out}/samples", exist_ok=True); os.makedirs(f"{out}/raw_data", exist_ok=True); os.makedirs(f"{out}/rgb", exist_ok=True)

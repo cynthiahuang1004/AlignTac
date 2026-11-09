@@ -10,7 +10,7 @@ from matplotlib import cm
 sys.path.insert(0, "scripts")
 import build_real_filtered_new as B
 B.VIEW = 0.017502
-G = "/media/hdd2/ihsuan/gs_blender"; OUT = "paper/figures/intro_figure/fig2_assets"; os.makedirs(OUT, exist_ok=True)
+G = "/media/hdd/ihsuan/gs_blender"; OUT = "paper/figures/intro_figure/fig2_assets"; os.makedirs(OUT, exist_ok=True)
 RED, GREEN, ORANGE = (235, 60, 50), (40, 220, 90), (255, 150, 30); UP = 3
 obj = "pattern_06_5_lines_angle_1"
 

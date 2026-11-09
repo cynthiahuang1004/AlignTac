@@ -1,5 +1,5 @@
 {
-"root": "/media/hdd2/ihsuan/gs_blender/real_filtered",
+"root": "/media/hdd/ihsuan/gs_blender/real_filtered",
 "rule": "idx%10 in (5,8) and not in any K-shot linspace set (K=10,25,50,100)",
 "frames": [
 "pattern_01_2_lines_angle_1_2/session_000/sensor_0000/0008",

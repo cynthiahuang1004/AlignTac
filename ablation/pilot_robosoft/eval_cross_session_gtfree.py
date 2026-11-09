@@ -37,7 +37,7 @@ from vistacfusion.engine.train import load_checkpoint  # noqa: E402
 from vistacfusion.models.model import build_model  # noqa: E402
 from vistacfusion.utils.config import merge_configs  # noqa: E402
 
-OUT = "/media/hdd2/ihsuan/VisTacFusion/AlignTac/runs"
+OUT = "/media/hdd/ihsuan/VisTacFusion/AlignTac/runs"
 MODEL = "ablation/encoder/tac_sitr_single.yaml"
 TRAIN = "ablation/pilot_robosoft/train_pilot_e50.yaml"
 V2_LOG = f"{T}/validation/calibration_v2.log"

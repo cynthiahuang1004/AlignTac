@@ -1,6 +1,6 @@
 #!/bin/bash
 # diff-GAN chain: wait for G -> render sim (composited on ref) -> downstream with real bg normalization
-cd /media/hdd2/ihsuan/VisTacFusion
+cd /media/hdd/ihsuan/VisTacFusion
 PY=/home/shared/miniconda3/envs/vistacfusion/bin/python
 tag=$1; gpu=$2; run=$3
 OBJS=$($PY -c "import yaml;print(' '.join(yaml.safe_load(open('ablation/pilot_robosoft/data_A_blender.yaml'))['sim']['include_objects']))")

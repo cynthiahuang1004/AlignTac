@@ -12,7 +12,7 @@ GT exactly like the aligner's labels (IoU, contact MAE, rotation / translation /
             global+aligner and global+icp refine from that start (calibration-free initialization)
 --perturb d1,d2,...: every local method is also started from the GT state rotated by +-d degrees (random sign) and shifted
 by --perturb-shift mm in a random direction, to measure the basin of convergence.
-usage: python scripts/tactile_render/fit_baselines.py --al-root /media/hdd2/ihsuan/gs_blender/real_pseudo_k25_ro_al \
+usage: python scripts/tactile_render/fit_baselines.py --al-root /media/hdd/ihsuan/gs_blender/real_pseudo_k25_ro_al \
            --aligner outputs/aligner_k25_realonly/aligner.pt --out ablation/pilot_robosoft/fit_baselines_k25.json --step 6
        session 2: --al-root .../real_pseudo_s2_k25_al --real-root .../real_s2_pool --gt-root .../real_s2_poolcheck --step 1
 """

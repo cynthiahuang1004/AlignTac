@@ -5,8 +5,8 @@ image_size: 224
 trunk_dim: 768
 encoder:
   name: sitr_b18
-  checkpoint: /media/hdd2/ihsuan/gsrl/datasets/checkpoints/SITR_B18.pth
-  calibration_dir: /media/hdd2/ihsuan/gs_blender/renders_v3/pattern_01_2_lines_angle_1_2/session_000/sensor_0000/calibration
+  checkpoint: /media/hdd/ihsuan/gsrl/datasets/checkpoints/SITR_B18.pth
+  calibration_dir: /media/hdd/ihsuan/gs_blender/renders_v3/pattern_01_2_lines_angle_1_2/session_000/sensor_0000/calibration
   num_calibration: 18
   embed_dim: 768
   patch_size: 16

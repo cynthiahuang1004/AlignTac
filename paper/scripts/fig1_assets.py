@@ -11,7 +11,7 @@ from matplotlib import cm
 sys.path.insert(0, "scripts")
 import build_real_filtered_new as B
 B.VIEW = 0.017502
-G = "/media/hdd2/ihsuan/gs_blender"; OUT = "paper/figures/intro_figure/v2_assets"; os.makedirs(OUT, exist_ok=True)
+G = "/media/hdd/ihsuan/gs_blender"; OUT = "paper/figures/intro_figure/v2_assets"; os.makedirs(OUT, exist_ok=True)
 RED, GREEN = (235, 60, 50), (40, 220, 90); UP = 3
 
 def overlay(rgb, depth_mm, color, name):

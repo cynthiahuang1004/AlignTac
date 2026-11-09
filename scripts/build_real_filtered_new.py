@@ -12,7 +12,7 @@ every --stride-th frame within a press (frames at full press are near-duplicates
 RGB: the rgb_images frame nearest in time (for completeness; not used by tactile-only models).
 Background: outputs/session_bg/real_new/<obj>__session_<run>.png from validation/bg_selection.json.
 
-usage: python scripts/build_real_filtered_new.py --out /media/hdd2/ihsuan/gs_blender/real_filtered_new
+usage: python scripts/build_real_filtered_new.py --out /media/hdd/ihsuan/gs_blender/real_filtered_new
 """
 import argparse
 import bisect
@@ -27,8 +27,8 @@ import numpy as np
 import trimesh
 from PIL import Image
 
-T = "/media/hdd2/ihsuan/VisTacFusion/AlignTac/new_real_test"
-MESH_DIR = "/media/hdd2/ihsuan/gs_blender/meshes"
+T = "/media/hdd/ihsuan/VisTacFusion/AlignTac/new_real_test"
+MESH_DIR = "/media/hdd/ihsuan/gs_blender/meshes"
 S = 224
 FC = 0.816
 VIEW = 0.017502 * FC
@@ -131,7 +131,7 @@ def robot_to_gt(quat_xyzw, ee_xy, theta_off, bias_x, bias_y, contact_z, ee_z):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--out", default="/media/hdd2/ihsuan/gs_blender/real_filtered_new")
+    ap.add_argument("--out", default="/media/hdd/ihsuan/gs_blender/real_filtered_new")
     ap.add_argument("--min-press", type=float, default=0.3, help="mm")
     ap.add_argument("--stride", type=int, default=3, help="keep every k-th contact frame")
     ap.add_argument("--max-lag", type=float, default=0.5)
@@ -145,7 +145,7 @@ def main():
     calib = json.load(open(args.calib)) if args.calib else {}
     keep_presses = json.load(open(args.keep_presses)) if args.keep_presses else None
     bg_sel = json.load(open(f"{T}/validation/bg_selection.json"))
-    bg_out = "/media/hdd2/ihsuan/VisTacFusion/AlignTac/outputs/session_bg/real_new"
+    bg_out = "/media/hdd/ihsuan/VisTacFusion/AlignTac/outputs/session_bg/real_new"
     os.makedirs(bg_out, exist_ok=True)
     total = 0
     for real_name in sorted(OBJ_MAP):

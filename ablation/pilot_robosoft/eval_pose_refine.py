@@ -29,10 +29,10 @@ from vistacfusion.engine.train import load_checkpoint  # noqa: E402
 from vistacfusion.models.model import build_model  # noqa: E402
 from vistacfusion.utils.config import merge_configs  # noqa: E402
 
-OUT = "/media/hdd2/ihsuan/VisTacFusion/AlignTac/runs"
+OUT = "/media/hdd/ihsuan/VisTacFusion/AlignTac/runs"
 SIDE = int(math.floor(224 * 0.816)); OFF = (224 - SIDE) // 2
-NEW = "/media/hdd2/ihsuan/gs_blender/real_filtered_new_curated_pred_r2_fv"
-REAL = "/media/hdd2/ihsuan/gs_blender/real_filtered"
+NEW = "/media/hdd/ihsuan/gs_blender/real_filtered_new_curated_pred_r2_fv"
+REAL = "/media/hdd/ihsuan/gs_blender/real_filtered"
 
 
 def circ_offset_removed(err_signed, objs):

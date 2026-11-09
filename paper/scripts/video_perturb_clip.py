@@ -9,7 +9,7 @@ from PIL import Image, ImageDraw, ImageFont
 ROOT = osp.dirname(osp.dirname(osp.dirname(osp.abspath(__file__)))); sys.path.insert(0, osp.join(ROOT, "scripts"))
 import build_real_filtered_new as B  # noqa: E402
 B.VIEW = 0.017502
-G = "/media/hdd2/ihsuan/gs_blender/real_filtered"; OBJ = "pattern_06_5_lines_angle_1"; FR = "0064"; UP = 3
+G = "/media/hdd/ihsuan/gs_blender/real_filtered"; OBJ = "pattern_06_5_lines_angle_1"; FR = "0064"; UP = 3
 VID = osp.join(ROOT, "paper", "video", "perturb"); FONT = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 
 

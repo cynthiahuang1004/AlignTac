@@ -19,7 +19,7 @@ from vistacfusion.engine.train import load_checkpoint  # noqa: E402
 from vistacfusion.models.model import build_model  # noqa: E402
 from vistacfusion.utils.config import merge_configs  # noqa: E402
 
-OUT = "/media/hdd2/ihsuan/VisTacFusion/AlignTac/runs"; RAW = osp.join(ROOT, "new_real_test"); VID = osp.join(ROOT, "paper", "video", "streams")
+OUT = "/media/hdd/ihsuan/VisTacFusion/AlignTac/runs"; RAW = osp.join(ROOT, "new_real_test"); VID = osp.join(ROOT, "paper", "video", "streams")
 HALF_MM = 41.0; VMAX = 1.2; UP = 3; FPS = 4
 MEAN = np.array([123.675, 116.28, 103.53], np.float32); STD = np.array([58.395, 57.12, 57.375], np.float32)
 FONT = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"

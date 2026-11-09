@@ -14,8 +14,8 @@ import sys
 import numpy as np
 from PIL import Image
 
-ROOTS = {"real": "/media/hdd2/ihsuan/gs_blender/real_filtered",
-         "sim": "/media/hdd2/ihsuan/gs_blender/renders_v3"}
+ROOTS = {"real": "/media/hdd/ihsuan/gs_blender/real_filtered",
+         "sim": "/media/hdd/ihsuan/gs_blender/renders_v3"}
 OUT = "outputs/session_bg"
 
 

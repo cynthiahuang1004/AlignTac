@@ -18,10 +18,10 @@ norm:
 real:
   exclude_frames: ablation/pilot_robosoft/testA_frames.json
   augment: false
-  mesh_dir: /media/hdd2/ihsuan/gs_blender/meshes
+  mesh_dir: /media/hdd/ihsuan/gs_blender/meshes
   oversample: 1
   rgb_subdir: rgb
-  root: /media/hdd2/ihsuan/gs_blender/real_pseudo_k100_al
+  root: /media/hdd/ihsuan/gs_blender/real_pseudo_k100_al
   use_rendered_normals: false
   val_every: 10
   train_samples_per_session: 1000000
@@ -41,10 +41,10 @@ sim:
   - pattern_35
   - pattern_36
   - pattern_37
-  mesh_dir: /media/hdd2/ihsuan/gs_blender/meshes
+  mesh_dir: /media/hdd/ihsuan/gs_blender/meshes
   rgb_subdir: rgb
   rgb_zoom: 1.15
-  root: /media/hdd2/ihsuan/gs_blender/renders_v3
+  root: /media/hdd/ihsuan/gs_blender/renders_v3
   rot_augment: true
   rot_augment_max_deg: 15.0
   rotation_windows: ablation/simqty_filtered/real_rotation_windows.json

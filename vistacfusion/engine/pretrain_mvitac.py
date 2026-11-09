@@ -3,7 +3,7 @@
 Usage:
   # (a) all sim renders under a root
   python -m vistacfusion.engine.pretrain_mvitac \
-    --data-root /media/hdd2/ihsuan/gs_blender/renders_v3 \
+    --data-root /media/hdd/ihsuan/gs_blender/renders_v3 \
     --output-dir outputs/mvitac_pretrain \
     --device cuda:0 --epochs 240 --batch-size 256
   # (b) EXACTLY the sim+real train images of a ratio-ladder data config

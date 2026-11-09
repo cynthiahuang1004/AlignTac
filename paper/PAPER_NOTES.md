@@ -78,7 +78,7 @@ Main sensor-A aligner logs include synthetic examples (24 real + 40 synthetic pe
 | Overleaf | project `6ab1c9afe47f399544728ef3`; `OVERLEAF_TOKEN=… bash sync_overleaf.sh push "<msg>"` (also `pull`) |
 
 Compile from this directory: `pdflatex main; bibtex main; pdflatex main; pdflatex main` (same for
-`main_long`). Regenerate tables/figures from the repo root (`/media/hdd2/ihsuan/VisTacFusion`):
+`main_long`). Regenerate tables/figures from the repo root (`/media/hdd/ihsuan/VisTacFusion`):
 
 ```
 conda run -n vistacfusion python paper_RoboSoft/scripts/build_tables.py
@@ -113,7 +113,7 @@ keys still use the old names. Do **not** rename anything in code.
 
 Prefix `pilot150_` = 150-epoch run (all main sensor-A numbers), `pilot_` = 50-epoch run (seeds, ablation
 table, all sensor-B runs). Seeds: `<run>_seed1`, `<run>_seed2` (seed 0 has no suffix). Checkpoints in
-`/media/hdd2/ihsuan/VisTacFusion/AlignTac/runs/<prefix><run>/{best_depth.pt,best_pose.pt,history.json}`
+`/media/hdd/ihsuan/VisTacFusion/AlignTac/runs/<prefix><run>/{best_depth.pt,best_pose.pt,history.json}`
 (`latest.pt` was deleted to free disk; nothing in the paper needs it). Logs: `outputs/pilot_logs/`.
 
 Method code: `scripts/tactile_render/train_aligner.py` (aligner), `scripts/tactile_render/pseudo_label.py`
@@ -212,7 +212,7 @@ self-training 0.300/0.707, MeshTac 0.252/0.743 (no renderer 0.288/0.707).
 - **Fig. 5 frames** are chosen by rule (per object, the frame whose contact-MAE improvement is the
   object's median), not hand-picked; the sensor-B objects shown are pattern_04, pattern_33, pattern_06
   (pattern_37, the hardest object, is not shown but is in every average). Predictions are cached in
-  `/media/hdd2/ihsuan/VisTacFusion/AlignTac/outputs/robosoft_qual/qual_{A,B}.npz` (130 MB each; keep them out of
+  `/media/hdd/ihsuan/VisTacFusion/AlignTac/outputs/robosoft_qual/qual_{A,B}.npz` (130 MB each; keep them out of
   `data/`, which is synced to Overleaf).
 - **Fig. 1**: the author selected the latest `fig_arch.pdf`. Its student-output thumbnails are actual predictions (`make_arch_assets.py`, `pilot150_B_k25_al2/best_depth.pt`), not the earlier GT placeholders. The caption also notes the omitted synthetic training branches. **Fig. 4 must retain four solid lines.**
 - **Second round** (student as teacher) gives no gain (K=10: 0.0570 vs 0.0559; K=25: 0.0445 vs 0.0450).

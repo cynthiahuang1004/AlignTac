@@ -1,7 +1,7 @@
 #!/bin/bash
 # gated_launch.sh <run_name> <data_cfg> [model_cfg] [train_cfg] [extra args...]
 # Waits until some GPU has < $MEMLIMIT MiB used (default 36000), then launches there via launch2.sh.
-cd /media/hdd2/ihsuan/VisTacFusion
+cd /media/hdd/ihsuan/VisTacFusion
 MEMLIMIT=${MEMLIMIT:-36000}
 while :; do
   best=""; bestm=999999

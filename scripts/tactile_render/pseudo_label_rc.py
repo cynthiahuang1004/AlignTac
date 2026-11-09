@@ -37,8 +37,8 @@ import build_real_filtered_new as B  # noqa: E402
 from train_tactile_gan import BG_ROOT, DEPTH_SCALE, UNetG  # noqa: E402
 
 B.VIEW = 0.017502            # real_filtered frames are the full gel view (verified: IoU 0.98 with the stored GT)
-REAL = "/media/hdd2/ihsuan/gs_blender/real_filtered"
-OUT = "/media/hdd2/ihsuan/VisTacFusion/AlignTac/runs"
+REAL = "/media/hdd/ihsuan/gs_blender/real_filtered"
+OUT = "/media/hdd/ihsuan/VisTacFusion/AlignTac/runs"
 MODEL = "ablation/encoder/tac_sitr_single.yaml"
 TRAIN = "ablation/pilot_robosoft/train_pilot_e50.yaml"
 _uu, _vv = np.meshgrid(np.arange(0, 224, 2) + 1.0, np.arange(0, 224, 2) + 1.0)

@@ -18,7 +18,7 @@ from vistacfusion.engine.train import load_checkpoint  # noqa: E402
 from vistacfusion.models.model import build_model  # noqa: E402
 from vistacfusion.utils.config import merge_configs  # noqa: E402
 
-OUT = "/media/hdd2/ihsuan/VisTacFusion/AlignTac/runs"; REAL = "/media/hdd2/ihsuan/gs_blender/real_filtered"
+OUT = "/media/hdd/ihsuan/VisTacFusion/AlignTac/runs"; REAL = "/media/hdd/ihsuan/gs_blender/real_filtered"
 RADII = [0, 2, 4, 6, 8, 10, 12, 15, 20, 25, 30]
 
 

@@ -10,11 +10,11 @@ from vistacfusion.engine.train import load_checkpoint
 from vistacfusion.models.model import build_model
 from vistacfusion.utils.config import merge_configs
 
-OUT = "/media/hdd2/ihsuan/VisTacFusion/AlignTac/runs"; P = "ablation/pilot_robosoft"
+OUT = "/media/hdd/ihsuan/VisTacFusion/AlignTac/runs"; P = "ablation/pilot_robosoft"
 MODEL = "ablation/encoder/tac_sitr_single.yaml"; TRAIN = f"{P}/train_pilot_e50.yaml"
 # Sensor A: clean-protocol runs (T_*) on the held-out session-1 test mirror root; sensor B: test set.
-SETS = {"A": dict(runs=[("pilot150_", "T_k25_realonly"), ("pilot150_", "T_k25_al2"), ("pilot150_", "T_k25_rf")], root="/media/hdd2/ihsuan/gs_blender/real_filtered_testA", step=1, fixed_crop=None),
-        "B": dict(runs=[("pilot_", "S_k25_realonly_m"), ("pilot_", "S_k25_mapl_m"), ("pilot_", "S_k25_maplnr_m")], root="/media/hdd2/ihsuan/gs_blender/real_gelslim40_test_mesh", step=4, fixed_crop=1.0)}
+SETS = {"A": dict(runs=[("pilot150_", "T_k25_realonly"), ("pilot150_", "T_k25_al2"), ("pilot150_", "T_k25_rf")], root="/media/hdd/ihsuan/gs_blender/real_filtered_testA", step=1, fixed_crop=None),
+        "B": dict(runs=[("pilot_", "S_k25_realonly_m"), ("pilot_", "S_k25_mapl_m"), ("pilot_", "S_k25_maplnr_m")], root="/media/hdd/ihsuan/gs_blender/real_gelslim40_test_mesh", step=4, fixed_crop=1.0)}
 
 
 @torch.no_grad()

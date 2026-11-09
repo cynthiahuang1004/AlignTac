@@ -25,7 +25,7 @@ from PIL import Image
 sys.path.insert(0, osp.dirname(osp.abspath(__file__)))
 from train_tactile_gan import DEPTH_SCALE, UNetG, with_coords
 
-SIM_ROOT = "/media/hdd2/ihsuan/gs_blender/renders_v3"
+SIM_ROOT = "/media/hdd/ihsuan/gs_blender/renders_v3"
 
 
 def main():

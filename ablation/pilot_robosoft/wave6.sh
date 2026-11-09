@@ -1,8 +1,8 @@
 #!/bin/bash
 # Method chains: (gr) rotate-then-render; (ft) L2-SP fine-tune pair; (bc) bg-conditioned GAN x3.
-cd /media/hdd2/ihsuan/VisTacFusion
+cd /media/hdd/ihsuan/VisTacFusion
 PY=/home/shared/miniconda3/envs/vistacfusion/bin/python; T=ablation/pilot_robosoft; M=ablation/encoder
-OUT=/media/hdd2/ihsuan/VisTacFusion/AlignTac/runs; G=$T/gated_launch.sh
+OUT=/media/hdd/ihsuan/VisTacFusion/AlignTac/runs; G=$T/gated_launch.sh
 OBJS=$($PY -c "import yaml;print(' '.join(yaml.safe_load(open('$T/data_A_blender.yaml'))['sim']['include_objects']))")
 case $1 in
   gr) until grep -q '^done' outputs/pilot_logs/gen_gr_loo.log; do sleep 120; done

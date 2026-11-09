@@ -106,7 +106,7 @@ def refine_run(args):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--out", default="/media/hdd2/ihsuan/gs_blender/real_filtered_new_curated")
+    ap.add_argument("--out", default="/media/hdd/ihsuan/gs_blender/real_filtered_new_curated")
     ap.add_argument("--per-obj", type=int, default=10)
     ap.add_argument("--per-run", type=int, default=3)
     ap.add_argument("--per-iter", type=int, default=1, help="frames kept per press iteration (different press depths)")

@@ -1,8 +1,8 @@
 #!/bin/bash
 # Automated chain: wait for current runs to finish, then launch next steps.
-cd /media/hdd2/ihsuan/VisTacFusion
+cd /media/hdd/ihsuan/VisTacFusion
 PY=/home/shared/miniconda3/envs/vistacfusion/bin/python
-OUT=/media/hdd2/ihsuan/VisTacFusion/AlignTac/runs
+OUT=/media/hdd/ihsuan/VisTacFusion/AlignTac/runs
 M_CLS=ablation/encoder/tac_sitr_single_cls.yaml
 T_CLS=ablation/pilot_robosoft/train_pilot_e50_cls.yaml
 
@@ -20,14 +20,14 @@ CLS="B_k0_blender_cls B_k25_realonly_cls B_k25_gank_cls B_k100_realonly_cls B_k1
 g=$(pick_gpu)
 $PY ablation/pilot_robosoft/eval_masked.py --prefix pilot_ --device cuda:$g $CLS
 $PY ablation/pilot_robosoft/eval_cross_session.py --device cuda:$g --batch 32 --tag cross_session_curated854 $(for r in $CLS; do echo -n "$r:pilot_ "; done)
-$PY ablation/pilot_robosoft/eval_cross_session.py --device cuda:$g --batch 16 --root /media/hdd2/ihsuan/gs_blender/real_gelslim40_test --fixed-crop 1.0 --tag cross_sensor_gs40 --json ablation/pilot_robosoft/cross_sensor_results.json $(for r in $CLS; do echo -n "$r:pilot_ "; done)
+$PY ablation/pilot_robosoft/eval_cross_session.py --device cuda:$g --batch 16 --root /media/hdd/ihsuan/gs_blender/real_gelslim40_test --fixed-crop 1.0 --tag cross_sensor_gs40 --json ablation/pilot_robosoft/cross_sensor_results.json $(for r in $CLS; do echo -n "$r:pilot_ "; done)
 echo "$(date +%m-%d\ %H:%M) cls eval done"
 
 # ---- 3. Wait for S_k50 runs + eval ----
 for r in S_k50_realonly S_k50_blender S_k50_gan40; do wait_run $r; done
 echo "$(date +%m-%d\ %H:%M) S_k50 done"
 g=$(pick_gpu)
-$PY ablation/pilot_robosoft/eval_cross_session.py --device cuda:$g --batch 16 --root /media/hdd2/ihsuan/gs_blender/real_gelslim40_test --fixed-crop 1.0 --tag sensorB_test --json ablation/pilot_robosoft/sensorB_results.json S_k50_realonly:pilot_ S_k50_blender:pilot_ S_k50_gan40:pilot_
+$PY ablation/pilot_robosoft/eval_cross_session.py --device cuda:$g --batch 16 --root /media/hdd/ihsuan/gs_blender/real_gelslim40_test --fixed-crop 1.0 --tag sensorB_test --json ablation/pilot_robosoft/sensorB_results.json S_k50_realonly:pilot_ S_k50_blender:pilot_ S_k50_gan40:pilot_
 echo "$(date +%m-%d\ %H:%M) S_k50 eval done"
 
 # ---- 4. Wait for multi-sensor GANs, eval fidelity ----

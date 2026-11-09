@@ -24,7 +24,7 @@ import numpy as np
 from PIL import Image
 
 sys.path.insert(0, osp.dirname(osp.abspath(__file__)))
-sys.path.insert(0, "/media/hdd2/ihsuan/gs_blender")
+sys.path.insert(0, "/media/hdd/ihsuan/gs_blender")
 from build_real_filtered_new import OBJ_MAP, T, get_zmap, gt_depth_mm, robot_to_gt  # noqa: E402
 from filter_real_data import rgb_grad_mask  # noqa: E402
 

@@ -1706,9 +1706,9 @@
   }
  },
  "args": {
-  "al_root": "/media/hdd2/ihsuan/gs_blender/real_pseudo_s2_k25_al",
-  "real_root": "/media/hdd2/ihsuan/gs_blender/real_s2_pool",
-  "gt_root": "/media/hdd2/ihsuan/gs_blender/real_s2_poolcheck",
+  "al_root": "/media/hdd/ihsuan/gs_blender/real_pseudo_s2_k25_al",
+  "real_root": "/media/hdd/ihsuan/gs_blender/real_s2_pool",
+  "gt_root": "/media/hdd/ihsuan/gs_blender/real_s2_poolcheck",
   "aligner": "outputs/aligner_k25_realonly/aligner.pt",
   "step": 1,
   "methods": "grid,icp,gd,aligner,global",

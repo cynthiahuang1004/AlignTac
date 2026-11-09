@@ -21,8 +21,8 @@ from vistacfusion.models.model import build_model  # noqa: E402
 from vistacfusion.utils.config import merge_configs  # noqa: E402
 
 B.VIEW = 0.017502
-G = "/media/hdd2/ihsuan/gs_blender"; OUT = "paper/figures/arch"; OBJ = "pattern_06_5_lines_angle_1"; K = 25
-RUN = "pilot150_B_k25_al2"; OUTD = "/media/hdd2/ihsuan/VisTacFusion/AlignTac/runs"; dev = "cuda:0"
+G = "/media/hdd/ihsuan/gs_blender"; OUT = "paper/figures/arch"; OBJ = "pattern_06_5_lines_angle_1"; K = 25
+RUN = "pilot150_B_k25_al2"; OUTD = "/media/hdd/ihsuan/VisTacFusion/AlignTac/runs"; dev = "cuda:0"
 fits = json.load(open(f"{G}/real_pseudo_k{K}_al/rc_fits.json"))
 
 

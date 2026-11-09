@@ -2,9 +2,9 @@
 # New-object labeling chain (held-out objects pattern_04_3_lines_angle_2, pattern_31_rod, pattern_33):
 #   teacher labels (pseudo_label.py, already running/finished) -> aligned mesh labels with the 9-object aligner
 #   -> mesh at the teacher pose (control) -> merged training roots + data configs.   usage: chain_loo3.sh <gpu>
-GPU=${1:-0}; cd /media/hdd2/ihsuan/VisTacFusion/AlignTac
+GPU=${1:-0}; cd /media/hdd/ihsuan/VisTacFusion/AlignTac
 export CUDA_VISIBLE_DEVICES=$GPU PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
-G=/media/hdd2/ihsuan/gs_blender; L=outputs/rss_logs; PY="conda run --no-capture-output -n vistacfusion python"; P=ablation/pilot_robosoft
+G=/media/hdd/ihsuan/gs_blender; L=outputs/rss_logs; PY="conda run --no-capture-output -n vistacfusion python"; P=ablation/pilot_robosoft
 HELD="pattern_04_3_lines_angle_2 pattern_31_rod pattern_33"
 step() { echo "$(date '+%m-%d %H:%M') [loo3] $*"; }
 until grep -q '"val_links"\|"iou_median"' $L/pseudo_loo3_ng.log 2>/dev/null; do sleep 30; done
@@ -32,7 +32,7 @@ import sys, yaml
 v = sys.argv[1]; P = "ablation/pilot_robosoft"
 c = yaml.safe_load(open(f"{P}/data_A_bgcondloo.yaml"))
 c["real"].pop("test_objects", None)
-c["real"]["root"] = f"/media/hdd2/ihsuan/gs_blender/real_loo3_merge_{v}"
+c["real"]["root"] = f"/media/hdd/ihsuan/gs_blender/real_loo3_merge_{v}"
 c["real"]["exclude_frames"] = f"{P}/loo3_test_frames.json"
 yaml.safe_dump(c, open(f"{P}/data_A_loo3_{v}.yaml", "w"), sort_keys=False)
 print("wrote", f"{P}/data_A_loo3_{v}.yaml")

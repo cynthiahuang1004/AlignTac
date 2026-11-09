@@ -34,7 +34,7 @@ scripts/            build_tables.py, make_paper_figs.py (run from the repo root)
 All downstream runs: `ablation/encoder/tac_sitr_single.yaml` (frozen SITR-B18, tactile only, DPT + pose
 head, 12 M trainable), train config `ablation/pilot_robosoft/train_pilot_e50.yaml` (150-ep: `_e150`),
 data configs `ablation/pilot_robosoft/data_<run>.yaml`. Outputs in
-`/media/hdd2/ihsuan/VisTacFusion/AlignTac/runs/pilot_<run>/` (50 ep) and `pilot150_<run>/` (150 ep),
+`/media/hdd/ihsuan/VisTacFusion/AlignTac/runs/pilot_<run>/` (50 ep) and `pilot150_<run>/` (150 ep),
 logs in `outputs/pilot_logs/`. Summaries: `python ablation/pilot_robosoft/summarize.py`.
 
 Sim data: `renders_v3`, 12 pattern objects, sim148 settings (5,345 train contacts; rotation-window
