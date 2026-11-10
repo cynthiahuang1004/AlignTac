@@ -375,3 +375,7 @@ pattern_31_rod, pattern_33: odd frame index = unlabeled pool, even = TEST, roots
 - P0-4: `pilot150_A_loo3_{al,tp,oracle}` (5-epoch fragments from 11-01) retrained from scratch in place + `rss2_A_loo3_*_seed{1,2}`; eval tag loo3test(_bp) in loo3_results.json.
 - Queue A (`rss2_jobs.tsv`): 9 LOO-3 + 3 mean-teacher runs. Queue B (`rss2_jobs_b.tsv`, 27 jobs): icp/gd/grid/tp + seeds, realonly/semipm seeds, s2 oldcal/consal/recal, u25/u50, conf/rand/oracle filters.
   Queue B's first attempt (11-09 21:30-21:48) failed on the missing SITR checkpoint; restarted 11-10 02:40 with a clean state.
+- 2026-11-10 (user decision): drift wording changed in `sections/03_setup.tex`, `sections_long/03_setup.tex` and both `05_experiments.tex` ("Label-free cross-session
+  adaptation"): the old "per-run corrections averaged 11 deg / 1.6 mm" (pose_calibration_new.json grid search, which locks onto wrong rotations for the symmetric
+  two-line patterns) is replaced by the curated-GT-vs-recorded-pose drift (medians 1.4 deg / 1.4 mm, means 3.4 deg / 3.0 mm over 38 runs; `rss2_s2_consensus_k25.json`
+  "drift") and its consequence (recorded-pose labels IoU 0.35 / cMAE 0.50; `rss2_fit_s2_k25.json` "old calibration"). PDF not rebuilt, Overleaf not pushed.
