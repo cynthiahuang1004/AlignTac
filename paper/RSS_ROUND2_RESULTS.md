@@ -285,3 +285,9 @@ the mechanism that keeps them out of training; the per-object student table must
 5. Two-line patterns stay at IoU ≈ 0.4 for every method on session 2; confidence filtering will mostly drop them.
 6. **Mean teacher** gives nothing over Labeled only at K = 25 (T1). Keep it in T1 as the semi-supervised baseline (3 seeds at w = 1)
    or drop it from the paper and mention it in the text only?
+8. **Session-2 reference labels are fitted, not calibrated.** They come from a per-frame mask-IoU refinement against the predicted depth of an
+   earlier model, then visual review (details in PAPER_NOTES 2026-11-10). Two independent refinements of the same 28 frames differ by a median
+   of 3.1° / 0.84 mm, so session-2 pose errors below about 2–3° / 1 mm are inside the reference noise. Options: (a) state this in the paper and
+   report session 2 mainly with dense metrics; (b) hand-annotate ridge keypoints on ~100 session-2 frames as an independent reference;
+   (c) run the drift study as a controlled experiment on session 1, whose labels are calibration-based.
+

@@ -417,4 +417,15 @@ pattern_31_rod, pattern_33: odd frame index = unlabeled pool, even = TEST, roots
 - 2026-11-10 20:45: `rf_s2recal` (recorded pose -> aligner, no consensus) on the session-2 test half 0.295 / 0.659 / rot 5.4 / 1.21 mm = consensus version within noise;
   GD seed 2 0.323 / 0.693 (3 seeds 0.322 / 0.689); mean teacher w=1 seed 1 0.279 / 0.687; filter students rand-75 % 0.242 / 0.721, oracle-50 % 0.237 / 0.735.
   Remaining: realonly_seed1, mt_w1_seed2, conf75, rand50.
+- 2026-11-10 SESSION-2 GT PROVENANCE AND NOISE (user question). The 854 curated frames (`real_filtered_new_curated_pred_r2[_fv]`, `scripts/curate_new_real_test.py --mask pred`):
+  recorded robot pose + session-1 OBJ_MAP + per-run calibration (best of v1 per-run / v2 per-object) -> per-frame local refinement of (theta, x, y) within +-3.5 deg / +-1.75 mm
+  (final step 0.25 deg / 0.125 mm) maximising IoU between the projected mesh contact and the contact mask of the PREDICTED depth of the user's earlier VisTacFusion model
+  (`new_real_test/output`); press depth from the robot (not refined); keep refined IoU >= 0.75 x best of the object (final set: mean 0.84, min 0.64); review grids approved by the user
+  (pattern_04_3_lines_angle_2 dropped as "all wrong"). So the session-2 reference is a fitted label, not a calibration-based one. Noise estimate: on the 28 frames that also have a
+  black-hat-mask refinement (`curated_selection.json`) the two refined poses differ by median 3.1 deg / 0.84 mm (p90 6.8 deg / 1.9 mm); this is an upper bound (black-hat masks are
+  noisier). Consequence: session-2 pose errors below ~2-3 deg / ~1 mm (label rot medians 2-2.7 deg, drift median 1.4 deg / 1.4 mm, localization success at 2 deg / 0.5 mm,
+  the 0.8 mm within-run scatter that failed the P2-8 gate) are at the level of the reference noise and should not be over-interpreted. Session-1 GT is calibration-based.
+- 2026-11-10 20:45 more students: rand75 0.242 / 0.721, oracle75 0.230 / 0.741, conf50 0.239 / 0.731, oracle50 0.237 / 0.735 (filtering is flat on session 1);
+  GD seed 2 0.323 / 0.693; mean teacher w=1 seed 1 0.279 / 0.687; session-2 test half: rf_s2recal (aligner from the recorded pose) 0.295 / 0.659 / rot 5.4 / 1.21 mm,
+  rf_s2consal 0.292 / 0.667 / 5.5 / 1.18 -> both recalibration-free variants match the recalibrated student (0.280 / 0.652 / 7.8 / 1.32).
 
