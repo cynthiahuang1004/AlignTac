@@ -110,6 +110,23 @@ rotation median 1.12° (mean 2.85°), translation median 1.61 mm (mean 2.36 mm);
 within a run. Consensus → aligner gives +0.02 IoU at K = 100 (0.646 vs 0.628) and nothing at K = 25. Recommendation: report as an
 analysis, do not adopt as a method component.
 
+## Side study — two-line patterns and the aligner's training range (`rss2_multistart_s2_k25.json`, `rss2_fit_s{1,2}_k25_range2.json`)
+On session 2 the three two-line patterns (31 of the 162 curated frames) stay at IoU 0.40 with the paper's aligner (session 1: 0.60–0.68),
+because the teacher's initial pose is 15–25° off after re-placement.
+
+| Variant | all 162: IoU / MAE / rot | two-line 31: IoU / MAE |
+|---|---|---|
+| teacher start → aligner (paper) | 0.580 / 0.326 / 8.6° | 0.396 / 0.421 |
+| global-search start → aligner | 0.601 / 0.320 / 9.2° | 0.427 / 0.449 |
+| 4 starts, pick by residual correction (label-free) | 0.607 / 0.307 / 6.3° | 0.434 / 0.406 |
+| 4 starts, oracle pick | 0.617 / 0.300 / 7.3° | 0.473 / 0.380 |
+| aligner trained with 2× perturbation range (±16°) | 0.589 / 0.323 / 5.8° | mixed (0.44 / 0.29 / 0.44 per object) |
+
+The 2× range aligner (same recipe otherwise) also improves session 1 (IoU 0.721 vs 0.712, MAE 0.231 vs 0.241) and holds the basin
+to 30° (IoU 0.715 vs 0.668). Not adopted as the default for round 2 (all 3-seed students use the paper's aligner); proposed as a
+robustness ablation. Even the oracle choice among four starts leaves the two-line patterns at 0.47, so confidence filtering remains
+the mechanism that keeps them out of training; the per-object student table must show it.
+
 ## Open questions
 1. **Drift number.** The paper's "per-run corrections averaged 11.4° / 1.6 mm" comes from `pose_calibration_new.json` (grid search on
    contact masks), which does not agree with the curated labels. Curated − recorded is 3.4° / 3.0 mm (means), 1.4° / 1.4 mm (medians).

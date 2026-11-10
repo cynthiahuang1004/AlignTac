@@ -379,3 +379,10 @@ pattern_31_rod, pattern_33: odd frame index = unlabeled pool, even = TEST, roots
   adaptation"): the old "per-run corrections averaged 11 deg / 1.6 mm" (pose_calibration_new.json grid search, which locks onto wrong rotations for the symmetric
   two-line patterns) is replaced by the curated-GT-vs-recorded-pose drift (medians 1.4 deg / 1.4 mm, means 3.4 deg / 3.0 mm over 38 runs; `rss2_s2_consensus_k25.json`
   "drift") and its consequence (recorded-pose labels IoU 0.35 / cMAE 0.50; `rss2_fit_s2_k25.json` "old calibration"). PDF not rebuilt, Overleaf not pushed.
+- 2026-11-10 two-line patterns / aligner range (`rss2_multistart_s2_k25.json`, `rss2_fit_s{1,2}_k25_range2.json`, `outputs/aligner_k25_realonly_range2`):
+  on the 162 curated session-2 frames the three two-line patterns (pattern_01_2_lines_angle_{1_2,2,3}, n=31) stay at IoU 0.40 (teacher init 15-25 deg off; session 1: 0.60-0.68).
+  Multi-start (teacher / global / recorded / teacher+period/2) + label-free selection by the aligner's residual correction: all 0.580 -> 0.607, two-line 0.396 -> 0.434;
+  oracle best-of-4 only 0.473 on two-line -> not only an initialization problem. Selecting by renderer L1 is harmful (0.538), by black-hat mask IoU 0.605.
+  Aligner retrained with the paper's recipe (K=25 real labels only, no synthetic frames) but 2x perturbation range (+-16 deg, +-3 mm, +-0.3 mm):
+  session 1 IoU 0.721 / cMAE 0.231 / rot 1.10 (default 0.712 / 0.241 / 1.04); basin: IoU 0.72 at 20 deg and 0.715 at 30 deg (default 0.70 / 0.67);
+  session 2 0.589 / 0.323 / rot 5.8 (default 0.580 / 0.326 / 8.6). Small, consistent gain; NOT adopted as the default (would invalidate the 3-seed students) -> report as a robustness ablation.
