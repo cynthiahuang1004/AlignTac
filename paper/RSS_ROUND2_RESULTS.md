@@ -10,7 +10,7 @@ Branch `rss-round2` (not pushed). Last update: 2026-11-10 02:45 UTC.
 |---|---|---|
 | §1 Sanity check after the outage | done | data roots, meshes, checkpoints intact after the hdd2 → hdd move; SITR encoder checkpoint was lost with `gsrl/`, rebuilt from run checkpoints and verified bit-exact on testA |
 | P0-1 Optimization labels → student | ICP ×3, GD ×2 done; grid, GD seed 2 training | student table in the T1 section |
-| P0-2 Mean teacher | sweep done (w = 0, 0.01, 0.1, 1, 10, 50), w = 1 seeds 1–2 queued | no gain over Labeled only; see T1 |
+| P0-2 Mean teacher | sweep done (w = 0, 0.01, 0.1, 1, 10, 50, all evaluated), w = 1 seeds 1–2 queued | no gain over Labeled only; see T1 |
 | P0-3 Conventional labels under drift | done | student `rss2_T_k25_rf_s2oldcal` evaluated on the session-2 test half (T2) |
 | P0-4 New objects (LOO-3) | done | 9 students (3 label sources × 3 seeds), T3 below |
 | P1-5 Confidence | analysis done, students queued | conf / random / oracle at 75 % and 50 % |
@@ -101,12 +101,12 @@ the aligner, which reads the image, does (0.235). Student rows (testA, 530 sessi
 | Labeled only | 1 | 0.0489 | 0.291 | 0.676 | 27.4 | 5.7 | 1.09 |
 | Self-training (teacher labels) | 1 | 0.0462 | 0.301 | 0.641 | 25.9 | 8.6 | 1.51 |
 | Self-training, teacher pose + mesh | 1 | 0.0470 | 0.307 | 0.620 | 26.1 | 5.5 | 1.11 |
-| Local grid search labels | 0 | pending | | | | | |
+| Local grid search labels | 1 | 0.0471 | 0.294 | 0.684 | 26.0 | 4.0 | 0.96 |
 | ICP labels | 3 | 0.0610 | 0.309 ± 0.011 | 0.469 ± 0.101 | 27.4 | 4.0 ± 0.0 | 1.00 ± 0.01 |
 | Gradient-descent labels | 2 | 0.0467 | 0.322 ± 0.005 | 0.688 ± 0.003 | 25.8 | 3.8 ± 0.1 | 0.94 ± 0.01 |
-| Mean teacher w=0 (strong aug only) | 0 | pending | | | | | |
-| Mean teacher w=0.01 | 0 | pending | | | | | |
-| Mean teacher w=0.1 | 0 | pending | | | | | |
+| Mean teacher w=0 (strong aug only) | 1 | 0.0460 | 0.288 | 0.669 | 26.2 | 5.9 | 1.05 |
+| Mean teacher w=0.01 | 1 | 0.0486 | 0.298 | 0.680 | 26.4 | 5.8 | 1.07 |
+| Mean teacher w=0.1 | 1 | 0.0474 | 0.293 | 0.687 | 25.9 | 5.6 | 1.06 |
 | Mean teacher w=1 | 1 | 0.0466 | 0.295 | 0.684 | 29.5 | 5.6 | 1.06 |
 | Mean teacher w=10 | 1 | 0.0790 | 0.282 | 0.350 | 29.4 | 5.8 | 1.07 |
 | Mean teacher w=50 | 1 | 0.1940 | 0.298 | 0.224 | 30.2 | 5.7 | 1.09 |
@@ -120,8 +120,9 @@ although their pose error is fine. GD labels give the best optimization-based st
 contact MAE 0.322 is *worse* than Labeled only (0.291): the fitted mesh is placed well but the depth it provides is not better than
 what the student already learns from 25 labels. Only the AlignTac labels improve every metric (0.233 / 0.737).
 Mean teacher: consistency weights 10 and 50 collapse the contact mask (IoU 0.35 / 0.22); w = 1 gives 0.295 / 0.684, i.e. the
-Labeled only numbers (0.291 / 0.676) within seed noise, and w = 0.1 / 0.01 reach the same validation depth MSE (0.054–0.055 vs. 0.052
-for w = 1 and 0.052 for w = 0, where w = 0 is the same pipeline with the strong augmentation only). Weight chosen by validation:
+Labeled only numbers (0.291 / 0.676) within seed noise; w = 0.1 / 0.01 / 0 give 0.293 / 0.687, 0.298 / 0.680 and 0.288 / 0.669,
+all within the same band (validation depth MSE 0.052–0.055 for every w ≤ 1; w = 0 is the same pipeline with the strong augmentation
+only, so the whole semi-supervised branch is worth nothing at K = 25). Weight chosen by validation:
 **w = 1**; seeds 1–2 queued (`rss2_T_k25_mt_w1_seed{1,2}`). Conclusion for the paper: consistency regularization on the unlabeled
 pool does not substitute for geometric labels at K = 25.
 

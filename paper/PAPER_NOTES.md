@@ -407,4 +407,6 @@ pattern_31_rod, pattern_33: odd frame index = unlabeled pool, even = TEST, roots
   AlignTac labels 0.332+-0.001 / 0.622+-0.003 / rot 3.2; teacher pose + mesh 0.426 / 0.486 / 4.5; oracle labels 0.233 / 0.725 / 3.0; teacher itself
   (A_bgcondloo) 0.327 / 0.631 / 4.6; Labeled only on 9 objects 0.363 / 0.578 / 53.6. Pose claim confirmed, dense gain over the teacher not
   confirmed on unseen objects (labels are at teacher-depth level on cMAE). Written as T3 in RSS_ROUND2_RESULTS.md with an open question on framing.
+- 2026-11-10 18:53 mean teacher sweep complete (testA cMAE / IoU, EMA teacher): w=0 0.288 / 0.669, w=0.01 0.298 / 0.680, w=0.1 0.293 / 0.687, w=1 0.295 / 0.684,
+  w=10 0.282 / 0.350, w=50 0.298 / 0.224; Labeled only 0.291 / 0.676. No weight helps; T1 updated.
 
