@@ -11,6 +11,7 @@ Multi-GPU (e.g. 2 GPUs):
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import math
 import os
@@ -110,8 +111,56 @@ def sync_bool(val, device):
     return bool(t.item())
 
 
+# ----------------------------------------------------------------------------- mean teacher (RSS round 2 baseline)
+# Enabled only by `mean_teacher: {enabled: true, ...}` in the train yaml; default behaviour is unchanged.
+#   labeled sample   = batch["pose_valid"] == 1 (true label);   unlabeled = pose_valid == 0 (pseudo-labeled root: its depth /
+#   normal / pose targets are loaded by the dataset but NEVER enter a loss here).
+#   student: strongly photometrically augmented view; EMA teacher: the clean view.  Supervised loss on the labeled samples,
+#   consistency (MSE on depth + normals) between student and teacher on all samples, sigmoid ramp-up of its weight.
+def mt_strong_aug(x):
+    """Photometric augmentation of a normalized image batch (no geometric change, so targets need no warping)."""
+    b, dev = x.shape[0], x.device
+    gain = 1 + 0.4 * (torch.rand(b, 1, 1, 1, device=dev) - 0.5)
+    cgain = 1 + 0.2 * (torch.rand(b, 3, 1, 1, device=dev) - 0.5)
+    bias = 0.6 * (torch.rand(b, 3, 1, 1, device=dev) - 0.5)
+    noise = torch.randn_like(x) * (0.15 * torch.rand(b, 1, 1, 1, device=dev))
+    return x * gain * cgain + bias + noise
+
+
+def mt_labeled_flags(train_ds):
+    """True for samples with a true label (pose json without the "pseudo" flag), in the index order of train_ds."""
+    import os.path as osp
+    parts = getattr(train_ds, "datasets", [train_ds])
+    flags, cache = [], {}
+    for ds in parts:
+        if id(ds) not in cache:
+            fl = []
+            for unit, idx in ds.samples:
+                with open(osp.join(unit, "raw_data", f"{idx:04d}_pose.json")) as f:
+                    fl.append(not json.load(f).get("pseudo", False))
+            cache[id(ds)] = fl
+        flags += cache[id(ds)]
+    return torch.tensor(flags, dtype=torch.bool)
+
+
+def mt_weight(mt, step):
+    ramp = max(1, int(mt["rampup_steps"]))
+    t = min(1.0, step / ramp)
+    return mt["weight"] * math.exp(-5.0 * (1.0 - t) ** 2)
+
+
+@torch.no_grad()
+def mt_ema_update(mt, student, step):
+    d = min(1.0 - 1.0 / (step + 1), mt["decay"])
+    for p_t, p_s in zip(mt["teacher"].parameters(), student.parameters()):
+        if p_s.requires_grad:
+            p_t.mul_(d).add_(p_s.detach(), alpha=1.0 - d)
+    for b_t, b_s in zip(mt["teacher"].buffers(), student.buffers()):
+        b_t.copy_(b_s)
+
+
 def train_one_epoch(model, loader, optimizer, scheduler, scaler, criterion,
-                    cfg, device, epoch, writer=None):
+                    cfg, device, epoch, writer=None, mt=None):
     model.train()
     md_cfg = cfg.modality_dropout
     _mt = cfg.get("model_type", "visuo_tactile")
@@ -134,13 +183,33 @@ def train_one_epoch(model, loader, optimizer, scheduler, scaler, criterion,
         with torch.autocast(device_type=device.type, enabled=cfg.amp and device.type == "cuda"):
             obj_ids = batch.get("object")
             domain_ids = batch.get("domain")
-            out = model(batch["rgb"], batch["tactile"], config=config,
+            tac_in = mt_strong_aug(batch["tactile"]) if mt is not None else batch["tactile"]
+            out = model(batch["rgb"], tac_in, config=config,
                         inject_rgb_to_dpt=inject_rgb, object_ids=obj_ids,
                         domain_ids=domain_ids)
             gt = {"depth": batch["depth"], "normal": batch["normal"],
                   "pose": batch["pose"], "mask": batch.get("mask"), "object": batch.get("object"),
                   "pose_valid": batch.get("pose_valid")}
-            loss, comps = criterion(out, gt, supervise_dense=has_dense)
+            if mt is None:
+                loss, comps = criterion(out, gt, supervise_dense=has_dense)
+            else:
+                lab = batch["pose_valid"] > 0.5                       # true-labeled samples only
+                nb = lab.shape[0]
+                if lab.any():
+                    sel = lambda v: v[lab] if (torch.is_tensor(v) and v.dim() > 0 and v.shape[0] == nb) else v  # noqa: E731
+                    loss, comps = criterion({k: sel(v) for k, v in out.items()}, {k: sel(v) for k, v in gt.items()},
+                                            supervise_dense=has_dense)
+                else:
+                    loss, comps = out["depth"].sum() * 0.0, {}
+                with torch.no_grad():
+                    out_t = mt["teacher"](batch["rgb"], batch["tactile"], config=config, inject_rgb_to_dpt=inject_rgb,
+                                          object_ids=obj_ids, domain_ids=domain_ids)
+                cons = torch.nn.functional.mse_loss(out["depth"].float(), out_t["depth"].float())
+                if mt["normal"]:
+                    cons = cons + torch.nn.functional.mse_loss(out["normal"].float(), out_t["normal"].float())
+                w_cons = mt_weight(mt, global_step_base + step)
+                loss = loss + w_cons * cons
+                comps["mt_cons"] = cons.detach(); comps["mt_w"] = w_cons; comps["mt_labeled"] = lab.float().mean()
 
             # L2-SP (Li et al., ICML 2018): pull trainable params toward their values at the
             # start of fine-tuning (set in main() when --finetune and cfg.l2sp_weight > 0).
@@ -175,6 +244,8 @@ def train_one_epoch(model, loader, optimizer, scheduler, scaler, criterion,
         scaler.step(optimizer)
         scaler.update()
         scheduler.step()
+        if mt is not None:
+            mt_ema_update(mt, model.module if isinstance(model, DDP) else model, global_step_base + step)
 
         for k, v in comps.items():
             running[k] = running.get(k, 0.0) + float(v)
@@ -346,6 +417,15 @@ def main():
         )
     else:
         sample_weights = getattr(train_ds, "sample_weights", None)
+        _mtc = cfg.get("mean_teacher", None)
+        if _mtc and _mtc.get("enabled", False) and _mtc.get("labeled_fraction", None) and not is_distributed():
+            lab_flags = mt_labeled_flags(train_ds)
+            n_l, n_u = int(lab_flags.sum()), int((~lab_flags).sum())
+            lf = float(_mtc.labeled_fraction)
+            sample_weights = torch.where(lab_flags, lf / max(n_l, 1), (1.0 - lf) / max(n_u, 1)).double()
+            train_ds.num_samples = len(train_ds)
+            if is_main_process():
+                print(f"  mean teacher: {n_l} labeled / {n_u} unlabeled train samples, labeled fraction per batch {lf}")
         if is_distributed():
             if sample_weights is not None:
                 raise NotImplementedError(
@@ -384,6 +464,19 @@ def main():
     optimizer = build_optimizer(model, cfg.optim, criterion)
     scheduler = build_scheduler(optimizer, cfg, len(train_loader))
     scaler = torch.amp.GradScaler("cuda", enabled=cfg.amp and device.type == "cuda")
+
+    mt = None
+    _mtc = cfg.get("mean_teacher", None)
+    if _mtc and _mtc.get("enabled", False):
+        if is_distributed():
+            raise NotImplementedError("mean_teacher is single-GPU only")
+        teacher = copy.deepcopy(model).to(device).eval()
+        for p_ in teacher.parameters():
+            p_.requires_grad_(False)
+        mt = {"teacher": teacher, "decay": float(_mtc.get("ema_decay", 0.999)), "weight": float(_mtc.get("weight", 10.0)),
+              "rampup_steps": float(_mtc.get("rampup_epochs", 30)) * len(train_loader), "normal": bool(_mtc.get("normal", True)),
+              "eval": str(_mtc.get("eval", "ema"))}
+        print(f"Mean teacher: decay={mt['decay']} weight={mt['weight']} rampup_steps={mt['rampup_steps']:.0f} eval={mt['eval']}")
 
     start_epoch = 0
     best_metric = float("inf")
@@ -443,7 +536,7 @@ def main():
         t0 = time.time()
         train_metrics = train_one_epoch(
             model, train_loader, optimizer, scheduler, scaler, criterion,
-            cfg, device, epoch, writer=writer)
+            cfg, device, epoch, writer=writer, mt=mt)
         elapsed = time.time() - t0
 
         if is_main_process():
@@ -454,6 +547,8 @@ def main():
                 writer.add_scalar(f"train_epoch/{k}", v, epoch)
 
             raw_model = model.module if isinstance(model, DDP) else model
+            if mt is not None and mt["eval"] == "ema":
+                raw_model = mt["teacher"]            # evaluate and checkpoint the EMA teacher
             val_metrics = evaluate(raw_model, val_loader, cfg, device,
                                    encoder_cache=val_enc_cache)
             print(f"[epoch {epoch:03d}] val metrics: {val_metrics}")
@@ -491,7 +586,7 @@ def main():
                 best_metric = depth_score
                 save_checkpoint(
                     os.path.join(args.output_dir, "best_depth.pt"),
-                    model, optimizer, scheduler, scaler, epoch, best_metric,
+                    raw_model if mt is not None else model, optimizer, scheduler, scaler, epoch, best_metric,
                     criterion=criterion)
                 print(f"  ** new best depth: mse={best_metric:.6f}")
 
@@ -499,7 +594,7 @@ def main():
                 best_pose_metric = pose_score
                 save_checkpoint(
                     os.path.join(args.output_dir, "best_pose.pt"),
-                    model, optimizer, scheduler, scaler, epoch, best_pose_metric,
+                    raw_model if mt is not None else model, optimizer, scheduler, scaler, epoch, best_pose_metric,
                     criterion=criterion)
                 print(f"  ** new best pose: rot_deg={best_pose_metric:.4f}")
 

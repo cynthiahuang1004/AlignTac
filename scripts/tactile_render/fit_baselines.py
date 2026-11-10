@@ -101,6 +101,29 @@ def icp(obj, Dt, th, x, y, p, iters=60, stride=2, trim=3.0):
     return th, x, y, p
 
 
+def icp_job(a):
+    obj, dep, th, x, y, p = a
+    return icp(obj, np.load(dep) * 1000, th, x, y, p)
+
+
+# ----------------------------------------------------------------------------- session-2 "conventional" label: recorded pose
+_poses_json = {}
+
+
+def oldcal_pose(pool_pose_json):
+    """Contact state of a session-2 frame from the RECORDED robot pose and the SESSION-1 calibration (OBJ_MAP offsets only,
+    i.e. without the per-run corrections of pose_calibration_new.json): the label a conventional pipeline would produce."""
+    P = json.load(open(pool_pose_json)); src = P["source"]; sim = P["obj_name"]
+    real = {v[0]: k for k, v in B.OBJ_MAP.items()}[sim]; _, th_off, bx, by = B.OBJ_MAP[real]
+    key = (real, str(src["run"]))
+    if key not in _poses_json:
+        tm = json.load(open(f"{B.T}/{real}/{src['run']}/tactile_images/poses.json"))
+        _poses_json[key] = (tm["contact_z_m"], {f["frame_id"]: f for f in tm["frames"]})
+    cz, frames = _poses_json[key]; ee = frames[src["frame"]]["robot_pose_xyz_xyzw"]
+    th, x, y, press = B.robot_to_gt(ee[3:], ee[:2], th_off, bx, by, cz, ee[2])
+    return th, x, y, float(np.clip(press, 0.3, 1.6))
+
+
 # ----------------------------------------------------------------------------- differentiable depth + gradient descent
 _zt = {}
 
@@ -180,7 +203,7 @@ def load_frames(al_root, real_root, gt_root, step):
         else:
             gpj = osp.join(unit, "raw_data", idx + "_pose.json")
         P = json.load(open(gpj))
-        items.append(dict(tac=tac, obj=obj, dep=dep, gt=gpj.replace("_pose.json", "_gt.npy"),
+        items.append(dict(tac=tac, obj=obj, dep=dep, gt=gpj.replace("_pose.json", "_gt.npy"), pj=osp.join(unit, "raw_data", idx + "_pose.json"),
                           gt_pose=(P["rotation_euler"][2], P["sample_x"] * 1e3, P["sample_y"] * 1e3, P["sample_z"] * 1e3),
                           tp=tuple(fits[tac]["tp"]), al=tuple(fits[tac]["pose"]) + (fits[tac]["p"],)))
     return items
@@ -199,6 +222,7 @@ def summarize(rows):
     keys = ("iou", "cmae", "rot", "rot_sym", "trans", "dp")
     out = {k: float(np.nanmean([r[k] for r in rows])) for k in keys}
     out["rot_median"] = float(np.nanmedian([r["rot"] for r in rows])); out["n"] = len(rows)
+    out["rot_sym_median"] = float(np.nanmedian([r["rot_sym"] for r in rows])); out["trans_median"] = float(np.nanmedian([r["trans"] for r in rows]))
     out["rot_lt5"] = float(np.mean([r["rot"] < 5 for r in rows]))
     return out
 
@@ -218,7 +242,7 @@ def run_methods(items, inits, A, dev, methods, pool, tag=""):
         out["grid"] = [tuple(c) + (p,) for c, p in fits]
         print(f"  [{tag}] grid {time.time() - t0:.0f}s", flush=True); t0 = time.time()
     if "icp" in methods:
-        out["icp"] = [icp(it["obj"], np.load(it["dep"]) * 1000, *i) for it, i in zip(items, inits)]
+        out["icp"] = list(pool.map(icp_job, [(it["obj"], it["dep"]) + tuple(i) for it, i in zip(items, inits)], chunksize=4))
         print(f"  [{tag}] icp {time.time() - t0:.0f}s", flush=True); t0 = time.time()
     if "gd" in methods:
         res = [None] * len(items)
@@ -258,6 +282,8 @@ def main():
     ap.add_argument("--perturb-shift", type=float, default=0.5, help="mm")
     ap.add_argument("--perturb-step", type=int, default=3, help="extra subsampling of the frames for the perturbation sweep")
     ap.add_argument("--out", required=True)
+    ap.add_argument("--write-fits", default=None, help="dir: write fits_<method>.json ({tactile path: {pose, p, err, tp}}, the rc_fits.json "
+                                                       "format) so pseudo_label_rc.py --fits can write a label root for that method")
     ap.add_argument("--workers", type=int, default=24)
     ap.add_argument("--device", default="cuda:0")
     args = ap.parse_args()
@@ -287,7 +313,25 @@ def main():
         sub = run_methods(items, g, A, dev, [m for m in ("grid", "icp", "aligner") if m in methods], pool, tag="global init")
         for k, v in sub.items():
             poses["global+" + k] = v
+    if args.gt_root:
+        poses["old calibration"] = [oldcal_pose(it["pj"]) for it in items]
+    if args.write_fits:
+        os.makedirs(args.write_fits, exist_ok=True)
+        for name in ("grid", "icp", "gd"):
+            if name in poses:
+                json.dump({it["tac"]: dict(pose=list(p[:3]), p=float(p[3]), err=0.0, tp=list(it["tp"])) for it, p in zip(items, poses[name])},
+                          open(osp.join(args.write_fits, f"fits_{name}.json"), "w"))
+        if "old calibration" in poses:
+            json.dump({it["tac"]: dict(pose=list(p[:3]), p=float(p[3]), err=0.0, tp=list(it["tp"])) for it, p in zip(items, poses["old calibration"])},
+                      open(osp.join(args.write_fits, "fits_oldcal.json"), "w"))
     results["from_teacher"] = {}
+    rows = []
+    for it in items:                                   # the teacher's own depth (self-training label)
+        gt = np.load(it["gt"]) * 1000; q = quality(np.load(it["dep"]) * 1000, gt); g = it["gt_pose"]
+        rows.append(dict(iou=q[0], cmae=q[1], rot=rot_err(it["tp"][0], g[0]), rot_sym=rot_err(it["tp"][0], g[0], period(it["obj"])),
+                         trans=(abs(it["tp"][1] - g[1]) + abs(it["tp"][2] - g[2])) / 2, dp=float("nan")))
+    results["from_teacher"]["teacher depth"] = dict(summary=summarize(rows), per_object={o: summarize([r for r, it in zip(rows, items) if it["obj"] == o]) for o in sorted({it["obj"] for it in items})})
+    print(fmt("teacher depth", results["from_teacher"]["teacher depth"]["summary"]), flush=True)
     for name, ps in poses.items():
         rows = [score(it, p, period(it["obj"])) for it, p in zip(items, ps)]
         results["from_teacher"][name] = dict(summary=summarize(rows),
