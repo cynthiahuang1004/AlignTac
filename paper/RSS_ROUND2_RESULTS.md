@@ -12,7 +12,7 @@ Branch `rss-round2` (not pushed). Last update: 2026-11-10 02:45 UTC.
 | P0-1 Optimization labels → student | ICP ×3, GD ×2 done; grid, GD seed 2 training | student table in the T1 section |
 | P0-2 Mean teacher | sweep done (w = 0, 0.01, 0.1, 1, 10, 50), w = 1 seeds 1–2 queued | no gain over Labeled only; see T1 |
 | P0-3 Conventional labels under drift | done | student `rss2_T_k25_rf_s2oldcal` evaluated on the session-2 test half (T2) |
-| P0-4 New objects (LOO-3) | 6 / 9 students evaluated | remaining 3 at ~135/150 epochs |
+| P0-4 New objects (LOO-3) | done | 9 students (3 label sources × 3 seeds), T3 below |
 | P1-5 Confidence | analysis done, students queued | conf / random / oracle at 75 % and 50 % |
 | P1-6 Unlabeled quantity | roots done, students queued | 25 % / 50 % pools for AlignTac and self-training |
 | P1-7 Single-touch localization | done | T4 below |
@@ -125,6 +125,39 @@ for w = 1 and 0.052 for w = 0, where w = 0 is the same pipeline with the strong 
 **w = 1**; seeds 1–2 queued (`rss2_T_k25_mt_w1_seed{1,2}`). Conclusion for the paper: consistency regularization on the unlabeled
 pool does not substitute for geometric labels at K = 25.
 
+## P0-4 / T3 — new objects from the mesh only (LOO-3; `loo3_results.json`, `loo3_test_frames.json`)
+
+Held-out objects: pattern_04_3_lines_angle_2, pattern_31_rod, pattern_33 (sensor A, session 1). Odd frame index = unlabeled pool
+(1,118 frames, pseudo-labeled; no real label of these objects is ever used), even frame index = test (635 frames). Teacher =
+`pilot150_A_bgcondloo` (trained on the 9 seen objects, all their labels, with GAN-LOO sim), aligner = `outputs/aligner_loo9`
+(9 seen objects only). Students start from scratch on 9-object labels + the pseudo-labeled pool, 150 epochs, 3 seeds.
+
+Label quality on the 1,118 pool frames (round 1):
+
+| Label source for the 3 new objects | IoU | Contact MAE (mm) | Rot (°) |
+|---|---|---|---|
+| Teacher depth (self-training) | 0.575 | 0.322 | 4.9 |
+| Mesh at teacher pose | 0.409 | 0.472 | 4.9 |
+| Mesh at aligner pose (**AlignTac**) | 0.594 | 0.331 | 1.4 |
+
+Students on the 635 test frames (dense at `best_depth.pt`, pose at `best_pose.pt`; mean ± std over 3 seeds):
+
+| Student | Depth MSE | Contact MAE (mm) | IoU | Normal (°) | Rot (°) | Trans (mm) |
+|---|---|---|---|---|---|---|
+| Labeled only, 9 objects (lower bound; never saw the 3 objects) | | 0.363 | 0.578 | 30.9 | 53.6 | 3.91 |
+| Teacher itself (`A_bgcondloo`, 9 objects + GAN-LOO sim) | | 0.327 | 0.631 | 29.4 | 4.6 | 1.55 |
+| Mesh at teacher pose (self-training, teacher pose + mesh) | 0.1051 | 0.426 ± 0.005 | 0.486 ± 0.005 | 33.9 | 4.5 ± 0.1 | 1.70 ± 0.01 |
+| **AlignTac** (mesh at aligner pose) | 0.0651 | 0.332 ± 0.001 | 0.622 ± 0.003 | 29.9 | 3.2 ± 0.0 | 1.56 ± 0.02 |
+| Oracle (curated labels of the pool; upper bound) | 0.0353 | 0.233 ± 0.002 | 0.725 ± 0.002 | 21.8 | 3.0 ± 0.0 | 1.38 ± 0.04 |
+
+Honest reading: on the new objects the AlignTac student confirms the claim for **pose** (rot 53.6° → 3.2°, better than the
+teacher's 4.6°) and beats the self-training student by a wide margin (0.332 / 0.622 vs 0.426 / 0.486), but it does **not** improve
+dense accuracy over the teacher it was distilled from (0.332 / 0.622 vs 0.327 / 0.631). The aligned labels themselves are only at
+teacher-depth level on contact MAE (0.331 vs 0.322), so the student cannot exceed it; the oracle row (0.233 / 0.725) shows the
+headroom is in label accuracy, not in the student. Framing for the paper: "a new object can be labeled from its mesh alone to the
+accuracy of a teacher that saw it, with 3× lower rotation error"; the dense gain over the teacher that the within-object setting
+shows (0.291 → 0.233) does not transfer to objects the aligner never saw. Seed variance is tiny (≤ 0.005), so the ranking is solid.
+
 ## P1-5 / F1 — pseudo-label confidence (`rss2_confidence_s1_k25.json`, `rss2_confidence_s2_k25.json`)
 | Signal | ρ vs MAE (S1) | ρ vs 1−IoU (S1) | ρ vs rot (S1) | ρ vs MAE (S2) | ρ vs 1−IoU (S2) | ρ vs rot (S2) |
 |---|---|---|---|---|---|---|
@@ -211,8 +244,11 @@ the mechanism that keeps them out of training; the per-object student table must
    1–3 mm and a few degrees", with the conventional-label row of T2 as the consequence.)
 2. **SITR checkpoint.** The original under `gsrl/` is gone; the rebuilt copy reproduces stored numbers exactly. If you still have the
    original file, drop it into `VisTacFusion/weights/`.
-3. **LOO-3 run dirs.** `runs/pilot150_A_loo3_{al,tp,oracle}` held 5-epoch fragments of the interrupted 11-01 runs and are being
+3. **LOO-3 run dirs.** `runs/pilot150_A_loo3_{al,tp,oracle}` held 5-epoch fragments of the interrupted 11-01 runs and were
    retrained from scratch in place (rule 1 technically violated; no results were lost).
+7. **T3 framing.** On unseen objects AlignTac matches the teacher on dense metrics and only wins on pose. Present as "mesh-only
+   labeling of new objects reaches teacher accuracy" (defensible) rather than as an improvement; or invest in an aligner
+   that generalizes better across objects (more seen objects / synthetic frames of the new mesh) before the RSS deadline?
 4. **P2-8**: stop here (recommended) or try a per-press offset model?
 5. Two-line patterns stay at IoU ≈ 0.4 for every method on session 2; confidence filtering will mostly drop them.
 6. **Mean teacher** gives nothing over Labeled only at K = 25 (T1). Keep it in T1 as the semi-supervised baseline (3 seeds at w = 1)

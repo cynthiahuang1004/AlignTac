@@ -403,4 +403,8 @@ pattern_31_rod, pattern_33: odd frame index = unlabeled pool, even = TEST, roots
   on testA unchanged (0.241 / 0.732). Stale-calibration labels actively hurt the drifted session. Note: "train FAILED" lines dated after 06:12 for
   mt_w1, mt_w50 and A_loo3_oracle_seed1 come from shells that were started before the atomic replace of rss2_train.sh (they still read the old inode);
   their final.pt exist and the finisher evaluated them. Paused low-priority jobs resumed on GPUs 1-3; GPU-0 ones resume automatically when the LOO-3 runs finish.
+- 2026-11-10 LOO-3 students complete (`loo3_results.json`, 635 test frames of pattern_04_3_lines_angle_2 / pattern_31_rod / pattern_33, 3 seeds):
+  AlignTac labels 0.332+-0.001 / 0.622+-0.003 / rot 3.2; teacher pose + mesh 0.426 / 0.486 / 4.5; oracle labels 0.233 / 0.725 / 3.0; teacher itself
+  (A_bgcondloo) 0.327 / 0.631 / 4.6; Labeled only on 9 objects 0.363 / 0.578 / 53.6. Pose claim confirmed, dense gain over the teacher not
+  confirmed on unseen objects (labels are at teacher-depth level on cMAE). Written as T3 in RSS_ROUND2_RESULTS.md with an open question on framing.
 
