@@ -439,4 +439,9 @@ pattern_31_rod, pattern_33: odd frame index = unlabeled pool, even = TEST, roots
   is IoU 0.725 seen / 0.614 unseen; pattern_33 generalizes (0.736), rod and 3-lines do not. Run-level fusion (`rss2_run_consensus_s1.py`): seen 0.719 / 0.235 -> 0.901 / 0.082 (0.08 deg, 0.10 mm);
   with teacher / grid / ICP / GD as the per-touch method 0.79 / 0.85 / 0.85 / 0.85; unseen 0.594 -> 0.663. train_aligner.py gained --synth-ranges / --synth-weight (objects seen only as
   synthetic frames); aligners loo9_syn3, loo9_syn3_r2, loo9_r2 training. Queue B and the finisher had been terminated at 21:15 (after the last round-2 job); restarted detached (setsid).
+- 2026-11-10 22:25 aligner_loo9_syn3_r2 (9 seen objects + synthetic-only frames of the 3 new meshes, pose ranges from the teacher's predictions on unlabeled frames, 2x range):
+  unseen per-touch labels 0.594 / 0.331 -> 0.624 / 0.312 (rot 0.8, trans 0.99 mm); pattern_33 0.767 / 0.190 (= seen level), rod 0.597, 3-lines 0.500; fixed point from the TRUE state 0.626.
+  Now above the teacher depth (0.575 / 0.322) on both metrics; line / rod objects stay at the single-touch limit. (`rss2_loo3_diag_unseen_syn3_r2_early.json`; syn3 and r2 controls still training.)
+  Metric definition for the record: IoU = |{label or predicted depth > 0.05 mm} AND {reference depth > 0}| / union, both from depth maps (reference = mesh rendered at the reference pose);
+  no mask is extracted from the tactile image at evaluation time. Image-derived masks enter only in the construction of the session-2 reference poses.
 
