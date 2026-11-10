@@ -346,3 +346,32 @@ pattern_31_rod, pattern_33: odd frame index = unlabeled pool, even = TEST, roots
 - New-object label quality (1,118 train-split frames of the three held-out objects, aligner never saw them): teacher depth 0.575 / 0.322 / 4.9;
   mesh @ teacher pose 0.409 / 0.472 / 4.9; mesh @ aligner_loo9 0.594 / 0.331 / 1.4.  Students (al / tp / oracle) training; reference models
   on the 635 TEST frames: A_bgcondloo cMAE 0.327 / IoU 0.631 / rot 4.6; A_ganloo 0.335 / 0.616 / 5.6; A_realonly 0.363 / 0.578 / 54.
+
+## 2026-11-09/10 — project moved to /media/hdd; RSS round 2 started (task list: /media/hdd/ihsuan/VisTacFusion/RSS_ROUND2_TASKS.md)
+- Move: every `/media/hdd2/ihsuan` path in AlignTac, VisTacFusion sources/configs, gs_blender manifests and 608,708 symlinks rewritten to `/media/hdd/ihsuan`
+  (commit 464e356 on branch `rss-round2`). New run dirs live on `/media/hdd2/users/ihsuan/AlignTac_runs` (symlinked into `runs/`).
+- The SITR encoder checkpoint (`gsrl/datasets/checkpoints/SITR_B18.pth`) was deleted with `gsrl/`; rebuilt from the frozen encoder tensors stored in
+  run checkpoints (bit-identical across pilot150_T_k25_rf, A_bgcondloo, T_k100_realonly, pilot_T_k25_tp) -> `VisTacFusion/weights/SITR_B18.pth`;
+  re-evaluating pilot150_T_k25_rf on testA reproduces the stored numbers exactly (MSE 0.038343, cMAE 0.233292, IoU 0.737425). All `tac_sitr_*.yaml` updated.
+  The conda env's editable install also pointed at hdd2; fixed. Scripts run as files must set PYTHONPATH=AlignTac (rss2_train.sh does) so that
+  evaluation imports the same `vistacfusion` snapshot the training used (`python -m` picks it up from the cwd).
+- Naming: new tables call `*_realonly` "Labeled only". Infrastructure: `rss2_queue.py` (GPU queue; jobs `outputs/rss_logs/rss2_jobs*.tsv`), `rss2_train.sh`,
+  `rss2_build_roots.sh`, `rss2_subset_root.py`; mean teacher in `vistacfusion/engine/train.py` behind `mean_teacher.enabled` (configs `train_pilot_e150_pm_mt_w{1,10,50}*.yaml`,
+  data `data_T_k25_mt*.yaml` = teacher-depth root `real_pseudo_k25_ro_ng`, labels of pseudo frames never enter a loss).
+- P0-1 labels (`rss2_fit_s1_k25_full.json`, all 3,897 K=25 pool frames, IoU / cMAE / rot): teacher depth 0.554/0.315/6.0; mesh@teacher 0.47/0.40/6.0;
+  grid 0.608/0.340/3.1; ICP 0.636/0.337/2.6; GD 0.630/0.298/3.0; aligner 0.719/0.235/1.1. Roots `real_pseudo_k25_ro_{icp,gd,grid}` (pseudo_label_rc --fits), configs `data_T_k25_{icp,gd,grid}.yaml`.
+- P0-3 / T2 (`rss2_fit_s2_k{25,100}.json`, 162 curated pool frames): recorded pose + session-1 calibration ("old calibration") IoU 0.352 / cMAE 0.504 / rot 4.9 (med 2.5) / trans 1.91 mm;
+  K=25 aligner 0.580/0.326/8.6 (2.7)/1.41; ICP 0.494/0.425; GD 0.511/0.442; global+aligner 0.601/0.320. K=100 aligner 0.628/0.300/4.4 (2.0).
+  Recorded pose -> aligner (no teacher; `rss2_s2_consensus_k*.json` stepB): K=25 0.564/0.353/4.2/1.24, K=100 0.626/0.306/2.7/1.06.
+- DRIFT NUMBER: curated label minus recorded pose, per-run medians over 38 runs = mean 3.42 deg / 3.02 mm, median 1.41 deg / 1.44 mm. This disagrees with the
+  paper's "11.4 deg / 1.6 mm" (pose_calibration_new.json, v2 per-object grid fit). Open question for the user before any text changes.
+- P2-8 Step A (`rss2_s2_consensus_k25.json`): run consensus (aligner from the recorded pose) vs curated reference: rot median 1.12 / mean 2.85 deg, trans median 1.61 / mean 2.36 mm,
+  21% of runs within 2 deg / 1 mm; 20 presses per run: 1.1 deg / 1.4 mm. Within-run scatter of curated-minus-recorded ~0.8 mm -> offset not rigid. GATE NOT MET.
+  consensus -> aligner labels: K=25 0.591/0.326, K=100 0.646/0.287 (vs 0.580 / 0.628). Roots `real_pseudo_s2_k25_{oldcal,recal,consal}` + merged `real_merge_k25_rf_s2{oldcal,recal,consal}`, configs `data_T_k25_rf_s2{oldcal,recal,consal}.yaml`.
+- P1-5 (`rss2_confidence_s{1,2}_k25.json`): conf = mean rank of multi-start agreement, global-start agreement, teacher-depth IoU, 1 - last correction. Spearman vs cMAE / 1-IoU / rot:
+  S1 0.36 / 0.34 / 0.21 (n=3897), S2 0.44 / 0.60 / 0.62 (n=162). Keeping 75% by conf: S1 IoU 0.719->0.751, cMAE 0.235->0.210 (random unchanged; oracle 0.803/0.166);
+  S2 0.580->0.658, rot 8.6->2.3. Roots `real_pseudo_k25_ro_al_{conf,rand,oracle}{75,50}` (`rss2_subset_root.py`), oversample 3 / 4 to keep epoch size.
+- P1-6 roots `real_pseudo_k25_ro_al_u{25,50}`, `real_pseudo_k25_u{25,50}` (same frame subset, `--like`), oversample 7/4 (rf) and 3/2 (semipm).
+- P0-4: `pilot150_A_loo3_{al,tp,oracle}` (5-epoch fragments from 11-01) retrained from scratch in place + `rss2_A_loo3_*_seed{1,2}`; eval tag loo3test(_bp) in loo3_results.json.
+- Queue A (`rss2_jobs.tsv`): 9 LOO-3 + 3 mean-teacher runs. Queue B (`rss2_jobs_b.tsv`, 27 jobs): icp/gd/grid/tp + seeds, realonly/semipm seeds, s2 oldcal/consal/recal, u25/u50, conf/rand/oracle filters.
+  Queue B's first attempt (11-09 21:30-21:48) failed on the missing SITR checkpoint; restarted 11-10 02:40 with a clean state.
