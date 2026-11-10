@@ -13,6 +13,8 @@ T=${TRAIN_YAML:-$P/train_pilot_e150_pm$SEED.yaml}; D=${DATA_YAML:-$P/data_$BASE.
 OUT=runs/$PRE$RUN
 if [ ! -e $OUT ]; then mkdir -p /media/hdd2/users/ihsuan/AlignTac_runs/$PRE$RUN && ln -s /media/hdd2/users/ihsuan/AlignTac_runs/$PRE$RUN $OUT; fi
 step() { echo "$(date '+%m-%d %H:%M') [$PRE$RUN] $*"; }
+# NOTE: never edit this file in place while jobs run (bash reads scripts incrementally); replace it atomically (write tmp + mv).
+if [ -f $OUT/final.pt ] && [ ! -f $OUT/.train_done ]; then touch $OUT/.train_done; fi   # training finished earlier (e.g. post-step garbled)
 if [ ! -f $OUT/.train_done ]; then
   step "train (data $D, train $T, gpu $CUDA_VISIBLE_DEVICES)"
   $PY -m vistacfusion.engine.train --model $M --train $T --data $D --output-dir $OUT "$@" > $L/$PRE$RUN.log 2>&1 || { step "train FAILED"; tail -5 $L/$PRE$RUN.log; exit 1; }

@@ -389,3 +389,9 @@ pattern_31_rod, pattern_33: odd frame index = unlabeled pool, even = TEST, roots
 - 2026-11-10 P1-7 localization (`rss2_localize.json`, `rss2_localize.py`; sym.-aware rot, trans = mean|dx|,|dy|, success = rot<2 & trans<0.5 mm): testA K=25
   Labeled only head 5.7 deg / 1.09 mm / 16% -> +align 0.8 / 0.65 / 69%; AlignTac head 3.1 / 0.87 / 33% -> +align 0.6 / 0.64 / 69% (3-seed means); global search on
   predicted depth + align 66-67%. K=100 +align 0.3 deg / 0.28 mm / 86%. s2half: heads 15 / 10 deg, +align ~5 deg (median 1.2-1.3), 35% success for every method.
+- 2026-11-10 mean teacher, first sweep (`rss2_T_k25_mt_w{1,10,50}`, EMA teacher evaluated): validation depth MSE degrades with training (w=1: 0.052 at ep 20 -> 0.10 at
+  ep 129; w=10: 0.10 -> 0.15; w=50: 0.20 -> 0.47; Labeled only stays ~0.057). Consistency on the unlabeled pool reinforces the teacher's own errors and the weight is far
+  too large relative to the uncertainty-weighted supervised terms (train depth MSE 1e-4). Second sweep launched: w = 0.1, 0.01 and 0 (strong augmentation only, isolates
+  the augmentation effect). Incident: rss2_train.sh was edited in place while 28 jobs were running; bash reads scripts incrementally, so the post-training step of those
+  jobs executes a garbled line (seen for mt_w10: "line 20: data_T_k25_mt_w10.yaml: Permission denied"). Training itself is unaffected (final.pt written);
+  `rss2_finisher.sh` (10-min loop) evaluates any finished run without results, and rss2_train.sh now skips training when final.pt exists; the file is replaced atomically from now on.
