@@ -99,6 +99,9 @@ def main():
     ap.add_argument("--extra-root", default=None,
                     help="self-training round: a root labeled by a previous aligner (pseudo_label_rc.py --aligner); its mesh-labeled "
                          "frames join the real training frames with their fitted pose")
+    ap.add_argument("--synth-ranges", default=None, help="json {object: [[th, x, y, p] lo, [..] hi]}: extra objects that are seen ONLY as synthetic frames "
+                    "(mesh + renderer, no real label), e.g. new objects whose pose range comes from the teacher's predictions on unlabeled frames")
+    ap.add_argument("--synth-weight", type=int, default=1, help="how many times each --synth-ranges object is listed when synthetic objects are drawn")
     ap.add_argument("--device", default="cuda:0")
     ap.add_argument("--eval-root", default=None, help="pseudo root (teacher depth) whose pseudo frames are refined and scored against GT")
     ap.add_argument("--eval-poses", default=None, help="json {tactile path: [rz, x_m, y_m]} of teacher poses (best_pose.pt)")
@@ -141,6 +144,11 @@ def main():
         lo, hi = p.min(0).values, p.max(0).values
         m = torch.tensor([math.radians(10), 1.0, 1.0, 0.05], device=dev)
         rng[o] = (lo - m, hi + m)
+    sobjs = list(objs)                                          # objects synthetic frames are drawn from
+    if args.synth_ranges:
+        for o, (lo, hi) in json.load(open(args.synth_ranges)).items():
+            B.get_zmap(o); rng[o] = (torch.tensor(lo, device=dev), torch.tensor(hi, device=dev)); sobjs += [o] * args.synth_weight
+        print(f"+ synthetic-only objects: {sorted(set(sobjs) - set(objs))} (weight {args.synth_weight})", flush=True)
     print(f"{n_true} labeled real frames, {len(objs)} objects", flush=True)
     G = UNetG(in_ch=3).to(dev).eval(); G.load_state_dict(torch.load(osp.join(args.gan, "G_final.pt"), map_location=dev))
     A = Aligner(pretrained=not args.no_pretrain, arch=args.arch).to(dev)
@@ -157,7 +165,7 @@ def main():
             ro = [r_obj[i] for i in ri.tolist()]; rpz = r_pose[ri]; rim = r_img[ri]
             rim = rim * (1 + 0.1 * (torch.rand(args.bs_real, 1, 1, 1, device=dev) - 0.5)) + 0.05 * (torch.rand(args.bs_real, 3, 1, 1, device=dev) - 0.5)
             # synthetic: random pose in the object's labeled range, rendered by the K-shot renderer
-            so = [objs[i] for i in np.random.randint(0, len(objs), args.bs_sim)]
+            so = [sobjs[i] for i in np.random.randint(0, len(sobjs), args.bs_sim)]
             if args.bs_sim:
                 lo = torch.stack([rng[o][0] for o in so]); hi = torch.stack([rng[o][1] for o in so])
                 spz = lo + torch.rand(args.bs_sim, 4, device=dev) * (hi - lo)

@@ -431,4 +431,12 @@ pattern_31_rod, pattern_33: odd frame index = unlabeled pool, even = TEST, roots
 - 2026-11-10 21:30 round-2 students complete. Last four (testA cMAE / IoU / rot): Labeled only seed 1 0.299 / 0.672 / 6.1 (3 seeds 0.299 +- 0.009 / 0.675 +- 0.003);
   mean teacher w=1 seed 2 0.286 / 0.652 (3 seeds 0.287 +- 0.008 / 0.675 +- 0.019); conf-75 % 0.244 / 0.730; random-50 % 0.251 / 0.722.
   Queue B and the finisher loop stopped (nothing left to run). All tables in RSS_ROUND2_RESULTS.md are final for round 2 except P2-9 (not started).
+- 2026-11-10 21:30-22:30 ROUND 2b (details and tables: RSS_ROUND2_RESULTS.md, section "Round 2b").
+  CORRECTION: `pilot150_T_k25_rf_s2` is teacher -> aligner with the recorded poses never used; it was wrongly called "recalibrated" in the T2 student table. No recalibrated-label student exists.
+  Controlled drift on session 1 (`rss2_drift_s1.py`): stale-label IoU 0.94 / 0.74 / 0.56 / 0.30 / 0.19 / 0.14 at 0 / 0.5 / 1 / 2 / 3 / 4 mm; aligner from the stale pose 0.725 at every level.
+  Students `rss2_T_k25_dr{05,10,20,30}_{stale,al}` queued 21:42 (roots `real_pseudo_k25_ro_dr*`, fits `outputs/rss2_fits/s1_k25_drift`, `rss2_drift_roots.sh`).
+  Unseen-object diagnosis (`rss2_loo3_diag.py`): error is translation only and anisotropic (aperture problem on line / rod objects, seen or unseen); aligner fixed point from the TRUE state
+  is IoU 0.725 seen / 0.614 unseen; pattern_33 generalizes (0.736), rod and 3-lines do not. Run-level fusion (`rss2_run_consensus_s1.py`): seen 0.719 / 0.235 -> 0.901 / 0.082 (0.08 deg, 0.10 mm);
+  with teacher / grid / ICP / GD as the per-touch method 0.79 / 0.85 / 0.85 / 0.85; unseen 0.594 -> 0.663. train_aligner.py gained --synth-ranges / --synth-weight (objects seen only as
+  synthetic frames); aligners loo9_syn3, loo9_syn3_r2, loo9_r2 training. Queue B and the finisher had been terminated at 21:15 (after the last round-2 job); restarted detached (setsid).
 

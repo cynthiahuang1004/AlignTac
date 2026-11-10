@@ -63,7 +63,7 @@ dense at `best_depth.pt`, pose at `best_pose.pt`):
 |---|---|---|---|---|---|
 | Labeled only (session-1 labels only) | 0.341 | 0.621 | 30.6 | 14.8 | 1.78 |
 | AlignTac, session-1 pseudo-labels only | 0.292 | 0.659 | 27.5 | 10.2 | 1.49 |
-| AlignTac + session-2 pseudo-labels, recalibrated (paper) | 0.280 | 0.652 | 27.5 | 7.8 | 1.32 |
+| AlignTac + session-2 pseudo-labels, teacher → aligner, recorded poses never used (paper's `rf_s2`) | 0.280 | 0.652 | 27.5 | 7.8 | 1.32 |
 | AlignTac + session-2 labels at the recorded poses, stale calibration (conventional) | 0.447 | 0.481 | 28.0 | 5.5 | 1.58 |
 | AlignTac + session-2 pseudo-labels from the recorded poses → aligner, no recalibration (`rf_s2recal`) | 0.295 | 0.659 | 27.5 | 5.4 | 1.21 |
 | AlignTac + session-2 pseudo-labels from run consensus, **no recalibration** (`rf_s2consal`) | 0.292 | 0.667 | 27.4 | 5.5 | 1.18 |
@@ -72,11 +72,11 @@ Takeaway (P0-3): adding session-2 frames labeled at the recorded poses with the 
 than not using session 2 at all (IoU 0.481 vs 0.659, contact MAE 0.447 vs 0.292); the student learns the drifted contact masks.
 Its rotation improves (5.5° vs 7.8°) because the pose targets are correct up to a small offset; only the dense targets are wrong.
 On session 1 (testA) the same student is unaffected (0.241 / 0.732 vs 0.233 / 0.737), so the damage is confined to the drifted session.
-The run-consensus labels (recorded pose + per-run robust offset → aligner, no recalibration and no curated label of session 2) give a
-student that matches the recalibrated one on dense metrics (0.292 / 0.667 vs 0.280 / 0.652) and beats it on pose (5.5° / 1.18 mm vs
-7.8° / 1.32 mm); starting the aligner directly from the recorded pose (no consensus step) gives 0.295 / 0.659 / 5.4° / 1.21 mm, the same
-within noise. The drifted session can be absorbed without touching the calibration, and the consensus step is not even needed. This is the student-level version of the
-P2-8 label result and is the strongest recalibration-free number so far.
+CORRECTION (2026-11-10 21:50): an earlier version of this table called the paper's `rf_s2` row "recalibrated". It is not: it is the
+teacher → aligner labeling that never reads the recorded poses. No student trained on recalibrated session-2 labels exists (only 390 pool
+frames have a curated label), so the table has no recalibration upper bound. All three AlignTac rows are recalibration-free and differ only
+in the aligner's starting point (teacher / stale recorded pose / run consensus); they agree on dense metrics (0.280–0.295 / 0.652–0.667),
+and starting from the recorded pose gives better pose accuracy (5.4–5.5° / 1.2 mm vs 7.8° / 1.32 mm).
 
 ## P0-1 / T1 (label part) — session 1, K = 25, all 3,897 unlabeled frames (`rss2_fit_s1_k25_full.json`)
 | Label source | IoU | Contact MAE (mm) | Rot mean / median (°) | Rot sym. (°) | Trans (mm) |
@@ -269,6 +269,85 @@ to 30° (IoU 0.715 vs 0.668). Not adopted as the default for round 2 (all 3-seed
 robustness ablation. Even the oracle choice among four starts leaves the two-line patterns at 0.47, so confidence filtering remains
 the mechanism that keeps them out of training; the per-object student table must show it.
 
+## Round 2b (2026-11-10 evening) — controlled drift, unseen-object diagnosis, run-level fusion
+
+### D1. Controlled drift on session 1 (`rss2_drift_s1.py`, `rss2_drift_s1_k25.json`; K = 25, pool frames, registered labels as reference)
+
+One constant offset per object is added to the registered (θ, x, y) of all its pool frames (translation of length T in a random direction,
+rotation ±R). This is exactly how a stale calibration acts in this setup (`robot_to_gt`: the calibration is additive in state space).
+"Stale" = mesh at the drifted pose; "aligner" = K = 25 aligner started from the drifted pose (no teacher, no recalibration).
+
+| T (mm) | stale IoU, R = 0° | R = 2° | R = 5° | R = 10° | aligner from the stale pose (R = 0°): IoU / cMAE / trans (mm) |
+|---|---|---|---|---|---|
+| 0 | 0.94 | 0.81 | 0.62 | 0.38 | 0.725 / 0.231 / 0.38 |
+| 0.25 | 0.84 | 0.81 | 0.63 | 0.40 | 0.725 / 0.231 / 0.38 |
+| 0.5 | 0.74 | 0.74 | 0.63 | 0.41 | 0.725 / 0.232 / 0.39 |
+| 0.75 | 0.65 | 0.66 | 0.60 | 0.41 | 0.725 / 0.232 / 0.40 |
+| 1 | 0.56 | 0.58 | 0.55 | 0.41 | 0.725 / 0.232 / 0.41 |
+| 1.5 | 0.42 | 0.43 | 0.44 | 0.38 | 0.725 / 0.232 / 0.43 |
+| 2 | 0.30 | 0.32 | 0.34 | 0.33 | 0.725 / 0.232 / 0.45 |
+| 3 | 0.19 | 0.19 | 0.21 | 0.23 | 0.724 / 0.232 / 0.50 |
+| 4 | 0.14 | 0.14 | 0.15 | 0.16 | 0.724 / 0.232 / 0.56 |
+
+A 1 mm offset already costs 40 % of the label IoU (0.94 → 0.56) and 2 mm leaves 0.30, the level of the real session-2 stale labels (0.35 at
+1.9 mm). The aligner returns to the same fixed point (0.725 / 0.232) from every start up to 4 mm, so its output is independent of the drift.
+Honest crossover: below ≈ 0.5 mm of drift the stale labels are better than the aligner's (0.74 vs 0.725), because the aligner's own per-touch
+accuracy is ≈ 0.4 mm. Students for T = 0.5 / 1 / 2 / 3 mm (R = 2°), stale vs aligner: `rss2_T_k25_dr{05,10,20,30}_{stale,al}` (training).
+
+### D2. Why unseen objects look bad (`rss2_loo3_diag.py`, `rss2_loo3_diag_{unseen,seen_k25}.json`)
+
+| Check | Unseen (aligner_loo9, 1,118 frames) | Seen (K = 25 aligner, 1,299 frames) |
+|---|---|---|
+| Aligner started from the teacher (pipeline): IoU / cMAE / rot / trans | 0.594 / 0.331 / 1.4° / 1.20 mm | 0.718 / 0.236 / 1.1° / 0.69 mm |
+| Aligner started from the TRUE state | 0.614 / 0.317 / 0.7° / 0.55 mm | 0.725 / 0.231 / 0.6° / 0.38 mm |
+| Pipeline result with the TRUE rotation swapped in | 0.594 | 0.725 |
+| Pipeline result with the TRUE press swapped in | 0.605 | 0.718 |
+| Pipeline result with the TRUE translation swapped in | 0.816 | 0.902 |
+
+Per object (teacher-depth IoU → aligner IoU, translation error; std of the translation error along its minor / major axis):
+
+| Object | Seen, K = 25 | Unseen |
+|---|---|---|
+| pattern_33 (non-line) | 0.539 → 0.767, 0.25 mm; 0.29 / 0.36 mm | 0.644 → 0.736, 0.23 mm; 0.19 / 0.37 mm |
+| pattern_31_rod | 0.488 → 0.619, 2.04 mm; 0.62 / 4.16 mm | 0.562 → 0.569, 1.61 mm; 0.71 / 2.90 mm |
+| pattern_04_3_lines_angle_2 | 0.529 → 0.686, 0.79 mm; 0.70 / 2.84 mm | 0.517 → 0.467, 1.60 mm; 0.90 / 3.64 mm |
+| other non-line objects (32, 35, 36, 37) | → 0.79–0.83, 0.2 mm | — |
+| other line objects (2 / 3 / 5 lines) | → 0.59–0.70, 0.4–1.5 mm | — |
+
+Findings: (1) rotation and press are solved; the label error is translation only. (2) The translation error is strongly anisotropic on
+every line / rod object, seen or unseen (3–4 mm along one axis, < 1 mm across): a single touch cannot observe the translation along an
+extruded ridge (aperture problem), and periodic lines add a one-period ambiguity. (3) Even from the TRUE state the aligner moves away
+(IoU 0.94 → 0.725 seen / 0.614 unseen): label accuracy is bounded by the aligner's per-touch fixed point, not by the initialization.
+(4) Two of the three held-out objects are line / rod objects, the hardest class even when seen; the non-line held-out object generalizes
+(0.736 vs 0.767 seen). The only real generalization failure is the three-line pattern (0.467 vs 0.686). The oracle student (0.233)
+shows that neither the student nor the teacher architecture is the limit.
+
+### D3. Run-level fusion of per-touch alignments (`rss2_run_consensus_s1.py`, `rss2_runfusion_*.json`)
+
+A label state is the robot reading plus one constant (dθ, dx, dy, dpress) per placement, and the robot knows the relative motion between
+touches. Estimating that constant as the median over all touches of a run of (aligned state − robot reading) and re-labeling every touch
+with it removes the per-touch ambiguity. No label of the evaluated frames is used.
+
+| Per-touch method | Per-touch IoU / cMAE / rot / trans | After run fusion | Placement error from 10 touches |
+|---|---|---|---|
+| Seen objects (3,897 pool frames, K = 25) | | | |
+| Teacher pose head | 0.471 / 0.400 / 6.0° / 1.14 mm | 0.793 / 0.169 / 1.2° / 0.25 mm | 2.3° / 0.40 mm |
+| Grid search on teacher depth | 0.630 / 0.298 / 3.0° / 0.91 mm | 0.854 / 0.123 / 0.8° / 0.19 mm | 1.0° / 0.26 mm |
+| ICP | 0.608 / 0.340 / 3.1° / 0.99 mm | 0.851 / 0.147 / 0.7° / 0.16 mm | 1.0° / 0.29 mm |
+| Gradient descent | 0.636 / 0.337 / 2.6° / 0.90 mm | 0.854 / 0.208 / 0.8° / 0.18 mm | 0.9° / 0.26 mm |
+| **Aligner** | 0.719 / 0.235 / 1.1° / 0.67 mm | **0.901 / 0.082 / 0.08° / 0.10 mm** | 0.2° / 0.18 mm |
+| Unseen objects (1,118 frames, aligner_loo9) | | | |
+| Teacher pose head | 0.409 / 0.472 / 4.9° / 1.54 mm | 0.578 / 0.357 / 1.3° / 0.49 mm | 1.8° / 0.68 mm |
+| **Aligner** | 0.594 / 0.331 / 1.4° / 1.20 mm | 0.663 / 0.284 / 0.5° / 0.37 mm | 0.5° / 0.55 mm |
+
+Caveats: (a) session-1 registered labels were built with exactly this rigid model, so fusion is exact by construction here; on a real new
+placement it holds as far as the fixture is rigid, the same assumption a manual recalibration makes. (b) Fusion helps every per-touch
+method, so the aligner's margin shrinks in IoU (0.90 vs 0.85) but stays large in contact MAE (0.082 vs 0.123–0.208), rotation (0.08° vs
+0.7–1.2°) and number of touches needed. (c) It uses the robot's readings of the unlabeled frames, which the current paper never uses;
+it changes the premise from "pose-free per frame" to "uncalibrated robot + mesh, self-calibrated per run". (d) On unseen line / rod objects
+the fused placement keeps a 0.6–1.0 mm bias: the aligner's errors are not zero-mean on shapes it never saw (aligners trained with synthetic
+frames of the new meshes are being tested: `outputs/aligner_loo9_{syn3,syn3_r2,r2}`).
+
 ## Open questions
 1. **Drift number.** The paper's "per-run corrections averaged 11.4° / 1.6 mm" comes from `pose_calibration_new.json` (grid search on
    contact masks), which does not agree with the curated labels. Curated − recorded is 3.4° / 3.0 mm (means), 1.4° / 1.4 mm (medians).
@@ -290,4 +369,7 @@ the mechanism that keeps them out of training; the per-object student table must
    of 3.1° / 0.84 mm, so session-2 pose errors below about 2–3° / 1 mm are inside the reference noise. Options: (a) state this in the paper and
    report session 2 mainly with dense metrics; (b) hand-annotate ridge keypoints on ~100 session-2 frames as an independent reference;
    (c) run the drift study as a controlled experiment on session 1, whose labels are calibration-based.
+9. **Method premise.** Run-level fusion (D3) lifts label IoU from 0.72 to 0.90 on session 1 and explains the unseen-object and session-2
+   weaknesses, but it uses the robot readings of the unlabeled frames. Adopt it as the core of the RSS version ("self-calibrating labeling
+   from an uncalibrated robot and a mesh") or keep the pose-free per-frame method and report fusion as an extension?
 
