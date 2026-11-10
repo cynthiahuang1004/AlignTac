@@ -414,4 +414,7 @@ pattern_31_rod, pattern_33: odd frame index = unlabeled pool, even = TEST, roots
   self-training 0.308 / 0.294 / 0.301. Confidence filtering: conf-50 % 0.239 / 0.731, oracle-75 % 0.230 / 0.741. Session-2 test half: run-consensus labels
   (no recalibration) 0.292 / 0.667 / rot 5.5 / 1.18 mm vs recalibrated 0.280 / 0.652 / 7.8 / 1.32 -> strongest recalibration-free student result.
   Still training: realonly_seed1, gd_seed2, rf_s2recal, conf75, rand75, rand50, oracle50, mt_w1 seeds 1-2.
+- 2026-11-10 20:45: `rf_s2recal` (recorded pose -> aligner, no consensus) on the session-2 test half 0.295 / 0.659 / rot 5.4 / 1.21 mm = consensus version within noise;
+  GD seed 2 0.323 / 0.693 (3 seeds 0.322 / 0.689); mean teacher w=1 seed 1 0.279 / 0.687; filter students rand-75 % 0.242 / 0.721, oracle-50 % 0.237 / 0.735.
+  Remaining: realonly_seed1, mt_w1_seed2, conf75, rand50.
 

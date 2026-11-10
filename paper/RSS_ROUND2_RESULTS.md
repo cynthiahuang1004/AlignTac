@@ -9,11 +9,11 @@ Branch `rss-round2` (not pushed). Last update: 2026-11-10 02:45 UTC.
 | Task | Status | Notes |
 |---|---|---|
 | §1 Sanity check after the outage | done | data roots, meshes, checkpoints intact after the hdd2 → hdd move; SITR encoder checkpoint was lost with `gsrl/`, rebuilt from run checkpoints and verified bit-exact on testA |
-| P0-1 Optimization labels → student | ICP ×3, GD ×2, grid ×1 done; GD seed 2 training | student table in the T1 section |
-| P0-2 Mean teacher | sweep done (w = 0, 0.01, 0.1, 1, 10, 50, all evaluated), w = 1 seeds 1–2 queued | no gain over Labeled only; see T1 |
-| P0-3 Conventional labels under drift | done | `rf_s2oldcal` and `rf_s2consal` evaluated on the session-2 test half (T2); `rf_s2recal` training |
+| P0-1 Optimization labels → student | done (ICP ×3, GD ×3, grid ×1) | student table in the T1 section |
+| P0-2 Mean teacher | sweep done; w = 1 seed 1 done, seed 2 training | no gain over Labeled only; see T1 |
+| P0-3 Conventional labels under drift | done | `rf_s2oldcal`, `rf_s2consal`, `rf_s2recal` evaluated on the session-2 test half (T2) |
 | P0-4 New objects (LOO-3) | done | 9 students (3 label sources × 3 seeds), T3 below |
-| P1-5 Confidence | analysis done; conf50, oracle75 students done | conf75, rand75, rand50, oracle50 training |
+| P1-5 Confidence | analysis done; 4 / 6 filter students done | conf75, rand50 training |
 | P1-6 Unlabeled quantity | done (1 seed) | F2 below |
 | P1-7 Single-touch localization | done | T4 below |
 | P2-8 Session-level consensus | Step A done, **gate not met** | see section |
@@ -65,7 +65,7 @@ dense at `best_depth.pt`, pose at `best_pose.pt`):
 | AlignTac, session-1 pseudo-labels only | 0.292 | 0.659 | 27.5 | 10.2 | 1.49 |
 | AlignTac + session-2 pseudo-labels, recalibrated (paper) | 0.280 | 0.652 | 27.5 | 7.8 | 1.32 |
 | AlignTac + session-2 labels at the recorded poses, stale calibration (conventional) | 0.447 | 0.481 | 28.0 | 5.5 | 1.58 |
-| AlignTac + session-2 pseudo-labels from the recorded poses (`rf_s2recal`) | training (133/150) | | | | |
+| AlignTac + session-2 pseudo-labels from the recorded poses → aligner, no recalibration (`rf_s2recal`) | 0.295 | 0.659 | 27.5 | 5.4 | 1.21 |
 | AlignTac + session-2 pseudo-labels from run consensus, **no recalibration** (`rf_s2consal`) | 0.292 | 0.667 | 27.4 | 5.5 | 1.18 |
 
 Takeaway (P0-3): adding session-2 frames labeled at the recorded poses with the stale calibration makes the student *worse*
@@ -74,7 +74,8 @@ Its rotation improves (5.5° vs 7.8°) because the pose targets are correct up t
 On session 1 (testA) the same student is unaffected (0.241 / 0.732 vs 0.233 / 0.737), so the damage is confined to the drifted session.
 The run-consensus labels (recorded pose + per-run robust offset → aligner, no recalibration and no curated label of session 2) give a
 student that matches the recalibrated one on dense metrics (0.292 / 0.667 vs 0.280 / 0.652) and beats it on pose (5.5° / 1.18 mm vs
-7.8° / 1.32 mm): the drifted session can be absorbed without touching the calibration. This is the student-level version of the
+7.8° / 1.32 mm); starting the aligner directly from the recorded pose (no consensus step) gives 0.295 / 0.659 / 5.4° / 1.21 mm, the same
+within noise. The drifted session can be absorbed without touching the calibration, and the consensus step is not even needed. This is the student-level version of the
 P2-8 label result and is the strongest recalibration-free number so far.
 
 ## P0-1 / T1 (label part) — session 1, K = 25, all 3,897 unlabeled frames (`rss2_fit_s1_k25_full.json`)
@@ -107,18 +108,17 @@ the aligner, which reads the image, does (0.235). Student rows (testA, 530 sessi
 | Self-training, teacher pose + mesh | 3 | 0.0467 | 0.302 ± 0.005 | 0.624 ± 0.004 | 26.0 | 5.5 ± 0.0 | 1.10 ± 0.01 |
 | Local grid search labels | 1 | 0.0471 | 0.294 | 0.684 | 26.0 | 4.0 | 0.96 |
 | ICP labels | 3 | 0.0610 | 0.309 ± 0.011 | 0.469 ± 0.101 | 27.4 | 4.0 ± 0.0 | 1.00 ± 0.01 |
-| Gradient-descent labels | 2 | 0.0467 | 0.322 ± 0.005 | 0.688 ± 0.003 | 25.8 | 3.8 ± 0.1 | 0.94 ± 0.01 |
+| Gradient-descent labels | 3 | 0.0465 | 0.322 ± 0.004 | 0.689 ± 0.003 | 25.7 | 3.8 ± 0.0 | 0.94 ± 0.01 |
 | Mean teacher w=0 (strong aug only) | 1 | 0.0460 | 0.288 | 0.669 | 26.2 | 5.9 | 1.05 |
 | Mean teacher w=0.01 | 1 | 0.0486 | 0.298 | 0.680 | 26.4 | 5.8 | 1.07 |
 | Mean teacher w=0.1 | 1 | 0.0474 | 0.293 | 0.687 | 25.9 | 5.6 | 1.06 |
-| Mean teacher w=1 | 1 | 0.0466 | 0.295 | 0.684 | 29.5 | 5.6 | 1.06 |
+| Mean teacher w=1 | 2 | 0.0484 | 0.287 ± 0.011 | 0.686 ± 0.002 | 28.2 | 5.7 ± 0.1 | 1.06 ± 0.00 |
 | Mean teacher w=10 | 1 | 0.0790 | 0.282 | 0.350 | 29.4 | 5.8 | 1.07 |
 | Mean teacher w=50 | 1 | 0.1940 | 0.298 | 0.224 | 30.2 | 5.7 | 1.09 |
 | AlignTac (paper run) | 1 | 0.0383 | 0.233 | 0.737 | 23.1 | 3.2 | 0.88 |
 | AlignTac + session-2 old-calibration labels | 1 | 0.0370 | 0.241 | 0.732 | 23.2 | 3.1 | 0.88 |
 
-Notes: Labeled only / self-training = the paper's T run + `rss2_T_k25_{realonly,semipm}_seed{1,2}` (Labeled only seed 1 and GD seed 2
-still training). The grid-search student (0.294 / 0.684) is the best optimization-based student on contact MAE but still 0.06 mm behind AlignTac. ICP labels are unstable across seeds (IoU 0.38–0.58):
+Notes: Labeled only / self-training = the paper's T run + `rss2_T_k25_{realonly,semipm}_seed{1,2}` (Labeled only seed 1 still training). The grid-search student (0.294 / 0.684) is the best optimization-based student on contact MAE but still 0.06 mm behind AlignTac. ICP labels are unstable across seeds (IoU 0.38–0.58):
 the ICP label set has the worst label IoU of the three optimizers (0.608) and its students lose most of the contact-mask accuracy
 although their pose error is fine. GD labels give the best optimization-based student (IoU 0.688, +0.012 over Labeled only) but
 contact MAE 0.322 is *worse* than Labeled only (0.291): the fitted mesh is placed well but the depth it provides is not better than
@@ -191,12 +191,15 @@ Students `rss2_T_k25_rf_{conf,rand,oracle}{75,50}` are queued.
 | Kept | by confidence | random | by true error (oracle) |
 |---|---|---|---|
 | 100 % | 0.233 / 0.737 / 3.2° | — | — |
-| 75 % | training | training | 0.230 / 0.741 / 3.1° |
-| 50 % | 0.239 / 0.731 / 3.4° | training | training |
+| 75 % | training | 0.242 / 0.721 / 3.0° | 0.230 / 0.741 / 3.1° |
+| 50 % | 0.239 / 0.731 / 3.4° | training | 0.237 / 0.735 / 3.9° |
 
 (contact MAE / IoU / rot). Keeping the 50 % most confident labels costs almost nothing (0.239 vs 0.233); the oracle-75 % row shows the
 ceiling of filtering is small too (0.230), i.e. the aligned labels are already good enough that dropping the worst quarter barely matters
-on session 1. The interesting comparison is confidence vs. random at the same fraction (pending).
+on session 1. Random 75 % (0.242 / 0.721) is already slightly worse than confidence 50 % (0.239 / 0.731), and oracle 50 % (0.237 / 0.735)
+is close to confidence 50 %: confidence keeps the useful half. The differences are all ≤ 0.01 mm, so on session 1 the filtering curve is
+flat and F1 is a robustness statement, not a headline; its value is on session 2 (ρ 0.44–0.62, two-line patterns) where no student
+has been trained yet.
 
 ## P2-8 / T5 — session-level consensus (`rss2_s2_consensus_k25.json`, `_k100.json`)
 Reference per run = median of (curated label − recorded pose) over the run's curated frames (38 runs). Recorded-pose drift by that
