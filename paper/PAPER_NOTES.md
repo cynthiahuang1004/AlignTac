@@ -386,3 +386,6 @@ pattern_31_rod, pattern_33: odd frame index = unlabeled pool, even = TEST, roots
   Aligner retrained with the paper's recipe (K=25 real labels only, no synthetic frames) but 2x perturbation range (+-16 deg, +-3 mm, +-0.3 mm):
   session 1 IoU 0.721 / cMAE 0.231 / rot 1.10 (default 0.712 / 0.241 / 1.04); basin: IoU 0.72 at 20 deg and 0.715 at 30 deg (default 0.70 / 0.67);
   session 2 0.589 / 0.323 / rot 5.8 (default 0.580 / 0.326 / 8.6). Small, consistent gain; NOT adopted as the default (would invalidate the 3-seed students) -> report as a robustness ablation.
+- 2026-11-10 P1-7 localization (`rss2_localize.json`, `rss2_localize.py`; sym.-aware rot, trans = mean|dx|,|dy|, success = rot<2 & trans<0.5 mm): testA K=25
+  Labeled only head 5.7 deg / 1.09 mm / 16% -> +align 0.8 / 0.65 / 69%; AlignTac head 3.1 / 0.87 / 33% -> +align 0.6 / 0.64 / 69% (3-seed means); global search on
+  predicted depth + align 66-67%. K=100 +align 0.3 deg / 0.28 mm / 86%. s2half: heads 15 / 10 deg, +align ~5 deg (median 1.2-1.3), 35% success for every method.

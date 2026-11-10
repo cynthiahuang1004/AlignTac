@@ -15,7 +15,7 @@ Branch `rss-round2` (not pushed). Last update: 2026-11-10 02:45 UTC.
 | P0-4 New objects (LOO-3) | running | 9 students (al / tp / oracle × 3 seeds) at ~60/150 epochs |
 | P1-5 Confidence | analysis done, students queued | conf / random / oracle at 75 % and 50 % |
 | P1-6 Unlabeled quantity | roots done, students queued | 25 % / 50 % pools for AlignTac and self-training |
-| P1-7 Single-touch localization | running | sessions 1 and 2, K = 25 (3 seeds) and 100 |
+| P1-7 Single-touch localization | done | T4 below |
 | P2-8 Session-level consensus | Step A done, **gate not met** | see section |
 | P2-9 Multi-touch reconstruction | not started | |
 
@@ -109,6 +109,36 @@ rotation median 1.12° (mean 2.85°), translation median 1.61 mm (mean 2.36 mm);
 **Gate (median < 2° and < 0.5 mm) not met**: the per-run offset is not rigid enough — curated-minus-recorded varies by ~0.8 mm (sd)
 within a run. Consensus → aligner gives +0.02 IoU at K = 100 (0.646 vs 0.628) and nothing at K = 25. Recommendation: report as an
 analysis, do not adopt as a method component.
+
+## P1-7 / T4 — single-touch localization (`rss2_localize.json`)
+One press, known mesh; rotation is symmetry-aware (modulo the mesh's rotational period), translation = mean(|dx|, |dy|). Global
+search = exhaustive (3°, 0.5 mm) fit of the mesh to the student's predicted depth within ±7 mm of the sensor centre (local
+localization, not whole-object). Session 1 = 530 held-out frames, session 2 = 464 curated frames of the held-out half.
+
+| Student | Method | S1 rot mean / median (°) | S1 trans (mm) | S1 succ 2°/0.5 mm | S1 succ 5°/1 mm | S2 rot mean / median (°) | S2 trans (mm) | S2 succ 2°/0.5 mm | S2 succ 5°/1 mm |
+|---|---|---|---|---|---|---|---|---|---|
+| Labeled only K=25 | pose head | 5.67 / 3.52 | 1.09 | 16 % | 45 % | 14.84 / 12.06 | 1.78 | 2 % | 12 % |
+| Labeled only K=25 | pose head + alignment | 0.82 / 0.42 | 0.65 | 69 % | 85 % | 5.49 / 1.29 | 1.29 | 35 % | 69 % |
+| Labeled only K=25 | global search on predicted depth | 4.81 / 1.70 | 0.98 | 32 % | 73 % | 6.46 / 2.87 | 1.81 | 15 % | 52 % |
+| Labeled only K=25 | global search + alignment | 3.22 / 0.43 | 0.86 | 66 % | 82 % | 4.98 / 1.35 | 1.61 | 36 % | 69 % |
+| AlignTac K=25 (3 seeds) | pose head | 3.09 / 1.80 | 0.87 | 33 % | 66 % | 10.28 / 6.66 | 1.51 | 7 % | 25 % |
+| AlignTac K=25 (3 seeds) | pose head + alignment | 0.64 / 0.40 | 0.64 | 69 % | 87 % | 5.10 / 1.27 | 1.27 | 35 % | 69 % |
+| AlignTac K=25 (3 seeds) | global search on predicted depth | 3.90 / 1.18 | 0.88 | 49 % | 81 % | 5.18 / 1.88 | 1.64 | 28 % | 59 % |
+| AlignTac K=25 (3 seeds) | global search + alignment | 3.11 / 0.41 | 0.90 | 66 % | 83 % | 4.33 / 1.31 | 1.42 | 35 % | 70 % |
+| Labeled only K=100 | pose head | 3.25 / 1.92 | 0.63 | 34 % | 67 % | 11.66 / 9.49 | 1.64 | 2 % | 12 % |
+| Labeled only K=100 | pose head + alignment | 0.29 / 0.21 | 0.28 | 86 % | 94 % | 4.79 / 1.27 | 1.30 | 39 % | 68 % |
+| Labeled only K=100 | global search on predicted depth | 4.42 / 1.52 | 0.92 | 48 % | 80 % | 12.87 / 2.83 | 1.92 | 23 % | 54 % |
+| Labeled only K=100 | global search + alignment | 2.69 / 0.21 | 0.78 | 81 % | 85 % | 11.57 / 1.38 | 1.86 | 36 % | 62 % |
+| AlignTac K=100 | pose head | 2.82 / 1.82 | 0.62 | 39 % | 73 % | 9.40 / 5.96 | 1.54 | 5 % | 24 % |
+| AlignTac K=100 | pose head + alignment | 0.28 / 0.21 | 0.28 | 85 % | 93 % | 3.91 / 1.20 | 1.23 | 37 % | 66 % |
+| AlignTac K=100 | global search on predicted depth | 4.04 / 1.22 | 0.84 | 60 % | 83 % | 5.23 / 1.94 | 1.51 | 34 % | 62 % |
+| AlignTac K=100 | global search + alignment | 2.95 / 0.22 | 0.84 | 80 % | 86 % | 3.63 / 1.24 | 1.43 | 37 % | 70 % |
+
+Takeaways: (i) the AlignTac student's own pose head localizes better than Labeled only (session 1: 3.1° vs 5.7°, success 33 % vs 16 %;
+session 2: 10° vs 15°); (ii) test-time alignment is the larger lever and nearly equalizes the two students (0.6–0.8° and 69 %
+success on session 1 at K=25; 0.3° and 86 % at K=100); (iii) global search on the predicted depth followed by alignment reaches
+the same accuracy without any pose head (66–67 % vs 69 %), i.e. the aligner alone localizes a single touch; (iv) on session 2 all
+methods plateau at ~35 % strict success (translation ~1.2–1.4 mm), consistent with the label-quality ceiling there.
 
 ## Side study — two-line patterns and the aligner's training range (`rss2_multistart_s2_k25.json`, `rss2_fit_s{1,2}_k25_range2.json`)
 On session 2 the three two-line patterns (31 of the 162 curated frames) stay at IoU 0.40 with the paper's aligner (session 1: 0.60–0.68),
