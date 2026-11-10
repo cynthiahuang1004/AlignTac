@@ -428,4 +428,7 @@ pattern_31_rod, pattern_33: odd frame index = unlabeled pool, even = TEST, roots
 - 2026-11-10 20:45 more students: rand75 0.242 / 0.721, oracle75 0.230 / 0.741, conf50 0.239 / 0.731, oracle50 0.237 / 0.735 (filtering is flat on session 1);
   GD seed 2 0.323 / 0.693; mean teacher w=1 seed 1 0.279 / 0.687; session-2 test half: rf_s2recal (aligner from the recorded pose) 0.295 / 0.659 / rot 5.4 / 1.21 mm,
   rf_s2consal 0.292 / 0.667 / 5.5 / 1.18 -> both recalibration-free variants match the recalibrated student (0.280 / 0.652 / 7.8 / 1.32).
+- 2026-11-10 21:30 round-2 students complete. Last four (testA cMAE / IoU / rot): Labeled only seed 1 0.299 / 0.672 / 6.1 (3 seeds 0.299 +- 0.009 / 0.675 +- 0.003);
+  mean teacher w=1 seed 2 0.286 / 0.652 (3 seeds 0.287 +- 0.008 / 0.675 +- 0.019); conf-75 % 0.244 / 0.730; random-50 % 0.251 / 0.722.
+  Queue B and the finisher loop stopped (nothing left to run). All tables in RSS_ROUND2_RESULTS.md are final for round 2 except P2-9 (not started).
 

@@ -10,10 +10,10 @@ Branch `rss-round2` (not pushed). Last update: 2026-11-10 02:45 UTC.
 |---|---|---|
 | §1 Sanity check after the outage | done | data roots, meshes, checkpoints intact after the hdd2 → hdd move; SITR encoder checkpoint was lost with `gsrl/`, rebuilt from run checkpoints and verified bit-exact on testA |
 | P0-1 Optimization labels → student | done (ICP ×3, GD ×3, grid ×1) | student table in the T1 section |
-| P0-2 Mean teacher | sweep done; w = 1 seed 1 done, seed 2 training | no gain over Labeled only; see T1 |
+| P0-2 Mean teacher | done (6 weights, 3 seeds at w = 1) | no gain over Labeled only; see T1 |
 | P0-3 Conventional labels under drift | done | `rf_s2oldcal`, `rf_s2consal`, `rf_s2recal` evaluated on the session-2 test half (T2) |
 | P0-4 New objects (LOO-3) | done | 9 students (3 label sources × 3 seeds), T3 below |
-| P1-5 Confidence | analysis done; 4 / 6 filter students done | conf75, rand50 training |
+| P1-5 Confidence | done | analysis + 6 filter students (F1) |
 | P1-6 Unlabeled quantity | done (1 seed) | F2 below |
 | P1-7 Single-touch localization | done | T4 below |
 | P2-8 Session-level consensus | Step A done, **gate not met** | see section |
@@ -103,7 +103,7 @@ the aligner, which reads the image, does (0.235). Student rows (testA, 530 sessi
 
 | Student (K = 25) | n | Depth MSE | Contact MAE (mm) | IoU | Normal (°) | Rot (°) | Trans (mm) |
 |---|---|---|---|---|---|---|---|
-| Labeled only | 2 | 0.0484 | 0.300 ± 0.012 | 0.677 ± 0.001 | 27.1 | 5.8 ± 0.1 | 1.08 ± 0.01 |
+| Labeled only | 3 | 0.0486 | 0.299 ± 0.009 | 0.675 ± 0.003 | 27.1 | 5.9 ± 0.2 | 1.09 ± 0.02 |
 | Self-training (teacher labels) | 3 | 0.0464 | 0.300 ± 0.003 | 0.627 ± 0.013 | 25.9 | 8.5 ± 0.1 | 1.50 ± 0.02 |
 | Self-training, teacher pose + mesh | 3 | 0.0467 | 0.302 ± 0.005 | 0.624 ± 0.004 | 26.0 | 5.5 ± 0.0 | 1.10 ± 0.01 |
 | Local grid search labels | 1 | 0.0471 | 0.294 | 0.684 | 26.0 | 4.0 | 0.96 |
@@ -112,13 +112,13 @@ the aligner, which reads the image, does (0.235). Student rows (testA, 530 sessi
 | Mean teacher w=0 (strong aug only) | 1 | 0.0460 | 0.288 | 0.669 | 26.2 | 5.9 | 1.05 |
 | Mean teacher w=0.01 | 1 | 0.0486 | 0.298 | 0.680 | 26.4 | 5.8 | 1.07 |
 | Mean teacher w=0.1 | 1 | 0.0474 | 0.293 | 0.687 | 25.9 | 5.6 | 1.06 |
-| Mean teacher w=1 | 2 | 0.0484 | 0.287 ± 0.011 | 0.686 ± 0.002 | 28.2 | 5.7 ± 0.1 | 1.06 ± 0.00 |
+| Mean teacher w=1 | 3 | 0.0480 | 0.287 ± 0.008 | 0.675 ± 0.019 | 27.6 | 5.8 ± 0.1 | 1.07 ± 0.02 |
 | Mean teacher w=10 | 1 | 0.0790 | 0.282 | 0.350 | 29.4 | 5.8 | 1.07 |
 | Mean teacher w=50 | 1 | 0.1940 | 0.298 | 0.224 | 30.2 | 5.7 | 1.09 |
 | AlignTac (paper run) | 1 | 0.0383 | 0.233 | 0.737 | 23.1 | 3.2 | 0.88 |
 | AlignTac + session-2 old-calibration labels | 1 | 0.0370 | 0.241 | 0.732 | 23.2 | 3.1 | 0.88 |
 
-Notes: Labeled only / self-training = the paper's T run + `rss2_T_k25_{realonly,semipm}_seed{1,2}` (Labeled only seed 1 still training). The grid-search student (0.294 / 0.684) is the best optimization-based student on contact MAE but still 0.06 mm behind AlignTac. ICP labels are unstable across seeds (IoU 0.38–0.58):
+Notes: Labeled only / self-training = the paper's T run + `rss2_T_k25_{realonly,semipm}_seed{1,2}`. The grid-search student (0.294 / 0.684) is the best optimization-based student on contact MAE but still 0.06 mm behind AlignTac. ICP labels are unstable across seeds (IoU 0.38–0.58):
 the ICP label set has the worst label IoU of the three optimizers (0.608) and its students lose most of the contact-mask accuracy
 although their pose error is fine. GD labels give the best optimization-based student (IoU 0.688, +0.012 over Labeled only) but
 contact MAE 0.322 is *worse* than Labeled only (0.291): the fitted mesh is placed well but the depth it provides is not better than
@@ -127,7 +127,7 @@ Mean teacher: consistency weights 10 and 50 collapse the contact mask (IoU 0.35 
 Labeled only numbers (0.291 / 0.676) within seed noise; w = 0.1 / 0.01 / 0 give 0.293 / 0.687, 0.298 / 0.680 and 0.288 / 0.669,
 all within the same band (validation depth MSE 0.052–0.055 for every w ≤ 1; w = 0 is the same pipeline with the strong augmentation
 only, so the whole semi-supervised branch is worth nothing at K = 25). Weight chosen by validation:
-**w = 1**; seeds 1–2 queued (`rss2_T_k25_mt_w1_seed{1,2}`). Conclusion for the paper: consistency regularization on the unlabeled
+**w = 1**; 3 seeds: 0.287 ± 0.008 / 0.675 ± 0.019 vs Labeled only 0.299 ± 0.009 / 0.675 ± 0.003. Conclusion for the paper: consistency regularization on the unlabeled
 pool does not substitute for geometric labels at K = 25.
 
 ## P0-4 / T3 — new objects from the mesh only (LOO-3; `loo3_results.json`, `loo3_test_frames.json`)
@@ -191,14 +191,14 @@ Students `rss2_T_k25_rf_{conf,rand,oracle}{75,50}` are queued.
 | Kept | by confidence | random | by true error (oracle) |
 |---|---|---|---|
 | 100 % | 0.233 / 0.737 / 3.2° | — | — |
-| 75 % | training | 0.242 / 0.721 / 3.0° | 0.230 / 0.741 / 3.1° |
-| 50 % | 0.239 / 0.731 / 3.4° | training | 0.237 / 0.735 / 3.9° |
+| 75 % | 0.244 / 0.730 / 3.1° | 0.242 / 0.721 / 3.0° | 0.230 / 0.741 / 3.1° |
+| 50 % | 0.239 / 0.731 / 3.4° | 0.251 / 0.722 / 3.3° | 0.237 / 0.735 / 3.9° |
 
 (contact MAE / IoU / rot). Keeping the 50 % most confident labels costs almost nothing (0.239 vs 0.233); the oracle-75 % row shows the
 ceiling of filtering is small too (0.230), i.e. the aligned labels are already good enough that dropping the worst quarter barely matters
-on session 1. Random 75 % (0.242 / 0.721) is already slightly worse than confidence 50 % (0.239 / 0.731), and oracle 50 % (0.237 / 0.735)
-is close to confidence 50 %: confidence keeps the useful half. The differences are all ≤ 0.01 mm, so on session 1 the filtering curve is
-flat and F1 is a robustness statement, not a headline; its value is on session 2 (ρ 0.44–0.62, two-line patterns) where no student
+on session 1. At 50 % kept, confidence (0.239 / 0.731) beats random (0.251 / 0.722) and is within 0.002 of the oracle (0.237 / 0.735); at 75 % the
+three are within 0.014 (conf 0.244, random 0.242, oracle 0.230). So the score does pick the useful half, but every point of the curve
+lies within 0.02 mm of using all labels (0.233): on session 1 the filtering curve is flat and F1 is a robustness statement, not a headline; its value is on session 2 (ρ 0.44–0.62, two-line patterns) where no student
 has been trained yet.
 
 ## P2-8 / T5 — session-level consensus (`rss2_s2_consensus_k25.json`, `_k100.json`)
