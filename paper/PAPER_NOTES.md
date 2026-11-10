@@ -395,3 +395,12 @@ pattern_31_rod, pattern_33: odd frame index = unlabeled pool, even = TEST, roots
   the augmentation effect). Incident: rss2_train.sh was edited in place while 28 jobs were running; bash reads scripts incrementally, so the post-training step of those
   jobs executes a garbled line (seen for mt_w10: "line 20: data_T_k25_mt_w10.yaml: Permission denied"). Training itself is unaffected (final.pt written);
   `rss2_finisher.sh` (10-min loop) evaluates any finished run without results, and rss2_train.sh now skips training when final.pt exists; the file is replaced atomically from now on.
+- 2026-11-10 students, round 2 (testA; `rss2_testA_results.json`): ICP labels 0.309 / 0.469 (3 seeds, IoU 0.38-0.58, unstable), GD labels 0.322 / 0.688 (2 seeds),
+  teacher pose + mesh 0.307 / 0.620, Labeled only 0.291 / 0.676, AlignTac 0.233 / 0.737. Mean teacher sweep (EMA teacher evaluated): w=50 0.298 / 0.224, w=10 0.282 / 0.350,
+  w=1 0.295 / 0.684; best validation depth MSE w=0 0.0515, w=1 0.0517, w=0.1 0.0537, w=0.01 0.0548 (Labeled only 0.0561, AlignTac 0.0426) -> consistency adds
+  nothing beyond the strong augmentation; w=1 chosen by validation, seeds 1-2 queued. P0-3 student `rss2_T_k25_rf_s2oldcal` on the session-2 test half:
+  cMAE 0.447 / IoU 0.481 / rot 5.5 / trans 1.58 mm vs AlignTac without session 2 0.292 / 0.659 / 10.2 / 1.49 and recalibrated 0.280 / 0.652 / 7.8 / 1.32;
+  on testA unchanged (0.241 / 0.732). Stale-calibration labels actively hurt the drifted session. Note: "train FAILED" lines dated after 06:12 for
+  mt_w1, mt_w50 and A_loo3_oracle_seed1 come from shells that were started before the atomic replace of rss2_train.sh (they still read the old inode);
+  their final.pt exist and the finisher evaluated them. Paused low-priority jobs resumed on GPUs 1-3; GPU-0 ones resume automatically when the LOO-3 runs finish.
+
