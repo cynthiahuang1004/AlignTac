@@ -409,4 +409,9 @@ pattern_31_rod, pattern_33: odd frame index = unlabeled pool, even = TEST, roots
   confirmed on unseen objects (labels are at teacher-depth level on cMAE). Written as T3 in RSS_ROUND2_RESULTS.md with an open question on framing.
 - 2026-11-10 18:53 mean teacher sweep complete (testA cMAE / IoU, EMA teacher): w=0 0.288 / 0.669, w=0.01 0.298 / 0.680, w=0.1 0.293 / 0.687, w=1 0.295 / 0.684,
   w=10 0.282 / 0.350, w=50 0.298 / 0.224; Labeled only 0.291 / 0.676. No weight helps; T1 updated.
+- 2026-11-10 19:05 batch of students finished (testA cMAE / IoU / rot): Labeled only 2 seeds 0.300 / 0.677 / 5.8; self-training 3 seeds 0.300 / 0.627 / 8.5;
+  teacher pose + mesh 3 seeds 0.302 / 0.624 / 5.5; grid labels 0.294 / 0.684 / 4.0. Unlabeled quantity (F2): AlignTac 25 / 50 / 100 % = 0.247 / 0.244 / 0.233 cMAE,
+  self-training 0.308 / 0.294 / 0.301. Confidence filtering: conf-50 % 0.239 / 0.731, oracle-75 % 0.230 / 0.741. Session-2 test half: run-consensus labels
+  (no recalibration) 0.292 / 0.667 / rot 5.5 / 1.18 mm vs recalibrated 0.280 / 0.652 / 7.8 / 1.32 -> strongest recalibration-free student result.
+  Still training: realonly_seed1, gd_seed2, rf_s2recal, conf75, rand75, rand50, oracle50, mt_w1 seeds 1-2.
 
