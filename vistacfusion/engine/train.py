@@ -527,6 +527,17 @@ def main():
         if os.path.exists(history_path):
             with open(history_path) as f:
                 history = json.load(f)
+            if args.resume and not args.finetune and start_epoch > 0:
+                # resume after an interruption: drop entries of epochs that will be redone and restore the best
+                # validation rotation error, so best_pose.pt is only replaced by a genuinely better epoch
+                history = [h for h in history if h.get("epoch", -1) < start_epoch]
+                _ps = []
+                for h in history:
+                    _v = h.get("val", {}); _b = _v.get("both") or (next(iter(_v.values())) if _v else {})
+                    _ps.append(_b.get("pose_rot_deg", _b.get("pose_rot", float("inf"))))
+                if _ps and os.path.exists(os.path.join(args.output_dir, "best_pose.pt")):
+                    best_pose_metric = min(_ps)
+                    print(f"  resume: {len(history)} history entries kept, best pose so far rot_deg={best_pose_metric:.4f}")
 
     max_epochs = args.epochs if args.epochs is not None else cfg.schedule.max_epochs
     for epoch in range(start_epoch, max_epochs):

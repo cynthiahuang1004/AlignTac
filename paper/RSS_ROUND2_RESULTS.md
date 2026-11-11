@@ -348,6 +348,51 @@ it changes the premise from "pose-free per frame" to "uncalibrated robot + mesh,
 the fused placement keeps a 0.6–1.0 mm bias: the aligner's errors are not zero-mean on shapes it never saw (aligners trained with synthetic
 frames of the new meshes are being tested: `outputs/aligner_loo9_{syn3,syn3_r2,r2}`).
 
+### D4. New objects: observability-aware fusion and mesh-only aligner onboarding (`rss2_obs_fusion.py`, `rss2_obsfusion_loo3_*.json`, 2026-11-11)
+
+Two changes, neither uses a real label of the new objects:
+1. **Onboarding from the mesh.** The aligner is trained on the 9 seen objects plus synthetic-only frames of the 3 new meshes (learned
+   renderer; pose ranges taken from the teacher's predictions on the unlabeled frames; `train_aligner.py --synth-ranges`), 2× perturbation range.
+2. **Observability-aware fusion.** For every touch the mesh gives the information matrix W = JᵀJ, J = ∂(mesh depth)/∂(θ, x, y) at the aligned
+   state (a structure tensor: rank-deficient along an extruded ridge). The placement constant is estimated per run with rotation by the
+   median and translation in information form, c = (Σ sᵢWᵢ)⁻¹ Σ sᵢWᵢeᵢ (Cauchy weights sᵢ), so each touch contributes only what it can see.
+
+Label quality on the 1,118 pool frames of the three held-out objects (IoU / contact MAE / rot / trans):
+
+| Aligner | Per touch | + median fusion | + observability-aware fusion |
+|---|---|---|---|
+| Teacher depth (self-training label) | 0.575 / 0.322 / 4.9° / 1.54 mm | | |
+| 9 seen objects (round 1) | 0.594 / 0.331 / 1.4° / 1.20 mm | 0.663 / 0.284 / 0.5° / 0.37 mm | 0.735 / 0.207 / 0.5° / 0.27 mm |
+| + 2× range only | 0.574 / 0.354 / 0.8° / 1.19 mm | 0.622 / 0.326 | 0.678 / 0.268 |
+| + synthetic frames of the new meshes | 0.612 / 0.318 / 1.3° / 1.13 mm | 0.686 / 0.263 | 0.757 / 0.187 |
+| + synthetic frames of the new meshes, 2× range | 0.624 / 0.312 / 0.8° / 0.99 mm | 0.718 / 0.232 | **0.769 / 0.177 / 0.6° / 0.22 mm** |
+
+For reference, per-touch labels of SEEN objects at K = 25 are 0.719 / 0.235. Observability as a label-free confidence: Spearman between the
+weakest translation eigenvalue ratio and the true per-touch translation error is 0.60–0.69 on unseen objects (quartile means 2.4–3.0 mm →
+0.6 mm) and 0.27 on seen objects (worst quartile 2.2 mm vs 0.6–0.8 mm). On seen objects information weighting equals the median
+(0.896 vs 0.901): per-touch errors are zero-mean there; the weighting matters when the aligner is biased along unobservable directions.
+With 10 touches the placement translation error on unseen objects is 0.43 mm (median fusion 0.51 mm); 20 touches 0.33 mm (0.46 mm).
+
+Students (9 seen objects with labels + pool frames of the 3 new objects with these labels, 150 epochs): `rss2_A_loo3_obsf` (full, 3 seeds),
+`rss2_A_loo3_obsf9` (fusion only), `rss2_A_loo3_syn` (onboarding only, per touch) — queued 2026-11-11.
+
+### D5. Session-2 reference labels: what others do and what we can do
+
+| Work | How the real reference pose is obtained |
+|---|---|
+| Tac2Pose (Bauza et al., IJRR 2023) | objects mounted at known poses; overhead camera, then refined until the simulated contact shape matches the observed one (same kind of image-based refinement as ours) |
+| MidasTouch / YCB-Slide (Suresh et al., CoRL 2022) | OptiTrack markers on sensor and object, trajectories post-processed onto the mesh surface |
+| YOTO (2026) | motion capture instead of arm forward kinematics |
+| 3D Cal (2025) | a 3D printer as an automated prober: machine kinematics give the label |
+| T-LESS / BOP | state the accuracy of the reference poses; BOP re-annotated its datasets; rule: reference error must be well below the method error |
+| BOP-Distrib (Meden et al., WACV 2026) | per-image pose *distributions* under visual ambiguity; re-evaluation changes the ranking of methods |
+
+Options for session 2: (a) replace the per-frame fits by one rigid correction per run estimated from all frames (no per-frame fitting, no manual
+selection) and report its uncertainty by split-half agreement; (b) report session 2 with ambiguity-invariant quantities (dense depth metrics,
+pose error only along observable directions), as BOP-Distrib argues; (c) state the reference accuracy in the paper (two refinements differ by
+3.1° / 0.84 mm; within-run scatter 0.8 mm); (d) for the full paper, a short re-capture with a fiducial object in the same placement
+(independent of the image evidence) or motion capture.
+
 ## Open questions
 1. **Drift number.** The paper's "per-run corrections averaged 11.4° / 1.6 mm" comes from `pose_calibration_new.json` (grid search on
    contact masks), which does not agree with the curated labels. Curated − recorded is 3.4° / 3.0 mm (means), 1.4° / 1.4 mm (medians).

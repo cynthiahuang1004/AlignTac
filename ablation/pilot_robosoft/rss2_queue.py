@@ -15,6 +15,7 @@ import argparse, json, os, re, subprocess, time
 ap = argparse.ArgumentParser()
 ap.add_argument("--jobs", required=True); ap.add_argument("--gpus", default="0,1,2,3")
 ap.add_argument("--per-gpu", type=int, default=3); ap.add_argument("--min-free", type=int, default=9000)
+ap.add_argument("--job-mib", type=int, default=6000, help="memory reserved for a job this queue started that has not allocated yet")
 args = ap.parse_args()
 state_f = args.jobs + ".state.json"
 state = json.load(open(state_f)) if os.path.exists(state_f) else {}
@@ -92,7 +93,10 @@ while True:
         if os.path.exists(args.jobs + ".stop"):
             break
         load = our_gpu_load()                       # all of this user's training jobs, whichever queue started them
-        cand = [g for g in gpus if load.get(g, 0) < args.per_gpu and free_mib(g) >= args.min_free]
+        mine = {g: sum(1 for (_p, gg) in running.values() if gg == g) for g in gpus}   # jobs this queue started (may not have allocated yet)
+        pend = {g: max(0, mine[g] - load.get(g, 0)) for g in gpus}                      # started but not yet visible on the GPU
+        load = {g: max(load.get(g, 0), mine[g]) for g in gpus}
+        cand = [g for g in gpus if load[g] < args.per_gpu and free_mib(g) - args.job_mib * pend[g] >= args.min_free]
         if not cand:
             break
         g = min(cand, key=lambda x: (load[x], x))

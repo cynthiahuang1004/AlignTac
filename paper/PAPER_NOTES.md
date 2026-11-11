@@ -444,4 +444,14 @@ pattern_31_rod, pattern_33: odd frame index = unlabeled pool, even = TEST, roots
   Now above the teacher depth (0.575 / 0.322) on both metrics; line / rod objects stay at the single-touch limit. (`rss2_loo3_diag_unseen_syn3_r2_early.json`; syn3 and r2 controls still training.)
   Metric definition for the record: IoU = |{label or predicted depth > 0.05 mm} AND {reference depth > 0}| / union, both from depth maps (reference = mesh rendered at the reference pose);
   no mask is extracted from the tactile image at evaluation time. Image-derived masks enter only in the construction of the session-2 reference poses.
+- 2026-11-11 INFRA: reboot at 11-10 23:52. Mount points swapped again (project disk now /media/hdd2, overflow disk /media/hdd-slam, /media/hdd is a 9.1T NTFS disk).
+  No path rewrite: shim symlinks /media/hdd/ihsuan/{VisTacFusion,gs_blender} -> /media/hdd2/ihsuan/...; 50 run symlinks re-pointed to /media/hdd-slam/users/ihsuan/AlignTac_runs;
+  rss2_train.sh picks the existing overflow path. The 8 drift students were killed at epochs 79-111 and resumed with --resume latest.pt (train.py now truncates history to the
+  resumed epoch and restores the best validation rotation so best_pose.pt is not overwritten by a worse epoch). rss2_queue.py now reserves memory for jobs it started that have
+  not allocated yet (--job-mib). A teammate's jobs hold ~40 GB per GPU: queue runs one of our jobs per GPU (--min-free 7500).
+- 2026-11-11 NEW OBJECTS (section D4 of RSS_ROUND2_RESULTS.md): aligner onboarding from the mesh (`outputs/aligner_loo9_syn3_r2`, synthetic-only frames of the 3 new meshes, 2x range)
+  + observability-aware fusion (`rss2_obs_fusion.py`, hybrid: rotation median, translation information form with W = J^T J of the mesh depth): unseen labels 0.594 / 0.331 -> 0.769 / 0.177
+  (teacher depth 0.575 / 0.322; seen per-touch 0.719 / 0.235). Controls: 2x range only 0.574 -> 0.678, synthetic only 0.612 -> 0.757, round-1 aligner 0.594 -> 0.735; plain median fusion 0.663 / 0.718.
+  Roots `real_pseudo_loo3_{obsf,obsf9,syn}`, merged roots `real_loo3_merge_*`, configs `data_A_loo3_{obsf,obsf9,syn}.yaml` (`rss2_loo3_obsf_roots.sh`); students queued.
+  Literature notes for the session-2 reference labels in section D5.
 
