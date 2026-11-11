@@ -1,0 +1,5 @@
+# Jobs for the local machine (one at a time on an 8 GB card).  ~78k steps each.
+# These two are NOT in the server queue, so nothing is duplicated: seeds 1 and 2 of the new-object student trained on
+# per-touch labels from the mesh-only-onboarded aligner (seed 0 runs on the server).  Three seeds are needed for the T3 row.
+rss2_	A_loo3_syn_seed1	loo3
+rss2_	A_loo3_syn_seed2	loo3

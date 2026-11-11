@@ -146,7 +146,11 @@ def quality(pred, gt):
 def link(src, dst):
     if osp.lexists(dst):
         os.remove(dst)
-    os.symlink(os.path.realpath(src) if osp.islink(src) else src, dst)
+    tgt = os.path.realpath(src) if osp.islink(src) else src
+    phys = os.path.realpath("/media/hdd/ihsuan")      # the project disk's mount point changes across reboots: keep link targets on the stable path
+    if tgt.startswith(phys + "/"):
+        tgt = "/media/hdd/ihsuan" + tgt[len(phys):]
+    os.symlink(tgt, dst)
 
 
 def main():

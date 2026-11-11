@@ -13,7 +13,7 @@ for p in $PARTS; do case $p in
     echo VisTacFusion/weights/SITR_B18.pth; } > $OUT/01_code.list
   tar -cf - --exclude='__pycache__' --exclude='*.pyc' -T $OUT/01_code.list | $Z -o $OUT/01_code.tar.zst ;;
 02) step "02_real_core"
-  { echo gs_blender/meshes; for d in gs_blender/real_filtered gs_blender/real_filtered_testA gs_blender/real_filtered_new* gs_blender/real_loo3* gs_blender/real_pseudo_loo3_* gs_blender/real_s2_* \
+  { echo gs_blender/meshes; for d in gs_blender/real_filtered gs_blender/real_filtered_testA gs_blender/real_filtered_sel* gs_blender/real_filtered_new* gs_blender/real_loo3* gs_blender/real_pseudo_loo3_* gs_blender/real_s2_* \
       gs_blender/real_pseudo_s2_k25_* gs_blender/real_merge_k25_* gs_blender/real_pseudo_k25_ro_* gs_blender/real_pseudo_k25_u* gs_blender/real_pseudo_k25 gs_blender/real_pseudo_k25_al gs_blender/real_pseudo_k25_ng; do [ -e $d ] && echo $d; done; } | sort -u > $OUT/02_real_core.list
   tar -cf - -T $OUT/02_real_core.list | $Z -o $OUT/02_real_core.tar.zst ;;
 02b) step "02b_real_rest"

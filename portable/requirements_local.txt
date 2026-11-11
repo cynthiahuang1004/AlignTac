@@ -1,0 +1,14 @@
+# Pinned to the server environment (python 3.11).  Used by portable/setup_local.sh; torch is installed separately (cu121 build).
+numpy==2.4.4
+pillow==12.2.0
+PyYAML==6.0.3
+omegaconf==2.3.1
+einops==0.8.2
+timm==1.0.28
+scipy==1.17.1
+scikit-image==0.26.0
+matplotlib==3.11.0
+opencv-python-headless==5.0.0.93
+trimesh==4.12.2
+tqdm==4.68.3
+tensorboard==2.20.0

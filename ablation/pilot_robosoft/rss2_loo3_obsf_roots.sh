@@ -2,7 +2,7 @@
 # RSS round 2b, new objects: label roots + merged roots + configs + queue entries for labels written by rss2_obs_fusion.py --write-fits.
 # usage: rss2_loo3_obsf_roots.sh <device> <variant>=<fits json> ...     e.g.  cpu obsf=outputs/rss2_fits/loo3/fits_obsf_syn3_r2.json
 DEV=$1; shift
-cd /media/hdd2/ihsuan/VisTacFusion/AlignTac; export PYTHONPATH=/media/hdd2/ihsuan/VisTacFusion/AlignTac
+cd /media/hdd/ihsuan/VisTacFusion/AlignTac; export PYTHONPATH=/media/hdd/ihsuan/VisTacFusion/AlignTac
 G=/media/hdd/ihsuan/gs_blender; L=outputs/rss_logs; PY="conda run --no-capture-output -n vistacfusion python -u"; P=ablation/pilot_robosoft
 HELD="pattern_04_3_lines_angle_2 pattern_31_rod pattern_33"
 for a in "$@"; do v=${a%%=*}; f=${a#*=}

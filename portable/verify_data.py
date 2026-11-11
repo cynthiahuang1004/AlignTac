@@ -23,7 +23,7 @@ for d in cfgs:
         print(f"OK   {d}: train {len(tr)}, val {len(va)}; sample keys {sorted(b)[:6]}")
         if model is None:
             model = build_model(cfg).eval()
-            x = {k: (v[None] if torch.is_tensor(v) else v) for k, v in b.items()}
+            x = {k: (v[None] if torch.is_tensor(v) else torch.as_tensor([v]) if isinstance(v, (int, np.integer)) else v) for k, v in b.items()}
             with torch.no_grad():
                 out = model(x["rgb"], x["tactile"], config="tactile", object_ids=x.get("object"))
             print(f"OK   model forward on CPU: depth {tuple(out['depth'].shape)}")
