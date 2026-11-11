@@ -461,3 +461,4 @@ pattern_31_rod, pattern_33: odd frame index = unlabeled pool, even = TEST, roots
   teacher start: per touch 0.580, rigid 0.47, adaptive 0.538. NOT a gain under the curated reference, which is biased towards per-touch fits -> fusion is validated on session 1 only.
   `adaptive_map()` in rss2_obs_fusion.py (rigidity sigma_r estimated per run): session 1 seen 0.824, unseen 0.683 (rigid 0.898 / 0.769). No session-2 fusion student queued.
 
+- 2026-11-11 PORTABLE KIT: `portable/` (build_bundle.sh, verify_bundle.sh, setup.sh, run_jobs.py, AlignTac_colab.ipynb, README.md, jobs_{loo3,drift}.tsv). Bundle being built at /media/hdd-slam/users/ihsuan/aligntac_bundle (01_code, 02_real_core, 02b_real_rest, 03_sim_subset; paths relative to /media/hdd/ihsuan). rss2_train.sh accepts PY and RUNS_DIR from the environment. Nothing uploaded anywhere; the user moves the archives.
