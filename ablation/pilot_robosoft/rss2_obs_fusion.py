@@ -47,6 +47,20 @@ def fuse(E, W, iters=8):
     return c
 
 
+def adaptive_map(X, prior, W, sigma_a=0.3, floor=0.05):
+    """Per-touch MAP translation.  X [n,2] per-touch aligned translations, prior [n,2] run estimate (robot reading + fused constant),
+    W [n,2,2] information.  The touch is trusted along the directions it observes (W normalised by its largest eigenvalue, noise
+    sigma_a = the aligner's error on the K labeled frames), the run estimate elsewhere; how rigid the run is (sigma_r) is read from
+    the data: robust spread of (touch - run estimate) along each touch's best-observed direction, minus sigma_a^2.  Returns (labels, sigma_r)."""
+    ev, V = np.linalg.eigh(W); Wn = W / np.maximum(ev[:, 1], 1e-12)[:, None, None]
+    s = np.einsum("ni,ni->n", V[:, :, 1], X - prior)
+    spread = 1.4826 * np.median(np.abs(s - np.median(s)))
+    sigma_r = math.sqrt(max(spread ** 2 - sigma_a ** 2, floor ** 2))
+    A = Wn / sigma_a ** 2 + np.eye(2)[None] / sigma_r ** 2
+    b = np.einsum("nij,nj->ni", Wn, X) / sigma_a ** 2 + prior / sigma_r ** 2
+    return np.linalg.solve(A, b[:, :, None])[:, :, 0], sigma_r
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--al-root", required=True); ap.add_argument("--real-root", required=True); ap.add_argument("--out", required=True)
@@ -85,7 +99,17 @@ def main():
     # hybrid: rotation is observable in every touch -> median; translation -> information form on the 2x2 translation block
     hyb = {o: np.append(med[o][0], fuse(E[idx[o]][:, 1:], Ws[idx[o]][:, 1:, 1:])) for o in objs}
     out["fusion hybrid"] = rep("fusion hybrid", labels(hyb))
+    # adaptive MAP: per-touch evidence where the touch can see, run estimate where it cannot; rigidity estimated per run
+    amap = [None] * len(items); out["sigma_r"] = {}
+    for o in objs:
+        j = idx[o]; G_ = np.array([items[i]["gt_pose"] for i in j]); X = np.array([items[i]["al"][1:3] for i in j])
+        prior = G_[:, 1:3] + hyb[o][1:3]; x, sr = adaptive_map(X, prior, Ws[j][:, 1:, 1:]); out["sigma_r"][o] = float(sr)
+        for k, i in enumerate(j):
+            amap[i] = (G_[k, 0] + hyb[o][0], float(x[k, 0]), float(x[k, 1]), G_[k, 3] + np.median(dp[j]))
+    out["fusion adaptive MAP"] = rep("adaptive MAP", amap)
+    print("  estimated non-rigidity sigma_r (mm):", {o[8:]: round(v, 2) for o, v in out["sigma_r"].items()})
     if args.write_fits:
+        json.dump({it["tac"]: dict(pose=[float(v) for v in p[:3]], p=float(p[3]), err=0.0, tp=list(it["tp"])) for it, p in zip(items, amap)}, open(args.write_fits.replace(".json", "_amap.json"), "w"))
         os.makedirs(osp.dirname(args.write_fits) or ".", exist_ok=True)
         json.dump({it["tac"]: dict(pose=[float(v) for v in p[:3]], p=float(p[3]), err=0.0, tp=list(it["tp"])) for it, p in zip(items, labels(hyb))}, open(args.write_fits, "w"))
         json.dump({it["tac"]: dict(pose=[float(v) for v in it["al"][:3]], p=float(it["al"][3]), err=0.0, tp=list(it["tp"])) for it in items}, open(args.write_fits.replace(".json", "_pertouch.json"), "w"))

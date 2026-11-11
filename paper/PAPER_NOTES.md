@@ -454,4 +454,10 @@ pattern_31_rod, pattern_33: odd frame index = unlabeled pool, even = TEST, roots
   (teacher depth 0.575 / 0.322; seen per-touch 0.719 / 0.235). Controls: 2x range only 0.574 -> 0.678, synthetic only 0.612 -> 0.757, round-1 aligner 0.594 -> 0.735; plain median fusion 0.663 / 0.718.
   Roots `real_pseudo_loo3_{obsf,obsf9,syn}`, merged roots `real_loo3_merge_*`, configs `data_A_loo3_{obsf,obsf9,syn}.yaml` (`rss2_loo3_obsf_roots.sh`); students queued.
   Literature notes for the session-2 reference labels in section D5.
+- 2026-11-11 SESSION-2 REFERENCE AND FUSION ON SESSION 2 (section D6). Rigid per-run re-fit of the session-2 reference rejected: residual about a run constant 0.63 mm (shared sensor-frame
+  offset does not help), same-press repeatability 0.37 mm, press means 1.02 mm, split-half 0.94 deg / 1.09 mm, black-hat IoU curated 0.307 vs rigid 0.240 vs recorded 0.171.
+  Decision: curated labels stay the session-2 reference for dense metrics only; no session-2 pose claims below ~1 mm / 2 deg. Session-1 controlled drift predicts session-2 stale-label IoU
+  (1.23 mm -> 0.565 vs 0.56; 2.34 mm -> 0.220 vs 0.30 / 0.19). Run fusion on session 2 (`rss2_s2_fusion.py`): rigid 0.478-0.515 vs per touch 0.564 (recorded start), MAP rho=4 0.579, adaptive 0.550;
+  teacher start: per touch 0.580, rigid 0.47, adaptive 0.538. NOT a gain under the curated reference, which is biased towards per-touch fits -> fusion is validated on session 1 only.
+  `adaptive_map()` in rss2_obs_fusion.py (rigidity sigma_r estimated per run): session 1 seen 0.824, unseen 0.683 (rigid 0.898 / 0.769). No session-2 fusion student queued.
 

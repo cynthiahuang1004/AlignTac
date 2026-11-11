@@ -393,6 +393,54 @@ pose error only along observable directions), as BOP-Distrib argues; (c) state t
 3.1° / 0.84 mm; within-run scatter 0.8 mm); (d) for the full paper, a short re-capture with a fiducial object in the same placement
 (independent of the image evidence) or motion capture.
 
+### D6. Session-2 reference: can it be made objective? and fusion on the real second session (2026-11-11)
+
+**Rigid re-fit tested and rejected** (`rss2_s2_rigid_gt.py`, `rss2_s2_rigid_gt.json`, `rss2_s2_reference_precision.json`; 854 curated frames, 42 runs).
+One correction per run (reference = recorded pose + run constant, leave-one-press-out) does not reproduce the curated labels:
+
+| Check | Result |
+|---|---|
+| Re-rendering the stored reference from its pose | exact (1e-7 mm) |
+| Residual of (curated − recorded) about a run constant | median 0.63 mm; adding one sensor-frame offset shared by all runs: 0.55 mm (no TCP-offset explanation) |
+| Same press, different depths (repeatability of the per-frame fit) | 0.37 mm std |
+| Press-to-press within a run | 1.02 mm std of press means; linear drift over a run 1.1 mm end to end |
+| Split-half agreement of the run correction (32 runs) | median 0.94° / 1.09 mm, p90 3.4° / 2.8 mm |
+| Agreement with the image (black-hat ridge mask IoU, 853 frames) | per-frame curated 0.307, rigid per run 0.240, recorded pose 0.171 |
+| Curated vs rigid reference | depth-mask IoU 0.564; 0.75° / 0.99 mm (medians) |
+| Deviation vs fit quality | Spearman −0.39 with the refined IoU; by object 0.07–0.12 mm (patterns 35, 37) up to 1.1–1.3 mm (2-lines 1_2, rod) |
+
+So a rigid per-run reference would be *worse* by the only image evidence available, and it cannot be told from this data whether the
+press-to-press deviations (≈ 1 mm) are imprint shifts on the gel or errors of the per-frame fits. Handling adopted: keep the curated labels
+as the session-2 reference for **dense** metrics (the review checked contour overlays, i.e. exactly the directions the depth maps are
+sensitive to; sliding along a ridge or by one period does not change the depth map), state its precision (0.4 mm within a press, ≈ 1 mm
+press to press against a rigid model), and do not report session-2 pose errors below ≈ 1 mm / 2°. Quantitative claims rest on session 1.
+
+**Session 1 predicts session 2.** Splitting the 162 scored pool frames by how far the recorded poses are from the reference:
+
+| Session-2 subset | Stale-label translation error | Stale-label IoU | Controlled drift on session 1 (D1) | AlignTac labels IoU |
+|---|---|---|---|---|
+| patterns 01_3, 32, 35, 36 (n = 62) | 1.23 mm | 0.565 | 0.56 at 1 mm | 0.611 |
+| other seven objects (n = 100) | 2.34 mm | 0.220 | 0.30 at 2 mm, 0.19 at 3 mm | 0.560 |
+
+**Run-level fusion on the real second session** (`rss2_s2_fusion.py`, `rss2_s2_fusion_k25_{recal,teacher}.json`; K = 25, 1,066 pool frames, 45 runs,
+scored on 162 frames against the curated reference; IoU / contact MAE):
+
+| Labels | Aligner started from the recorded pose | from the teacher |
+|---|---|---|
+| Recorded pose, stale calibration | 0.352 / 0.504 | |
+| Per touch (aligner) | 0.564 / 0.353 | 0.580 / 0.326 |
+| Rigid run fusion, median | 0.478 / 0.418 | 0.466 / 0.415 |
+| Rigid run fusion, observability-aware | 0.515 / 0.391 | 0.471 / 0.414 |
+| Touch evidence where observable + run estimate elsewhere (MAP, ρ = 4) | 0.579 / 0.346 | 0.547 / 0.354 |
+| Same with the rigidity estimated per run (adaptive) | 0.550 / 0.365 | 0.538 / 0.355 |
+
+Against this reference a rigid run estimate is worse than the per-touch labels, and the combination is at best equal. The reference is
+itself a per-frame image fit, so it favours per-touch methods and cannot settle whether fusion helps after a real re-placement.
+On session 1 the adaptive estimator gives 0.824 / 0.144 on seen objects (rigid 0.898, per touch 0.719) and 0.683 / 0.261 on the unseen
+objects (rigid 0.769, per touch 0.624): it does not separate aligner noise from non-rigidity well enough to match the rigid estimate
+where the run is rigid. **Status of fusion: demonstrated on session 1 (whose reference is rigid by construction), not demonstrated on a
+real re-placement.** Settling this needs an independent reference (open question 10).
+
 ## Open questions
 1. **Drift number.** The paper's "per-run corrections averaged 11.4° / 1.6 mm" comes from `pose_calibration_new.json` (grid search on
    contact masks), which does not agree with the curated labels. Curated − recorded is 3.4° / 3.0 mm (means), 1.4° / 1.4 mm (medians).
@@ -417,4 +465,8 @@ pose error only along observable directions), as BOP-Distrib argues; (c) state t
 9. **Method premise.** Run-level fusion (D3) lifts label IoU from 0.72 to 0.90 on session 1 and explains the unseen-object and session-2
    weaknesses, but it uses the robot readings of the unlabeled frames. Adopt it as the core of the RSS version ("self-calibrating labeling
    from an uncalibrated robot and a mesh") or keep the pose-free per-frame method and report fusion as an extension?
+10. **Independent reference for a real re-placement.** Neither the session-2 pose accuracy nor the value of run-level fusion after a real
+    re-placement can be decided with image-fitted references. A short capture would settle both: in each new placement (a) press an
+    isotropic pattern (35 or 37; their fits are self-consistent to 0.1 mm) to obtain the placement independently, (b) repeat a few presses at
+    identical commanded poses to measure press-to-press repeatability of the imprint. About one hour on the robot. Do it before the full paper?
 
