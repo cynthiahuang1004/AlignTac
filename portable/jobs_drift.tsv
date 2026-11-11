@@ -1,0 +1,10 @@
+# controlled drift on session 1 (K = 25): stale labels vs aligner from the stale pose, 0.5 / 1 / 2 / 3 mm.  ~34k steps each.
+# all eight are running or queued on the server (resumed from epochs 79-111); this list is a fallback if the server goes down.
+rss2_	T_k25_dr05_stale	testA
+rss2_	T_k25_dr05_al	testA
+rss2_	T_k25_dr10_stale	testA
+rss2_	T_k25_dr10_al	testA
+rss2_	T_k25_dr20_stale	testA
+rss2_	T_k25_dr20_al	testA
+rss2_	T_k25_dr30_stale	testA
+rss2_	T_k25_dr30_al	testA

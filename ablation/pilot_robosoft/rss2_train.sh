@@ -6,12 +6,12 @@
 PRE=$1; RUN=$2; EV=${3:-testA}; shift 3
 cd /media/hdd/ihsuan/VisTacFusion/AlignTac
 export PYTHONPATH=/media/hdd/ihsuan/VisTacFusion/AlignTac   # scripts run as files must import the SAME package snapshot the training used
-G=/media/hdd/ihsuan/gs_blender; L=outputs/rss_logs; PY="conda run --no-capture-output -n vistacfusion python -u"; P=ablation/pilot_robosoft
+G=/media/hdd/ihsuan/gs_blender; L=outputs/rss_logs; PY=${PY:-conda run --no-capture-output -n vistacfusion python -u}; P=ablation/pilot_robosoft   # PY="python -u" on Colab / a local machine
 M=${MODEL_YAML:-ablation/encoder/tac_sitr_single.yaml}
 BASE=$(echo $RUN | sed -E 's/(_seed[0-9]+)+$//'); SEED=$(echo $RUN | grep -oE '_seed[0-9]+$')
 T=${TRAIN_YAML:-$P/train_pilot_e150_pm$SEED.yaml}; D=${DATA_YAML:-$P/data_$BASE.yaml}
 OUT=runs/$PRE$RUN
-OVER=/media/hdd2/users/ihsuan/AlignTac_runs; [ -d $OVER ] || OVER=/media/hdd-slam/users/ihsuan/AlignTac_runs   # the 20T overflow disk changes mount point across reboots
+OVER=${RUNS_DIR:-/media/hdd2/users/ihsuan/AlignTac_runs}; [ -d $OVER ] || OVER=/media/hdd-slam/users/ihsuan/AlignTac_runs   # the 20T overflow disk changes mount point across reboots
 if [ ! -e $OUT ]; then mkdir -p $OVER/$PRE$RUN && ln -s $OVER/$PRE$RUN $OUT; fi
 step() { echo "$(date '+%m-%d %H:%M') [$PRE$RUN] $*"; }
 # NOTE: never edit this file in place while jobs run (bash reads scripts incrementally); replace it atomically (write tmp + mv).

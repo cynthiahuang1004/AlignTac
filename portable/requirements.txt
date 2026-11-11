@@ -1,0 +1,15 @@
+# torch / torchvision: use the build that comes with the machine (Colab: preinstalled; local: pip install torch torchvision --index-url https://download.pytorch.org/whl/cu121)
+# server versions for reference: torch 2.5.1+cu121, torchvision 0.20.1, numpy 2.4.4, python 3.11
+numpy
+pillow
+pyyaml
+omegaconf
+einops
+timm
+scipy
+scikit-image
+matplotlib
+opencv-python-headless
+trimesh
+tqdm
+tensorboard

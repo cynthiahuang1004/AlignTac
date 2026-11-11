@@ -1,0 +1,6 @@
+# new-object students (labels: mesh-only aligner onboarding + observability-aware run fusion).  ~78k steps each.
+# rss2_A_loo3_obsf (seed 0) is training on the server; run the others elsewhere and tell Claude so they are removed from the server queue.
+rss2_	A_loo3_obsf_seed1	loo3
+rss2_	A_loo3_obsf_seed2	loo3
+rss2_	A_loo3_syn	loo3
+rss2_	A_loo3_obsf9	loo3
