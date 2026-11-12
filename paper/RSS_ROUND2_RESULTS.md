@@ -2,7 +2,7 @@
 
 Working document for the Stage-1 extended abstract (due 2026-12-04 AoE). Every number below comes from a JSON under
 `ablation/pilot_robosoft/` (file named per section); run names, configs and logs (`outputs/rss_logs/`) are listed per task.
-Branch `rss-round2` (not pushed). Last update: 2026-11-10 02:45 UTC.
+Branch `rss-round2` (not pushed). Last update: 2026-11-12 20:00 UTC (student tables of D1 and D4; AlignTac row of T1 with 3 seeds).
 
 ## Status
 
@@ -115,7 +115,7 @@ the aligner, which reads the image, does (0.235). Student rows (testA, 530 sessi
 | Mean teacher w=1 | 3 | 0.0480 | 0.287 ± 0.008 | 0.675 ± 0.019 | 27.6 | 5.8 ± 0.1 | 1.07 ± 0.02 |
 | Mean teacher w=10 | 1 | 0.0790 | 0.282 | 0.350 | 29.4 | 5.8 | 1.07 |
 | Mean teacher w=50 | 1 | 0.1940 | 0.298 | 0.224 | 30.2 | 5.7 | 1.09 |
-| AlignTac (paper run) | 1 | 0.0383 | 0.233 | 0.737 | 23.1 | 3.2 | 0.88 |
+| AlignTac (paper run + 2 seeds) | 3 | 0.0376 | 0.235 ± 0.003 | 0.736 ± 0.001 | 23.2 | 3.2 ± 0.0 | 0.87 ± 0.01 |
 | AlignTac + session-2 old-calibration labels | 1 | 0.0370 | 0.241 | 0.732 | 23.2 | 3.1 | 0.88 |
 
 Notes: Labeled only / self-training = the paper's T run + `rss2_T_k25_{realonly,semipm}_seed{1,2}`. The grid-search student (0.294 / 0.684) is the best optimization-based student on contact MAE but still 0.06 mm behind AlignTac. ICP labels are unstable across seeds (IoU 0.38–0.58):
@@ -292,7 +292,31 @@ rotation ±R). This is exactly how a stale calibration acts in this setup (`robo
 A 1 mm offset already costs 40 % of the label IoU (0.94 → 0.56) and 2 mm leaves 0.30, the level of the real session-2 stale labels (0.35 at
 1.9 mm). The aligner returns to the same fixed point (0.725 / 0.232) from every start up to 4 mm, so its output is independent of the drift.
 Honest crossover: below ≈ 0.5 mm of drift the stale labels are better than the aligner's (0.74 vs 0.725), because the aligner's own per-touch
-accuracy is ≈ 0.4 mm. Students for T = 0.5 / 1 / 2 / 3 mm (R = 2°), stale vs aligner: `rss2_T_k25_dr{05,10,20,30}_{stale,al}` (training).
+accuracy is ≈ 0.4 mm.
+
+**Students under controlled drift** (`rss2_T_k25_dr{05,10,20,30}_{stale,al}`, 3 seeds each, R = 2°; testA, 530 frames; dense at
+`best_depth.pt`, pose at `best_pose.pt`; `rss2_testA_results.json`; finished 2026-11-12). The 25 labels are untouched; only the labels of
+the 3,897 pool frames differ.
+
+| Drift T (mm) | Pool labels | Depth MSE | Contact MAE (mm) | IoU | Normal (°) | Rot (°) | Trans (mm) |
+|---|---|---|---|---|---|---|---|
+| 0.5 | mesh at the stale pose | 0.0347 | 0.228 ± 0.004 | 0.730 ± 0.007 | 23.4 | 3.3 ± 0.1 | 0.69 ± 0.01 |
+| 0.5 | aligner from the stale pose | 0.0378 | 0.231 ± 0.003 | 0.742 ± 0.002 | 23.1 | 2.9 ± 0.1 | 0.68 ± 0.01 |
+| 1 | mesh at the stale pose | 0.0564 | 0.330 ± 0.018 | 0.548 ± 0.044 | 29.1 | 3.3 ± 0.0 | 0.90 ± 0.01 |
+| 1 | aligner from the stale pose | 0.0378 | 0.231 ± 0.003 | 0.741 ± 0.003 | 23.1 | 2.9 ± 0.0 | 0.69 ± 0.01 |
+| 2 | mesh at the stale pose | 0.0866 | 0.439 ± 0.016 | 0.426 ± 0.019 | 31.9 | 3.4 ± 0.1 | 1.44 ± 0.01 |
+| 2 | aligner from the stale pose | 0.0383 | 0.232 ± 0.003 | 0.740 ± 0.003 | 23.3 | 2.9 ± 0.0 | 0.72 ± 0.00 |
+| 3 | mesh at the stale pose | 0.1063 | 0.494 ± 0.010 | 0.353 ± 0.017 | 32.4 | 3.4 ± 0.0 | 2.04 ± 0.00 |
+| 3 | aligner from the stale pose | 0.0380 | 0.231 ± 0.001 | 0.741 ± 0.001 | 23.2 | 2.9 ± 0.1 | 0.75 ± 0.01 |
+
+References on the same test set: Labeled only 0.299 / 0.675 / 5.9° / 1.09 mm; AlignTac from the teacher 0.235 / 0.736 / 3.2° / 0.87 mm.
+Reading: (1) the aligner students are flat in every dense metric from 0.5 to 3 mm (0.231–0.232 / 0.740–0.742); only their translation error
+creeps up (0.68 → 0.75 mm), following the label translation error (0.39 → 0.50 mm). (2) The stale students degrade monotonically, and from
+1 mm on they are worse than Labeled only (0.330 / 0.548 vs 0.299 / 0.675): drifted labels are worse than no pseudo-labels. Their translation
+error grows with the offset (2.04 mm at 3 mm: the student learns the drift), their rotation does not (R is only 2°). (3) Honest crossover,
+as predicted by the label table: at 0.5 mm the two students are equal within seed noise on contact MAE (0.228 vs 0.231) and differ by 0.012
+in IoU. The claim is "independent of drift", not "better at any drift". (4) Starting the aligner from a recorded pose gives slightly better
+pose accuracy than starting from the teacher (2.9° / 0.68 mm vs 3.2° / 0.87 mm), as on session 2 (T2).
 
 ### D2. Why unseen objects look bad (`rss2_loo3_diag.py`, `rss2_loo3_diag_{unseen,seen_k25}.json`)
 
@@ -373,8 +397,27 @@ weakest translation eigenvalue ratio and the true per-touch translation error is
 (0.896 vs 0.901): per-touch errors are zero-mean there; the weighting matters when the aligner is biased along unobservable directions.
 With 10 touches the placement translation error on unseen objects is 0.43 mm (median fusion 0.51 mm); 20 touches 0.33 mm (0.46 mm).
 
-Students (9 seen objects with labels + pool frames of the 3 new objects with these labels, 150 epochs): `rss2_A_loo3_obsf` (full, 3 seeds),
-`rss2_A_loo3_obsf9` (fusion only), `rss2_A_loo3_syn` (onboarding only, per touch) — queued 2026-11-11.
+**Students** (9 seen objects with labels + pool frames of the 3 new objects with these labels, 150 epochs; 635 test frames of the new
+objects; dense at `best_depth.pt`, pose at `best_pose.pt`; `loo3_results.json`; finished 2026-11-12):
+
+| Labels for the 3 new objects | n | Depth MSE | Contact MAE (mm) | IoU | Normal (°) | Rot (°) | Trans (mm) |
+|---|---|---|---|---|---|---|---|
+| Teacher itself (reference, from T3) | 1 | 0.0588 | 0.327 | 0.631 | 29.4 | 4.6 | 1.55 |
+| AlignTac per touch, 9-object aligner (T3) | 3 | 0.0651 | 0.332 ± 0.001 | 0.622 ± 0.003 | 29.9 | 3.2 ± 0.0 | 1.56 ± 0.02 |
+| + mesh-only onboarding, per touch (`loo3_syn`) | 3 | 0.0588 | 0.315 ± 0.000 | 0.644 ± 0.001 | 28.8 | 3.1 ± 0.1 | 1.50 ± 0.02 |
+| 9-object aligner + observability-aware fusion (`loo3_obsf9`) | 1 | 0.0488 | 0.285 | 0.672 | 26.6 | 3.0 | 1.42 |
+| + mesh-only onboarding + observability-aware fusion (`loo3_obsf`) | 3 | 0.0472 | 0.276 ± 0.003 | 0.688 ± 0.001 | 25.3 | 3.0 ± 0.1 | 1.39 ± 0.03 |
+| Oracle (curated labels of the pool; T3) | 3 | 0.0353 | 0.233 ± 0.002 | 0.725 ± 0.002 | 21.8 | 3.0 ± 0.0 | 1.38 ± 0.04 |
+
+Reading: (1) the label gains carry over to the students in the same order. (2) With onboarding alone the method keeps its pose-free,
+per-frame premise and now beats the teacher on dense accuracy (0.315 / 0.644 vs 0.327 / 0.631); the margin is small but the seed spread
+is < 0.001, and in round 1 this comparison was a tie-to-loss (0.332 / 0.622). (3) Fusion adds most of the gain: the full student closes
+54 % of the teacher → oracle gap in contact MAE (0.327 → 0.276, oracle 0.233) and 61 % in IoU, and reaches the oracle's pose accuracy
+(3.0° / 1.39 mm vs 3.0° / 1.38 mm). (4) Caveat unchanged from D3 / D6: fusion assumes a rigid placement and uses the robot readings; the
+session-1 reference is rigid by construction, and fusion has not been shown to help after a real re-placement. (5) Student accuracy lags
+label accuracy (labels 0.769 / 0.177 → student 0.688 / 0.276; oracle labels → 0.725 / 0.233): about half of the remaining gap to the
+oracle is label error, the rest is what a student reaches on these three objects with ~370 pseudo-labeled frames each.
+Extra seeds of the fusion-only row (`rss2_A_loo3_obsf9_seed{1,2}`) started 2026-11-12.
 
 ### D5. Session-2 reference labels: what others do and what we can do
 
