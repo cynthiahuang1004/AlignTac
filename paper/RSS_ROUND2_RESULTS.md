@@ -564,6 +564,24 @@ roots before any claim is kept (open question 11c).
 Not done: frames the session-1 filter deleted (the unfiltered source `real_data` covers 10 objects and is not a superset of
 `real_filtered`); the full session-2 pool (all contact frames) as a corrected root; corrected versions of the derived training roots.
 
+### D10. All captured presses with the corrected labels (2026-11-13; `rss2_recapture/rss2_relabel_full.py`, `full_scan.json`)
+
+Sources: session 1 raw capture `/media/hdd2/xiangdong/gelslim_depth/data` (every pressed sample), session 2 `new_real_test` (every contact frame,
+stride 3 inside a press). A frame is usable when the image shows a ridge (ridge pixels >= 2 %), the corrected label has contact (>= 1 %) and the
+two agree (NCC >= 0.45); the NCC of each frame is stored in its pose file (`label_ncc`) so stricter subsets can be drawn.
+
+| | Captured | In the old roots | Usable with the corrected labels | Newly usable |
+|---|---|---|---|---|
+| Session 1 (12 objects) | 9,738 | 4,669 | 9,605 (98.6 %) | 4,964 |
+| Session 2 (12 objects, 48 runs) | 2,167 | 854 (curated) | 1,813 | 967 |
+
+Session 1: 133 presses rejected (NCC), 28 of them inside the old root. Session 2: 354 rejected, all by NCC; the sampled ones are presses where
+the gel shows no ridge although the robot was below the contact height (background frames). pattern_04_3_lines_angle_2 was missing from the
+curated session-2 set; its constants were fitted here (dtheta -30.4 deg, k (3.48, -0.90) mm; 105 usable frames).
+Roots: `gs_blender/real_filtered_kin_plus` (session_000 = link to `real_filtered_kin`, same indices, so existing splits and label subsets stay
+valid; session_001 = the 4,964 recovered presses) and `gs_blender/real_s2_kin_all` (one session per run, 1,813 frames, `in_curated854` flag;
+`kin_manifest.json` in both). The loader reads 9,503 and 1,813 frames (130 session-1 frames are skipped by the loader, cause not looked at).
+
 ### D5. Session-2 reference labels: what others do and what we can do
 
 | Work | How the real reference pose is obtained |

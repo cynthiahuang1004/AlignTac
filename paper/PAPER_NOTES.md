@@ -505,3 +505,8 @@ pattern_31_rod, pattern_33: odd frame index = unlabeled pool, even = TEST, roots
   curated session-2 labels were fitted to model predictions and inherit the displacement.
 - The loader reads the new roots unchanged (530 test frames, identical images). Details: RSS_ROUND2_RESULTS.md D9. Nothing re-trained.
 
+## 2026-11-13 ALL CAPTURED PRESSES RE-LABELLED (user: use the new labels; recover filtered samples; drop session-2 background frames)
+- Session-1 conversion source = /media/hdd2/xiangdong/gelslim_depth/scripts/data_scripts/render_gt_blender_ortho.py; stored labels reproduced exactly (4,669 / 4,669).
+- `rss2_relabel_full.py scan|build`: session 1 9,738 captured -> 9,605 usable (4,964 new); session 2 2,167 -> 1,813 usable (967 new), 354 background / no-ridge frames dropped.
+- Roots `gs_blender/real_filtered_kin_plus`, `gs_blender/real_s2_kin_all`; details RSS_ROUND2_RESULTS.md D10. Nothing trained yet; old-label jobs still running.
+
