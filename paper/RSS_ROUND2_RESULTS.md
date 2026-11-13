@@ -689,3 +689,26 @@ real re-placement.** Settling this needs an independent reference (open question
     script (`reorganize_to_sim_format.py`, not on this server) available?
     **Update 2026-11-13:** (a) and (b) done on the user's go-ahead (D9). Open: (c) re-run the main tables on the corrected roots, and how to
     frame the paper now that the real re-installation offset is about 0.4 mm / under 1.2 deg (one plate 18 deg) instead of millimetres.
+
+## D11. Re-run on the corrected labels (started 2026-11-13 17:51, in progress)
+
+Decision (user, 2026-11-13): use the corrected labels; the 4,964 recovered session-1 presses are **unlabeled pool only for now**
+(test set = the same 530 testA frames, K=25 labeled frames unchanged). **After the minimal set finishes, ask the user whether later
+runs keep this allocation.** The 14 old-label fold-2 jobs were stopped (their run dirs are kept, unfinished).
+
+Pipeline `ablation/pilot_robosoft/rss2_kin_chain.sh` (same steps/arguments as the paper's K=25 chain; log `outputs/rss_logs/rss2_kin_chain.log`),
+queue `outputs/rss_logs/rss2_jobs_kin.tsv` (GPUs 1-3, 3 per GPU; chain steps on GPU 0), evaluation mode `kin` of `rss2_train.sh`:
+`rss2_kin_testA_results.json` (530 testA frames, corrected labels) and `rss2_kin_s2_results.json` (session 2, 1,813 frames, corrected labels).
+
+| Run (`rss2_` + name, seeds 0-2) | Training data |
+|---|---|
+| `kin_k25_realonly` | Labeled only (300 frames, `real_filtered_kin`); seed 0 = teacher |
+| `kin_k25_st` | + teacher labels on the pool (`real_pseudo_kin_k25_ng`) |
+| `kin_k25_rf0` | + mesh at the teacher pose (`real_pseudo_kin_k25_tp0`) |
+| `kin_k25_rf` | AlignTac, same pool as before (`real_pseudo_kin_k25_al`) |
+| `kin_k25_rfp` | AlignTac, pool + recovered presses (`real_merge_kin_k25_rfp`) |
+| `kin_k{10,50,100}_realonly`, `kin_all_oracle` (seed 0) | Labeled only at other K (teachers for later chains); all 3,667 pool labels (upper bound) |
+
+Renderer `outputs/rss2_tactile_gan_kin_k25`, aligner `outputs/rss2_aligner_kin_k25`. Pool note: the teacher config excludes the testA
+frames, so the pseudo-labeled pool is 3,367 frames (the old chain labeled 3,897 and excluded the test frames at student time; the
+student training set is the same). Results: to be filled in.

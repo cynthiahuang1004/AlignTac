@@ -30,6 +30,7 @@ case $EV in
   loo3)   ev $G/real_loo3_test loo3test $P/loo3_results.json ;;
   f2)     ev $G/real_f2_test f2test $P/f2_results.json ;;
   s2half) ev $G/real_s2_testhalf s2half $P/rss2_cross_session_results.json; ev $G/real_filtered_testA testA $P/rss2_testA_results.json ;;
+  kin)    ev $G/real_filtered_kin_testA testA $P/rss2_kin_testA_results.json; ev $G/real_s2_kin_all s2kin $P/rss2_kin_s2_results.json ;;   # corrected labels (D8-D10)
   s2all)  ev $G/real_s2_testhalf s2half $P/rss2_cross_session_results.json; ev $G/real_filtered_testA testA $P/rss2_testA_results.json ;;
 esac
 step "done"

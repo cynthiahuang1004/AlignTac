@@ -510,3 +510,4 @@ pattern_31_rod, pattern_33: odd frame index = unlabeled pool, even = TEST, roots
 - `rss2_relabel_full.py scan|build`: session 1 9,738 captured -> 9,605 usable (4,964 new); session 2 2,167 -> 1,813 usable (967 new), 354 background / no-ridge frames dropped.
 - Roots `gs_blender/real_filtered_kin_plus`, `gs_blender/real_s2_kin_all`; details RSS_ROUND2_RESULTS.md D10. Nothing trained yet; old-label jobs still running.
 
+- 2026-11-13 (evening) RE-RUN ON CORRECTED LABELS STARTED: user decided to use the corrected labels; recovered session-1 presses = unlabeled pool only for now (ask again after the minimal set whether later runs keep this). Old-label fold-2 jobs stopped. Chain `rss2_kin_chain.sh`, runs `rss2_kin_*`, results → `rss2_kin_testA_results.json` / `rss2_kin_s2_results.json`; see RSS_ROUND2_RESULTS.md D11.
