@@ -2,7 +2,7 @@
 
 Working document for the Stage-1 extended abstract (due 2026-12-04 AoE). Every number below comes from a JSON under
 `ablation/pilot_robosoft/` (file named per section); run names, configs and logs (`outputs/rss_logs/`) are listed per task.
-Branch `rss-round2` (not pushed). Last update: 2026-11-12 20:00 UTC (student tables of D1 and D4; AlignTac row of T1 with 3 seeds).
+Branch `rss-round2` (not pushed). Last update: 2026-11-13 07:30 UTC (D8: the robot pose -> label conversion does not rotate the translation with the tool yaw; affects every real label; nothing changed yet).
 
 ## Status
 
@@ -460,6 +460,46 @@ Identical pipeline with everything re-trained without the three objects: rendere
 `samples_bc_loo_f2`, teacher `rss2_A_f2_teacher`, aligners `outputs/aligner_f2_{loo9,syn3_r2}`, label roots `real_pseudo_f2_*`, students
 `rss2_A_f2_{tp,al,syn,obsf9,obsf,oracle}` (3 seeds for al / syn / obsf / oracle) and the lower bound `rss2_A_f2_realonly`. Results pending.
 
+### D8. Robot pose -> label conversion: the translation is not rotated with the tool yaw (2026-11-13; `rss2_recapture/`)
+
+Found while testing the analysis script for the planned re-capture (`rss2_recapture/rss2_recapture_check.py`: ridge maps of two
+presses are registered image to image, no mesh and no network, and compared with the motion the robot reports).
+**Not yet acted on: no label, root or result was changed.** Scripts and pair data: `rss2_recapture/kinematics_check/`.
+
+Label model everywhere (`scripts/build_real_filtered_new.py: robot_to_gt`, and the session-1 pose files): an object point m appears at
+`w = R(theta) m + c` with `theta = yaw + object offset` and `c = swap(ee_xy - C) + object offset`, i.e. the end-effector displacement
+is used as the image-plane translation **without rotating it by the tool yaw**. Tested alternative: `c = R(yaw) (swap(ee_xy - C) + k)`.
+
+| Check (non-line objects 32, 33, 35, 36) | Current conversion | Translation rotated with the yaw |
+|---|---|---|
+| Session 2, press pairs inside a run (125 pairs, 15 runs; commanded shift 3.1 mm median, yaw -20 .. -50 deg): unexplained image shift, median / p90 | 1.84 / 3.34 mm (1.81 with a free offset per object) | **0.19 / 0.39 mm with no free parameter**; fitted 2x2 matrix is a reflection with singular values 1.00 / 1.00, lever arm 0.2 mm |
+| Session 1 (`real_filtered`), 480 frame pairs, label-implied motion vs image | 1.07 / 2.19 mm (0.57 mm for pairs < 5 deg apart, 1.4 mm for > 30 deg) | 0.24 / 0.56 mm |
+| Session 1, ridge-mask IoU of the mesh on held-out frames, best constant per object | 0.368 / 0.371 / 0.405 / 0.334 | 0.411 / 0.475 / 0.473 / 0.403 |
+| Session 2 (`real_filtered_new`), same | 0.219 / 0.176 / 0.253 / 0.211 | 0.257 / 0.246 / 0.327 / 0.310 |
+
+Session-1 quality filter (`gs_blender/filter_real_data.py`, IoU >= 0.30 against the image) versus the error the alternative predicts
+for each frame, `|(R(yaw) - I) c|`, computed from the pose file alone (patterns 35, 33, 32; `real_data` vs `real_filtered`):
+
+| Predicted error | Frames | Kept by the filter |
+|---|---|---|
+| < 0.5 mm | 337 | 100 % |
+| 0.5 - 1 mm | 285 | 93 - 100 % |
+| 1 - 2 mm | 333 | 60 - 80 % |
+| 2 - 4 mm | 228 | 3 - 20 % |
+| > 4 mm | 17 | 0 % |
+
+Kept frames: predicted error median 0.57 - 0.70 mm, p90 1.35 - 1.66 mm; deleted frames: median 2.3 - 2.4 mm.
+
+Reading. (1) The imprint is rigid: with the right kinematics two presses of a run agree to about 0.2 mm, so the press-to-press scatter
+of about 1 mm in D6 was the conversion, not the gel. (2) The registered session-1 labels (training and test labels of every table)
+carry a deterministic translation error of about 0.6 - 0.7 mm (median) that the filter bounded by deleting the worst third of the frames.
+(3) In session 2 the yaw is 20 - 50 deg away from the session-1 centre, so the same conversion is off by about 1.8 mm: a large part of
+what T2 and the paper call re-placement drift is this conversion, not the re-installation. The true re-installation offset is the
+constant k (plus a rotation constant) per object and session and has to be re-measured after the correction.
+Not checked yet: line / rod objects (image registration is ambiguous along the lines), the rotation labels (pairwise rotation
+residual 1.0 - 1.5 deg, may be registration noise), a rotation constant and lever arm per session, and the pose-head targets
+(the data loader already rotates (sx, sy) by the relative yaw, so pose targets and depth maps may be inconsistent with each other).
+
 ### D5. Session-2 reference labels: what others do and what we can do
 
 | Work | How the real reference pose is obtained |
@@ -553,4 +593,11 @@ real re-placement.** Settling this needs an independent reference (open question
     re-placement can be decided with image-fitted references. A short capture would settle both: in each new placement (a) press an
     isotropic pattern (35 or 37; their fits are self-consistent to 0.1 mm) to obtain the placement independently, (b) repeat a few presses at
     identical commanded poses to measure press-to-press repeatability of the imprint. About one hour on the robot. Do it before the full paper?
-
+11. **Label conversion (D8).** The real labels of both sessions place the mesh with an un-rotated end-effector translation; with the
+    translation rotated by the tool yaw, presses agree with each other to 0.2 mm instead of 1.1 - 1.8 mm. Proposed: (a) rebuild corrected
+    label roots for both sessions under new names (per object and session: one translation constant, one rotation constant, lever arm;
+    all frames, including the third the filter deleted), (b) verify on held-out frames and on the line objects, (c) re-run the main
+    tables on the corrected labels. This replaces the re-capture as the first step (rigidity is answered; session 2 gets a
+    calibration-based reference from existing data). It changes every number and the size of the drift the paper motivates with, and
+    the ICRA VisTacFusion real-data labels come from the same conversion. Go ahead with (a) and (b)? Is the original session-1 conversion
+    script (`reorganize_to_sim_format.py`, not on this server) available?

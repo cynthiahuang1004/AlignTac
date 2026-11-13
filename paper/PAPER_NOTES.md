@@ -481,3 +481,16 @@ pattern_31_rod, pattern_33: odd frame index = unlabeled pool, even = TEST, roots
   `rss2_make_fold.py f2 ...` wrote roots real_f2 (1,373) / real_f2_test (692), f2_test_frames.json, data_A_f2_{teacher,realonly}.yaml; `rss2_fold.sh A|B` = queue jobs rss2_f2_chain{A,B}
   (inserted before the pending F2 seed jobs); rss2_train.sh / rss2_finisher.sh got the `f2` evaluation target (f2_results.json, tag f2test). Log: outputs/rss_logs/rss2_f2_chain.log.
   LINK FIX: the 11-11 patch of pseudo_label_rc.py did nothing under the current layout (/media/hdd/ihsuan is a real directory holding two shim links); it now maps per shim (gs_blender, VisTacFusion).
+
+## 2026-11-13 LABEL CONVERSION: TRANSLATION NOT ROTATED WITH THE TOOL YAW (found, not yet acted on)
+- Context: user confirmed the setup for a re-capture (objects screwed to a base that slides on a rail; arm presses; between sessions the
+  sensor and the base were re-installed; "calibration" = sensor frame <-> robot frame; the capture program accepts specified poses).
+  Testing the re-capture analysis script on existing session-2 data showed image-to-image press motion disagreeing with the labels.
+- `rss2_recapture/rss2_recapture_check.py` (pairs / across modes; stored 224-px images cover 17.502 mm, the 0.816 crop is applied by the
+  loader). Evidence scripts + pair data in `rss2_recapture/kinematics_check/` (s2_press_pairs, s1_label_pairs, abs_ridge_iou).
+- Session 2, 125 press pairs / 15 runs / objects 32, 33, 35, 36: current conversion leaves 1.84 mm (median) unexplained, rotated model
+  0.19 mm with no free parameter (free 2x2 fit = reflection, singular values 1.00 / 1.00, det -1.00; lever arm 0.2 mm).
+  Session 1, 480 label pairs: 1.07 mm -> 0.24 mm. Session-1 filter kept 100 % of frames with predicted error < 0.5 mm and 0 - 20 % above 2 mm.
+- Consequences and open decision: RSS_ROUND2_RESULTS.md D8 and open question 11. Re-capture on hold until the labels are corrected.
+- Second fold: chain A started 11-13 02:20, chain B 04:23 (both renderers training); they use the current labels.
+
