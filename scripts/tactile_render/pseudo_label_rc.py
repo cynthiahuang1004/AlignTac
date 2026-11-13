@@ -147,9 +147,10 @@ def link(src, dst):
     if osp.lexists(dst):
         os.remove(dst)
     tgt = os.path.realpath(src) if osp.islink(src) else src
-    phys = os.path.realpath("/media/hdd/ihsuan")      # the project disk's mount point changes across reboots: keep link targets on the stable path
-    if tgt.startswith(phys + "/"):
-        tgt = "/media/hdd/ihsuan" + tgt[len(phys):]
+    for sub in ("gs_blender", "VisTacFusion"):        # the project disk's mount point changes across reboots: keep link targets on the stable path
+        phys = os.path.realpath(f"/media/hdd/ihsuan/{sub}")   # (/media/hdd/ihsuan itself is a real directory holding the two shim links)
+        if tgt.startswith(phys + "/"):
+            tgt = f"/media/hdd/ihsuan/{sub}" + tgt[len(phys):]
     os.symlink(tgt, dst)
 
 

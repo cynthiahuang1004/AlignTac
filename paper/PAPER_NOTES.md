@@ -473,3 +473,11 @@ pattern_31_rod, pattern_33: odd frame index = unlabeled pool, even = TEST, roots
   T1 AlignTac row now 3 seeds: `pilot150_T_k25_rf_seed{1,2}` (trained 10-10, never scored on testA) evaluated into rss2_testA_results.json -> 0.235 +- 0.003 / 0.736 +- 0.001 / 3.2 deg / 0.87 mm.
   The user did not run the two `loo3_syn` seeds locally (kit installed and verified on an RTX 4060 Laptop under WSL2: BUNDLE OK, 1.75 steps/s, 5.9 GB); they ran on the server instead.
   Queue refilled with 12 seed jobs: `rss2_T_k25_grid_seed{1,2}`, `rss2_A_loo3_obsf9_seed{1,2}`, `rss2_T_k25_{rf,semipm}_u{25,50}_seed{1,2}` (error bars for T1 grid row, D4 fusion-only row, F2).
+- 2026-11-13 NEW OBJECTS PER OBJECT + SECOND FOLD STARTED (RESULTS.md D4 per-object table, D7). `rss2_eval_per_object.py` (same data path as eval_cross_session.py; "all" reproduces stored numbers).
+  Pose: every pseudo-labeled student = oracle on every held-out object; residual translation error of rod / 3-lines is on one pose axis (2.1-3.8 vs 0.6-1.1 mm), also for the oracle.
+  Dense (cMAE / IoU): pattern_33 teacher 0.179 / 0.795, per touch + onboarding 0.185 / 0.800, + fusion 0.136 / 0.872, oracle 0.102 / 0.882; rod: oracle 0.349 / 0.614, all variants 0.332-0.358 (ceiling);
+  3-lines: teacher 0.429 / 0.525, + onboarding 0.430 / 0.527, + fusion 0.318 / 0.660, oracle 0.211 / 0.760. CORRECTION: the aggregate "onboarding alone beats the teacher" (0.315 vs 0.327) is the rod only;
+  dense gains on new objects come from fusion. One object per shape class -> second fold: held out pattern_01_2_lines_angle_1_2, pattern_32, pattern_35 (rule fixed in advance, see D7).
+  `rss2_make_fold.py f2 ...` wrote roots real_f2 (1,373) / real_f2_test (692), f2_test_frames.json, data_A_f2_{teacher,realonly}.yaml; `rss2_fold.sh A|B` = queue jobs rss2_f2_chain{A,B}
+  (inserted before the pending F2 seed jobs); rss2_train.sh / rss2_finisher.sh got the `f2` evaluation target (f2_results.json, tag f2test). Log: outputs/rss_logs/rss2_f2_chain.log.
+  LINK FIX: the 11-11 patch of pseudo_label_rc.py did nothing under the current layout (/media/hdd/ihsuan is a real directory holding two shim links); it now maps per shim (gs_blender, VisTacFusion).

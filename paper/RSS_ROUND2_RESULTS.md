@@ -419,6 +419,47 @@ label accuracy (labels 0.769 / 0.177 → student 0.688 / 0.276; oracle labels �
 oracle is label error, the rest is what a student reaches on these three objects with ~370 pseudo-labeled frames each.
 Extra seeds of the fusion-only row (`rss2_A_loo3_obsf9_seed{1,2}`) started 2026-11-12.
 
+**Per object** (`rss2_eval_per_object.py`, `rss2_loo3_per_object.json`; same checkpoints, the "all" rows reproduce the table above; contact
+MAE / IoU at `best_depth.pt`; rot mean / trans / trans along the two pose axes |dx|, |dy| in mm at `best_pose.pt`; 3 seeds unless marked):
+
+| Student | pattern_33 (non-line, 179 frames) | pattern_31_rod (302) | pattern_04_3_lines_angle_2 (154) |
+|---|---|---|---|
+| Labeled only, 9 objects (1 seed) | 0.182 / 0.781; 58.7°, 3.17 (3.1, 3.2) | 0.424 / 0.513; 16.6°, 4.73 (8.1, 1.4) | 0.469 / 0.469; 157°, 4.05 (3.7, 4.4) |
+| Teacher (1 seed) | 0.179 / 0.795; 4.3°, 0.92 (0.8, 1.1) | 0.366 / 0.588; 3.8°, 1.47 (2.1, 0.9) | 0.429 / 0.525; 6.7°, 2.44 (3.9, 1.0) |
+| Mesh at teacher pose | 0.383 / 0.530; 4.2°, 0.99 | 0.412 / 0.511; 3.4°, 1.59 | 0.492 / 0.386; 7.0°, 2.76 |
+| AlignTac per touch | 0.201 / 0.787; 2.7°, 0.59 (0.6, 0.6) | 0.353 / 0.590; 1.8°, 1.59 (2.3, 0.9) | 0.445 / 0.495; 6.5°, 2.67 (4.0, 1.3) |
+| + mesh-only onboarding | 0.185 / 0.800; 2.6°, 0.58 | 0.332 / 0.612; 1.9°, 1.50 (2.2, 0.8) | 0.430 / 0.527; 5.9°, 2.57 (3.9, 1.3) |
+| Fusion only (1 seed) | 0.169 / 0.830; 2.7°, 0.62 | 0.358 / 0.583; 1.9°, 1.40 | 0.306 / 0.661; 5.7°, 2.37 |
+| + onboarding + fusion | 0.136 / 0.872; 2.5°, 0.56 (0.6, 0.6) | 0.353 / 0.593; 1.8°, 1.34 (2.1, 0.6) | 0.318 / 0.660; 5.9°, 2.44 (3.7, 1.2) |
+| Oracle | 0.102 / 0.882; 2.6°, 0.55 (0.6, 0.5) | 0.349 / 0.614; 1.7°, 1.34 (2.1, 0.6) | 0.211 / 0.760; 6.0°, 2.45 (3.8, 1.1) |
+
+Seen-object reference (K = 25 AlignTac student on testA, `rss2_testA_per_object.json`, 3 seeds): pattern_33 0.197 / 0.789, 1.9°, 0.27 mm;
+rod 0.302 / 0.660, 1.5°, 2.06 mm (3.3, 0.8); 3-lines angle 2 0.237 / 0.749, 2.9°, 1.00 mm (1.5, 0.6); non-line objects 32 / 35 / 36:
+0.15–0.20 / 0.78–0.84, 0.3 mm; other line objects 0.20–0.33 / 0.61–0.72, 0.4–1.5 mm.
+
+Reading (corrects the summary above): (1) **Pose is solved on every object.** Every pseudo-labeled student equals the oracle per object
+(e.g. full: 2.5° / 0.56, 1.8° / 1.34, 5.9° / 2.44 mm vs oracle 2.6° / 0.55, 1.7° / 1.34, 6.0° / 2.45 mm). The remaining translation error of
+the rod and the 3-line pattern sits on one pose axis (2.1–3.8 mm vs 0.6–1.1 mm), for the oracle too, and for the rod also when it is a seen
+object: it is the single-touch ambiguity along the ridge, not label error. (2) **Dense accuracy differs by object.** Rod: the oracle itself
+reaches only 0.349 / 0.614, all AlignTac variants are at that ceiling (0.332–0.358). Non-line object: per-touch labels only match the teacher
+(0.185 / 0.800 vs 0.179 / 0.795; even the student that never saw the object gets 0.182 / 0.781 on dense, its failure is pose); fusion brings it
+to 0.136 / 0.872, IoU within 0.01 of the oracle. 3-line pattern: per-touch labels equal the teacher (0.430 / 0.527 vs 0.429 / 0.525); fusion
+closes half of the gap to the oracle (0.318 / 0.660 vs 0.211 / 0.760); this object is the real generalization gap. (3) Therefore the
+aggregate "onboarding alone beats the teacher" (0.315 vs 0.327) comes from the rod only; without fusion the dense value of the labels is
+"teacher level", and the dense gains on new objects come from fusion (with its rigidity caveat). (4) With one object per shape class the
+split cannot support class-level statements: a second fold (pattern_01_2_lines_angle_1_2, pattern_32, pattern_35) is running, see below.
+Note on protocol (both folds): the placement constant of the fusion is estimated from all train-split frames of a held-out object (1,118 in
+fold 1), which include test-half images but never a label; 10–20 touches already suffice (D4 label table).
+
+### D7. Second held-out fold (started 2026-11-13; `rss2_make_fold.py`, `rss2_fold.sh`, results in `f2_results.json`, tag `f2test`)
+
+Held out: pattern_01_2_lines_angle_1_2 (2 lines), pattern_32, pattern_35 (non-line): 1,373 frames, odd index = pool (681), even = test (692).
+Selection rule, fixed before any result: two non-line objects and one line object so that the two folds together hold 3 line / rod and 3
+non-line objects; within a class the object with the most frames not in fold 1; the line object from a pattern family not held out in fold 1.
+Identical pipeline with everything re-trained without the three objects: renderers `outputs/tactile_gan{,_bgcond}_loo_f2`, sim renderings
+`samples_bc_loo_f2`, teacher `rss2_A_f2_teacher`, aligners `outputs/aligner_f2_{loo9,syn3_r2}`, label roots `real_pseudo_f2_*`, students
+`rss2_A_f2_{tp,al,syn,obsf9,obsf,oracle}` (3 seeds for al / syn / obsf / oracle) and the lower bound `rss2_A_f2_realonly`. Results pending.
+
 ### D5. Session-2 reference labels: what others do and what we can do
 
 | Work | How the real reference pose is obtained |

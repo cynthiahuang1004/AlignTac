@@ -28,6 +28,7 @@ ev() {  # ev <root> <tag> <json>
 case $EV in
   testA)  ev $G/real_filtered_testA testA $P/rss2_testA_results.json ;;
   loo3)   ev $G/real_loo3_test loo3test $P/loo3_results.json ;;
+  f2)     ev $G/real_f2_test f2test $P/f2_results.json ;;
   s2half) ev $G/real_s2_testhalf s2half $P/rss2_cross_session_results.json; ev $G/real_filtered_testA testA $P/rss2_testA_results.json ;;
   s2all)  ev $G/real_s2_testhalf s2half $P/rss2_cross_session_results.json; ev $G/real_filtered_testA testA $P/rss2_testA_results.json ;;
 esac
