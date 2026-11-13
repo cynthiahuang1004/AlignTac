@@ -2,7 +2,7 @@
 
 Working document for the Stage-1 extended abstract (due 2026-12-04 AoE). Every number below comes from a JSON under
 `ablation/pilot_robosoft/` (file named per section); run names, configs and logs (`outputs/rss_logs/`) are listed per task.
-Branch `rss-round2` (not pushed). Last update: 2026-11-13 07:30 UTC (D8: the robot pose -> label conversion does not rotate the translation with the tool yaw; affects every real label; nothing changed yet).
+Branch `rss-round2` (not pushed). Last update: 2026-11-13 (D8: the robot pose -> label conversion does not rotate the translation with the tool yaw; D9: corrected label roots for both sessions built and verified; no table re-run yet).
 
 ## Status
 
@@ -500,6 +500,60 @@ Not checked yet: line / rod objects (image registration is ambiguous along the l
 residual 1.0 - 1.5 deg, may be registration noise), a rotation constant and lever arm per session, and the pose-head targets
 (the data loader already rotates (sx, sy) by the relative yaw, so pose targets and depth maps may be inconsistent with each other).
 
+### D9. Corrected labels for both sessions: built and verified (2026-11-13; `rss2_recapture/rss2_relabel.py`, `fits_s{1,2}.json`, `relabel_check.json`)
+
+Model: `theta = yaw + object offset + dtheta`, `c = R(yaw + eps) (c_L + k) - lever`. Sensor constants per session from the mesh-free
+press pairs of D8 (session 1: eps 1.71 +- 0.17 deg, lever (-0.27, -0.15) mm; session 2: eps 1.81 +- 0.20 deg, lever (-0.19, 0.20) mm; image
+scale 0.997 / 1.001 of the nominal 17.502 mm). Object constants `dtheta, k` (3 numbers per object and session, **nothing per frame**) fitted
+to the image ridges (normalized correlation, NCC, of the black-hat ridge map and the mesh map). No trained model is involved anywhere.
+Rasterization: exact z-buffer (reproduces the stored session-1 depth maps at IoU 0.99; per-face minimum only 0.87).
+
+New roots (nothing overwritten; same frames, indices and images as the roots they mirror; `label_v1` in every pose file keeps the old values):
+
+| Root | Mirrors | Frames |
+|---|---|---|
+| `gs_blender/real_filtered_kin` | `real_filtered` (session 1, 12 objects) | 4,669 |
+| `gs_blender/real_filtered_kin_testA` | `real_filtered_testA` (`rss2_mirror_kin.py`) | 530 |
+| `gs_blender/real_s2_kin_curated854` | `real_filtered_new_curated_pred_r2_fv` (session 2, 11 objects) | 854 |
+
+Verification (held-out = constants fitted on the other half of the presses; overlays in `rss2_recapture/figs/overlay_s{1,2}.jpg`):
+
+| | Session 1 (12 objects) | Session 2 (11 objects) |
+|---|---|---|
+| Held-out NCC, corrected labels (mean; range) | **0.779** (0.62 - 0.88) | **0.776** (0.63 - 0.86) |
+| Held-out NCC, stored labels | 0.598 (0.50 - 0.71) registered | 0.574 (0.44 - 0.69) curated per-frame fits; 0.316 recorded pose |
+| Objects where corrected > stored | 12 / 12 (line and rod objects included) | 11 / 11 |
+| Split-half stability of the constants (median) | 0.11 deg, 0.05 mm | 0.53 deg, 0.15 mm |
+| Corrected - stored label, per-object median (range) | 0.84 mm (0.67 - 1.50), p90 1.5 - 2.7 mm | 1.17 mm (0.59 - 2.40; rod 6.9 mm along the rod) |
+| Rotation constant dtheta | +2.2 .. +3.4 deg on every object | +1.9 .. +4.5 deg (pattern_06_5: +21.0) |
+
+On the 530 test frames the stored and corrected depth masks overlap with IoU 0.617 and the pose targets differ by 0.74 / 0.65 mm (x / y).
+The stored label is a deterministic function of the true pose, so a network can learn it: the existing students (IoU 0.736 against the stored
+test labels) have learnt the displaced convention, and the curated session-2 labels, which were fitted to the predicted depth of such a
+model, inherit it. Scoring existing students against the corrected labels is therefore not a validation (`eval_existing_students_*.json`,
+for reference only).
+
+**What the re-installation between the sessions really changed** (session-2 frames labelled with the session-1 constants and the correct
+kinematics; assumes the stored session-1 labels used the object constants of `OBJ_MAP`):
+
+| Quantity | Value |
+|---|---|
+| Plate position, session 2 - session 1, per object | 0.15 - 0.87 mm, median 0.37 mm; mean over objects (-0.11, +0.07) +- (0.38, 0.18) mm: no common shift |
+| Plate rotation | median 0.31 deg, at most 1.2 deg; **pattern_06_5: +18.0 deg** (mounted differently) |
+| Sensor: lever arm / yaw offset | (-0.27, -0.15) -> (-0.19, 0.20) mm (0.36 mm); 1.71 -> 1.81 deg |
+| Label error of the stale (session-1) constants on session 2 | median 0.38 mm (per object 0.12 - 1.08 mm) |
+| NCC with the image: fresh constants / stale constants / curated per-frame / recorded pose with the old conversion | 0.63 - 0.86 / 0.59 - 0.85 (pattern_06_5: 0.30) / 0.44 - 0.69 / 0.08 - 0.62 |
+
+Consequences. (1) Session 2 now has a calibration-based reference that agrees with the images better than the per-frame fits; pose errors
+can be reported to a few tenths of a millimetre (split-half 0.15 mm). The re-capture is not needed for this. (2) The drift the paper
+motivates with (1.4 - 3 mm; "11.4 deg / 1.6 mm") was mostly the conversion. The real re-installation moved the contact by about 0.4 mm and
+under 1.2 deg, which is at the crossover of the controlled-drift study (D1: stale labels equal AlignTac at 0.5 mm), with one exception:
+one of 11 plates came back 18 deg rotated and its stale labels are useless. (3) Every table was trained and scored on the displaced
+labels; sim data has correctly aligned labels, so real and sim supervision disagreed. All numbers have to be re-run on the corrected
+roots before any claim is kept (open question 11c).
+Not done: frames the session-1 filter deleted (the unfiltered source `real_data` covers 10 objects and is not a superset of
+`real_filtered`); the full session-2 pool (all contact frames) as a corrected root; corrected versions of the derived training roots.
+
 ### D5. Session-2 reference labels: what others do and what we can do
 
 | Work | How the real reference pose is obtained |
@@ -601,3 +655,5 @@ real re-placement.** Settling this needs an independent reference (open question
     calibration-based reference from existing data). It changes every number and the size of the drift the paper motivates with, and
     the ICRA VisTacFusion real-data labels come from the same conversion. Go ahead with (a) and (b)? Is the original session-1 conversion
     script (`reorganize_to_sim_format.py`, not on this server) available?
+    **Update 2026-11-13:** (a) and (b) done on the user's go-ahead (D9). Open: (c) re-run the main tables on the corrected roots, and how to
+    frame the paper now that the real re-installation offset is about 0.4 mm / under 1.2 deg (one plate 18 deg) instead of millimetres.

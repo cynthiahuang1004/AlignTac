@@ -1,0 +1,264 @@
+{
+ "per_object": {
+  "session 1": {
+   "mean_ncc_corrected": 0.7791879113904515,
+   "mean_ncc_stored": 0.5984188309621782,
+   "median_shift_vs_stored_mm": 0.844759543004381,
+   "split_half_k_mm_median": 0.04786839666103501,
+   "split_half_dtheta_deg_median": 0.10611352756896553
+  },
+  "session 2": {
+   "mean_ncc_corrected": 0.7756177287977202,
+   "mean_ncc_stored": 0.5736426772107254,
+   "median_shift_vs_stored_mm": 1.166721217229174,
+   "split_half_k_mm_median": 0.15072435781398216,
+   "split_half_dtheta_deg_median": 0.531358151804973
+  }
+ },
+ "stale": {
+  "pattern_01_2_lines_angle_1_2": {
+   "obj": "pattern_01_2_lines_angle_1_2",
+   "n": 52,
+   "ncc": {
+    "corrected_s2_constants": 0.7251336425542831,
+    "s1_constants_s1_sensor": 0.7003964506662809,
+    "s1_constants_s2_sensor": 0.7199981923286731,
+    "curated_per_frame": 0.550378487087213,
+    "recorded_pose_old_conversion": 0.1042166524208509
+   },
+   "plate_moved_mm": [
+    -0.436443555499491,
+    -0.1543405659012712
+   ],
+   "plate_rotated_deg": -0.2254356136642901,
+   "stale_label_error": {
+    "rot_deg": 0.22543561366428827,
+    "shift_mm_median": 0.6084023305528459,
+    "shift_mm_p90": 0.6321691054854315
+   }
+  },
+  "pattern_01_2_lines_angle_2": {
+   "obj": "pattern_01_2_lines_angle_2",
+   "n": 47,
+   "ncc": {
+    "corrected_s2_constants": 0.6347677986672584,
+    "s1_constants_s1_sensor": 0.5868165727625502,
+    "s1_constants_s2_sensor": 0.6259260608794841,
+    "curated_per_frame": 0.43977917001602496,
+    "recorded_pose_old_conversion": 0.1722726745268154
+   },
+   "plate_moved_mm": [
+    0.848998391269244,
+    -0.19930676030455685
+   ],
+   "plate_rotated_deg": -0.3074369424816974,
+   "stale_label_error": {
+    "rot_deg": 0.3074369424817017,
+    "shift_mm_median": 1.0794724326541105,
+    "shift_mm_p90": 1.1079299381462273
+   }
+  },
+  "pattern_01_2_lines_angle_3": {
+   "obj": "pattern_01_2_lines_angle_3",
+   "n": 39,
+   "ncc": {
+    "corrected_s2_constants": 0.6787054691559229,
+    "s1_constants_s1_sensor": 0.6324851092619773,
+    "s1_constants_s2_sensor": 0.6646336622727222,
+    "curated_per_frame": 0.5567291271992219,
+    "recorded_pose_old_conversion": 0.2225024400231166
+   },
+   "plate_moved_mm": [
+    0.38820145553323404,
+    0.26294735678217374
+   ],
+   "plate_rotated_deg": 1.042230218948116,
+   "stale_label_error": {
+    "rot_deg": 1.042230218948116,
+    "shift_mm_median": 0.4601272750501445,
+    "shift_mm_p90": 0.5394170123269509
+   }
+  },
+  "pattern_04_3_lines_angle_1": {
+   "obj": "pattern_04_3_lines_angle_1",
+   "n": 84,
+   "ncc": {
+    "corrected_s2_constants": 0.6970753410742396,
+    "s1_constants_s1_sensor": 0.6513689550615492,
+    "s1_constants_s2_sensor": 0.6830158868715877,
+    "curated_per_frame": 0.4859357423016003,
+    "recorded_pose_old_conversion": 0.21614212090415613
+   },
+   "plate_moved_mm": [
+    -0.13958220870253157,
+    -0.15636033475842126
+   ],
+   "plate_rotated_deg": 1.0941458459429554,
+   "stale_label_error": {
+    "rot_deg": 1.0941458459429565,
+    "shift_mm_median": 0.47909108720586485,
+    "shift_mm_p90": 0.5053041704612393
+   }
+  },
+  "pattern_06_5_lines_angle_1": {
+   "obj": "pattern_06_5_lines_angle_1",
+   "n": 105,
+   "ncc": {
+    "corrected_s2_constants": 0.8267380067280361,
+    "s1_constants_s1_sensor": 0.2954886542899268,
+    "s1_constants_s2_sensor": 0.29357639097032096,
+    "curated_per_frame": 0.6935309705280123,
+    "recorded_pose_old_conversion": 0.29574768997374035
+   },
+   "plate_moved_mm": [
+    -0.07465531932177871,
+    0.2262520154974511
+   ],
+   "plate_rotated_deg": 18.010007944228796,
+   "stale_label_error": {
+    "rot_deg": 18.010007944228793,
+    "shift_mm_median": 0.12332591391635633,
+    "shift_mm_p90": 0.13162735200696626
+   }
+  },
+  "pattern_31_rod": {
+   "obj": "pattern_31_rod",
+   "n": 106,
+   "ncc": {
+    "corrected_s2_constants": 0.85323773071451,
+    "s1_constants_s1_sensor": 0.849728395354073,
+    "s1_constants_s2_sensor": 0.819505882150722,
+    "curated_per_frame": 0.6870358243303479,
+    "recorded_pose_old_conversion": 0.08391396090823561
+   },
+   "plate_moved_mm": [
+    -0.20829016113286591,
+    0.2479795726301871
+   ],
+   "plate_rotated_deg": 0.13226028825596847,
+   "stale_label_error": {
+    "rot_deg": 0.13226028825596975,
+    "shift_mm_median": 0.13370422836278095,
+    "shift_mm_p90": 0.18060794900244526
+   }
+  },
+  "pattern_32": {
+   "obj": "pattern_32",
+   "n": 122,
+   "ncc": {
+    "corrected_s2_constants": 0.861928368689584,
+    "s1_constants_s1_sensor": 0.8490090125896892,
+    "s1_constants_s2_sensor": 0.8413094741399171,
+    "curated_per_frame": 0.6020472987753446,
+    "recorded_pose_old_conversion": 0.5878466077026774
+   },
+   "plate_moved_mm": [
+    -0.36262064848321485,
+    0.25656774734525756
+   ],
+   "plate_rotated_deg": 0.041984807967490934,
+   "stale_label_error": {
+    "rot_deg": 0.04198480796748631,
+    "shift_mm_median": 0.2791177548036564,
+    "shift_mm_p90": 0.34633117779918277
+   }
+  },
+  "pattern_33": {
+   "obj": "pattern_33",
+   "n": 94,
+   "ncc": {
+    "corrected_s2_constants": 0.8278767441181426,
+    "s1_constants_s1_sensor": 0.7910603969655139,
+    "s1_constants_s2_sensor": 0.7944262294059105,
+    "curated_per_frame": 0.5430428664735023,
+    "recorded_pose_old_conversion": 0.4433980023765818
+   },
+   "plate_moved_mm": [
+    -0.49804684214543316,
+    0.1898783266163735
+   ],
+   "plate_rotated_deg": 0.09350876801428676,
+   "stale_label_error": {
+    "rot_deg": 0.09350876801428551,
+    "shift_mm_median": 0.36205646599008334,
+    "shift_mm_p90": 0.47281545151945076
+   }
+  },
+  "pattern_35": {
+   "obj": "pattern_35",
+   "n": 57,
+   "ncc": {
+    "corrected_s2_constants": 0.8448732286168817,
+    "s1_constants_s1_sensor": 0.8245534290347183,
+    "s1_constants_s2_sensor": 0.8426496355157149,
+    "curated_per_frame": 0.6869098742802938,
+    "recorded_pose_old_conversion": 0.6176802531669014
+   },
+   "plate_moved_mm": [
+    -0.14262165308363128,
+    -0.03744176081570605
+   ],
+   "plate_rotated_deg": 0.6237962317260726,
+   "stale_label_error": {
+    "rot_deg": 0.6237962317260743,
+    "shift_mm_median": 0.38156201442264664,
+    "shift_mm_p90": 0.40232451137524716
+   }
+  },
+  "pattern_36": {
+   "obj": "pattern_36",
+   "n": 113,
+   "ncc": {
+    "corrected_s2_constants": 0.8280686171708909,
+    "s1_constants_s1_sensor": 0.8175931673134322,
+    "s1_constants_s2_sensor": 0.8145494160398973,
+    "curated_per_frame": 0.6300727843710806,
+    "recorded_pose_old_conversion": 0.4765260469465129
+   },
+   "plate_moved_mm": [
+    -0.21803989036135962,
+    0.1560244879833459
+   ],
+   "plate_rotated_deg": 0.12462373301846164,
+   "stale_label_error": {
+    "rot_deg": 0.12462373301846515,
+    "shift_mm_median": 0.21790665776434662,
+    "shift_mm_p90": 0.24043987302154796
+   }
+  },
+  "pattern_37": {
+   "obj": "pattern_37",
+   "n": 33,
+   "ncc": {
+    "corrected_s2_constants": 0.7984089634635232,
+    "s1_constants_s1_sensor": 0.7754260717016278,
+    "s1_constants_s2_sensor": 0.7875026861826578,
+    "curated_per_frame": 0.4346073039553382,
+    "recorded_pose_old_conversion": 0.25903056842617367
+   },
+   "plate_moved_mm": [
+    -0.3682825040956057,
+    6.414826942935381e-05
+   ],
+   "plate_rotated_deg": 1.2091827506169524,
+   "stale_label_error": {
+    "rot_deg": 1.2091827506169477,
+    "shift_mm_median": 0.46725588589594375,
+    "shift_mm_p90": 0.5111700035108367
+   }
+  }
+ },
+ "stale_summary": {
+  "plate_moved_mm_mean": [
+   -0.1101257214566758,
+   0.07202402121311481
+  ],
+  "plate_moved_mm_std": [
+   0.3790031567312242,
+   0.17590859378328752
+  ],
+  "norm_median": 0.3682825096823501,
+  "rot_deg_median_abs": 0.3074369424816974,
+  "stale_label_error_mm_median": 0.38156201442264664
+ }
+}

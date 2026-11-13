@@ -494,3 +494,14 @@ pattern_31_rod, pattern_33: odd frame index = unlabeled pool, even = TEST, roots
 - Consequences and open decision: RSS_ROUND2_RESULTS.md D8 and open question 11. Re-capture on hold until the labels are corrected.
 - Second fold: chain A started 11-13 02:20, chain B 04:23 (both renderers training); they use the current labels.
 
+## 2026-11-13 CORRECTED LABELS BUILT AND VERIFIED (steps a, b of open question 11; user go-ahead)
+- `reorganize_to_sim_format.py` (session-1 conversion) is not on this server (searched gs_blender, the project, /home/shared, the overflow disk).
+- `rss2_recapture/rss2_relabel.py` (fit / build / overlay), `rss2_relabel_check.py`, `rss2_mirror_kin.py`; logs `outputs/rss_logs/rss2_relabel_*.log`.
+  Roots: `gs_blender/real_filtered_kin` (4,669), `real_filtered_kin_testA` (530), `real_s2_kin_curated854` (854). Stored label values kept as `label_v1` in each pose file.
+- Held-out NCC with the image: session 1 0.779 vs 0.598 stored (12/12 objects better); session 2 0.776 vs 0.574 curated vs 0.316 recorded pose (11/11).
+  Split-half of the constants 0.05 mm / 0.11 deg (s1), 0.15 mm / 0.53 deg (s2). dtheta about +2.8 deg on every object in BOTH sessions (a constant of the old convention, not drift).
+- True re-installation offset (session-1 constants on session-2 frames): 0.37 mm median plate offset, 0.31 deg, stale label error 0.38 mm; pattern_06_5 remounted 18 deg off.
+- The existing students learnt the displaced labels (stored vs corrected test masks overlap at IoU 0.617 while students reach 0.736 against the stored ones);
+  curated session-2 labels were fitted to model predictions and inherit the displacement.
+- The loader reads the new roots unchanged (530 test frames, identical images). Details: RSS_ROUND2_RESULTS.md D9. Nothing re-trained.
+
