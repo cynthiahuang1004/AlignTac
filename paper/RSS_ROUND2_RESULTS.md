@@ -577,7 +577,11 @@ two agree (NCC >= 0.45); the NCC of each frame is stored in its pose file (`labe
 
 Session 1: 133 presses rejected (NCC), 28 of them inside the old root. Session 2: 354 rejected, all by NCC; the sampled ones are presses where
 the gel shows no ridge although the robot was below the contact height (background frames). pattern_04_3_lines_angle_2 was missing from the
-curated session-2 set; its constants were fitted here (dtheta -30.4 deg, k (3.48, -0.90) mm; 105 usable frames).
+curated session-2 set. Its first fit (dtheta -30.4 deg, NCC 0.63) was a symmetric wrong optimum, caught by the user on the contact sheet
+(one branch of the label had no ridge in the image); a search over the full rotation (`rss2_refit_rotation.py`) gives dtheta -177.0 deg,
+k (1.81, -0.45) mm, held-out NCC 0.84, in line with the other plates (105 usable frames; the wrong labels are kept aside in
+`gs_blender/real_s2_kin_all__wrong_rotation_pattern_04_3_lines_angle_2`). Random recovered frames of every object were checked by the
+user on `figs/recovered_s{1,2}.jpg` (2026-11-13): all other objects correct.
 Roots: `gs_blender/real_filtered_kin_plus` (session_000 = link to `real_filtered_kin`, same indices, so existing splits and label subsets stay
 valid; session_001 = the 4,964 recovered presses) and `gs_blender/real_s2_kin_all` (one session per run, 1,813 frames, `in_curated854` flag;
 `kin_manifest.json` in both). The loader reads 9,503 and 1,813 frames (130 session-1 frames are skipped by the loader, cause not looked at).
