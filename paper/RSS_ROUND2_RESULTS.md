@@ -497,8 +497,18 @@ carry a deterministic translation error of about 0.6 - 0.7 mm (median) that the 
 what T2 and the paper call re-placement drift is this conversion, not the re-installation. The true re-installation offset is the
 constant k (plus a rotation constant) per object and session and has to be re-measured after the correction.
 Not checked yet: line / rod objects (image registration is ambiguous along the lines), the rotation labels (pairwise rotation
-residual 1.0 - 1.5 deg, may be registration noise), a rotation constant and lever arm per session, and the pose-head targets
-(the data loader already rotates (sx, sy) by the relative yaw, so pose targets and depth maps may be inconsistent with each other).
+residual 1.0 - 1.5 deg, may be registration noise), a rotation constant and lever arm per session.
+**Source confirmed (2026-11-13, later).** The session-1 conversion is `/media/hdd2/xiangdong/gelslim_depth/scripts/data_scripts/render_gt_blender_ortho.py`
+(lines 228-237: `theta = -2 atan2(qx, qy) + theta_offset`, `mesh_x = dy + bias_x`, `mesh_y = dx + bias_y`, `sample_x = mesh_x`, `sample_y = -mesh_y`;
+no rotation of the translation). Re-computing it from the raw capture in that folder reproduces all 4,669 stored labels of `real_filtered` exactly
+(difference 0 in theta, x, y; images identical on 194 / 194 checked frames; same object centre and the same per-object constants as `OBJ_MAP`).
+On the raw data, all pressed samples including those the filter deleted (600 pairs, 4 objects, yaw -44 .. 44 deg): old formula 2.13 mm median
+unexplained shift, new formula 0.30 mm with no free parameter, flat over the yaw (`kinematics_check/s1_raw_check.py`). The raw folder holds
+696 - 1,017 pressed samples per object (4,669 survive in `real_filtered`), so the deleted frames can be recovered from it.
+Pose-head targets: for real data the loader uses `(sx, sy) / half` unrotated (`dataset.py: _load_pose`), i.e. the same un-rotated value as the
+depth maps: pose targets and depth maps are consistent with each other and displaced together. (An earlier line here said the loader rotates
+them; that is the sim branch only.) The teammate's notes (`data/calibration_experiments_summary.md`) record an unexplained offset between the
+GT depth and the tactile image whose preferred sign differed from object to object.
 
 ### D9. Corrected labels for both sessions: built and verified (2026-11-13; `rss2_recapture/rss2_relabel.py`, `fits_s{1,2}.json`, `relabel_check.json`)
 
