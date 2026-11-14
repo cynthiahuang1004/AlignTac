@@ -901,3 +901,12 @@ Chain `ablation/pilot_robosoft/rss2_kin_s2adapt.sh` (log `outputs/rss_logs/rss2_
   `s2test` / `s2half` (`rss2_kin_s2adapt_results.json`). The zero-shot rows (`kin_k25_{realonly,st,rf}`, 3 seeds) are evaluated on
   the same test frames by the chain. `rss2_finisher.sh` updated so `kin_*_s2*` runs are evaluated on the test presses only.
 - Not done: the K = 100 block of the paper table (needs a corrected-label K = 100 chain: renderer, aligner, session-1 pool labels).
+
+## D15. K = 10 on the corrected labels (queued 2026-11-14 21:33; user: run when the GPUs are free)
+
+Question 15: does a dense gain reappear with fewer labels? Chain `ablation/pilot_robosoft/rss2_kin_chain_k.sh 10` (log
+`outputs/rss_logs/rss2_kin_chain_k10.log`) waits until the six D14 students have finished, then runs on the GPU with most free memory:
+renderer `rss2_tactile_gan_kin_k10` (`--per-object 10 --min-steps 30000`, the K = 25 recipe; the old K = 10 renderer's arguments are
+not recorded), aligner `rss2_aligner_kin_k10` (8,000 steps, real only, as the old `aligner_k10_realonly` log shows), teacher
+`rss2_kin_k10_realonly` (trained 2026-11-13), labels `real_pseudo_kin_k10_{ng,al}`, students `kin_k10_realonly_seed{1,2}`,
+`kin_k10_{st,rf}{,_seed1,_seed2}` (eval mode `kin`: testA + session 2).
