@@ -689,6 +689,16 @@ real re-placement.** Settling this needs an independent reference (open question
     script (`reorganize_to_sim_format.py`, not on this server) available?
     **Update 2026-11-13:** (a) and (b) done on the user's go-ahead (D9). Open: (c) re-run the main tables on the corrected roots, and how to
     frame the paper now that the real re-installation offset is about 0.4 mm / under 1.2 deg (one plate 18 deg) instead of millimetres.
+    **Update 2026-11-14:** (c) done for the K = 25 minimal set (D11). With correct GT, AlignTac's in-session margin over Labeled only is
+    IoU +0.004 (old labels: +0.066). Most paper tables (`B_`, `T_`, `P4_` families) still use the old `real_filtered` labels.
+12. **Recovered presses.** `rfp` is worse than `rf` on dense metrics (session 2 IoU 0.820 vs 0.853). Keep them out of the pool, or switch
+    to one unified session-1 pool with an even-interval train / val / test split (needs a full chain re-run, D11 "Split facts")?
+    The user prefers no artificial session_000 / session_001 distinction; decision on the re-split pending.
+13. **Where the method has headroom.** In-session K = 25 is near saturation (Labeled only 0.909, oracle 0.934). Candidates: AlignTac at
+    K = 10 / 50 on the corrected labels (Labeled-only teachers `kin_k{10,50}_realonly` exist), and session-2 adaptation (14).
+14. **Cross-session.** The session-2 rotation gap is half yaw coverage, half a real session shift (D12). Report with a yaw-matched
+    session-1 control and Rot calib; re-run the session-2 adaptation (AlignTac labels on unlabeled session-2 frames, no recalibration,
+    old-label P0-3) on the corrected labels? Needs an adapt / test split of the 1,813 session-2 frames.
 
 ## D11. Re-run on the corrected labels (started 2026-11-13 17:51, in progress)
 
@@ -711,4 +721,90 @@ queue `outputs/rss_logs/rss2_jobs_kin.tsv` (GPUs 1-3, 3 per GPU; chain steps on 
 
 Renderer `outputs/rss2_tactile_gan_kin_k25`, aligner `outputs/rss2_aligner_kin_k25`. Pool note: the teacher config excludes the testA
 frames, so the pseudo-labeled pool is 3,367 frames (the old chain labeled 3,897 and excluded the test frames at student time; the
-student training set is the same). Results: to be filled in.
+student training set is the same).
+
+**Results (2026-11-14; all runs finished, 3 seeds mean ± std unless noted).** Rot calib = rotation error after removing a per-object
+constant offset (circular median), as computed by `eval_cross_session.py`. Trans L1 is in normalized units.
+
+Pseudo-label quality (`--eval-gt`, chain log): original pool 3,367 frames, mesh IoU 0.897 / cMAE 0.097 / rot 0.95°; recovered pool
+4,345 frames, mesh IoU 0.765 / cMAE 0.186 / rot 6.72° (teacher alone: 0.641 / 0.151 / 14.74°).
+
+testA (530 frames)
+
+| Method | IoU | cMAE | Rot (°) | Rot calib (°) | Trans L1 |
+|---|---|---|---|---|---|
+| All labels (oracle, 1 seed) | 0.934 | 0.040 | 3.65 | 3.27 | 0.036 |
+| Labeled only | 0.909 ± 0.000 | 0.084 ± 0.000 | 7.55 ± 0.36 | 6.75 ± 0.35 | 0.070 ± 0.003 |
+| Teacher-label self-training (`st`) | 0.767 ± 0.001 | 0.096 ± 0.001 | 12.67 ± 1.31 | 12.02 ± 1.14 | 0.098 ± 0.009 |
+| Mesh at teacher pose (`rf0`) | 0.543 ± 0.036 | 0.243 ± 0.006 | 13.52 ± 1.08 | 12.69 ± 0.85 | 0.108 ± 0.007 |
+| **AlignTac (`rf`)** | 0.913 ± 0.001 | 0.085 ± 0.004 | 6.91 ± 1.72 | 5.77 ± 1.02 | 0.062 ± 0.010 |
+| AlignTac + recovered pool (`rfp`) | 0.901 ± 0.005 | 0.090 ± 0.004 | 6.58 ± 2.15 | 5.45 ± 1.44 | 0.060 ± 0.013 |
+
+session 2 (1,813 frames, never trained on)
+
+| Method | IoU | cMAE | Rot (°) | Rot calib (°) | Trans L1 |
+|---|---|---|---|---|---|
+| All labels (oracle, 1 seed) | 0.855 | 0.130 | 14.66 | 6.55 | 0.086 |
+| Labeled only | 0.845 ± 0.001 | 0.140 ± 0.001 | 21.06 ± 0.30 | 6.52 ± 0.20 | 0.113 ± 0.000 |
+| Teacher-label self-training (`st`) | 0.740 ± 0.004 | 0.143 ± 0.003 | 30.50 ± 3.03 | 6.27 ± 0.18 | 0.139 ± 0.018 |
+| Mesh at teacher pose (`rf0`) | 0.497 ± 0.057 | 0.291 ± 0.007 | 31.65 ± 2.43 | 6.43 ± 0.04 | 0.150 ± 0.005 |
+| **AlignTac (`rf`)** | 0.853 ± 0.001 | 0.135 ± 0.005 | 18.58 ± 2.15 | 5.98 ± 0.39 | 0.111 ± 0.015 |
+| AlignTac + recovered pool (`rfp`) | 0.820 ± 0.019 | 0.145 ± 0.004 | 17.27 ± 2.65 | 7.04 ± 1.15 | 0.098 ± 0.009 |
+
+Reading:
+- The corrected labels remove most of AlignTac's old margin. Old labels (testA): Labeled only → AlignTac IoU 0.674 → 0.739 (+0.066),
+  rot 9.73° → 5.97°. Corrected labels: 0.909 → 0.913 (+0.004), rot 7.55° → 6.91°. The old Labeled-only depth was poor because its GT
+  was misplaced; with correct GT, 300 labels already reach IoU 0.909 (oracle 0.934), so there is little in-session headroom at K = 25.
+- The only clean gain of `rf` is IoU (in-session +0.004, session 2 +0.008, both with std ≤ 0.001). Its raw rotation gains are inside
+  the seed spread (rf testA rot per seed 7.19 / 8.86 / 4.67°).
+- `rfp` (recovered presses as extra unlabeled pool) is **worse** than `rf` on dense metrics, most clearly on session 2
+  (IoU 0.820 ± 0.019 vs 0.853 ± 0.001; seed 0 alone 0.797). Its raw rotation looks better but is within the seed spread, and its
+  calibrated rotation on session 2 is worse (7.04° vs 5.98°). The recovered pool's pseudo-labels are worse (mesh IoU 0.765 vs 0.897).
+  CORRECTION: on 2026-11-14 the assistant first reported rfp from two finished seeds as "depth only slightly worse, pose better";
+  the third seed changed this.
+- Split facts (for the allocation decision): the recovered presses are the same capture as `session_000` (identical `session.json`,
+  manifest `session: s1`; both keep `original_sample_id`, 9,633 presses, no id collisions). In `rfp`, the 501 recovered presses with
+  index % 10 == 0 never entered training (pseudo_label.py skips the val slot and the chain did not pass `--link-val`). A unified
+  even-interval split by capture order (rank % 10 in {5, 8} test, rank % 10 == 0 val) would give 6,741 pool / 968 val / 1,924 test,
+  but needs the whole chain re-run (new K = 25 frames, new test set).
+
+## D12. Session 2 with the corrected labels: labels are right, the rotation gap is yaw coverage + a real session shift (2026-11-14)
+
+Scripts in the session scratchpad (`s2_label_check.py`, `yaw_bias.py`, `subsess.py`, `dist.py`, `eval_sym.py`, `offset.py`,
+`inrange.py`, `sameband.py`, `sameband_rf.py`, figures `s1_vs_s2_page{1,2}.png`, `s2_label_pairs_page{1,2}.png`); not committed.
+
+1. **The session-2 labels match the tactile images.** Mesh-at-label vs stored GT depth: IoU 0.951 (s1) / 0.941 (s2), but this is
+   circular (both come from the same kinematic model). The independent test: sweep a yaw offset and find the offset that best aligns
+   the mesh footprint with the measured contact (image minus background). s1: median +1.0°, mean |offset| 1.50°, 93 % within ±3°;
+   s2: median +1.0°, mean |offset| 3.18°, 78 % within ±3°. No systematic bias; session 2 is about twice as noisy. Per sub-session,
+   `session_007` is off (+29° to +50°, inconsistent between frames) but has only 12 frames. Visual check of 24 random s2 frames
+   (label outline over contact): aligned except two frames a few degrees off and one press mostly outside the gel. The −177° and +21°
+   fitted dθ of `pattern_04_3_lines_angle_2` / `pattern_06_5_lines_angle_1` in `real_s2_kin_all/kin_manifest.json` are 360°-wrap /
+   absorbed-constant artifacts; their labels align with the images (median offset +2° / +1°).
+2. **Not a symmetry artifact.** Six objects are rotationally symmetric (k = 2: the three two-line patterns and 31_rod; k = 3:
+   04_3_lines_angle_1; k = 5: 06_5_lines_angle_1). Folding the model's rotation error by the object's symmetry changes nothing
+   (all errors are below half the period).
+3. **The model has a per-object constant yaw bias on session 2 only.** Labeled only (seed 0), signed circular-median error per object:
+   testA −7.3° … +4.0°; session 2 +4.0° … +38.8° (session-wide +20.6°, except 31_rod +4.0° and 32 −10.4°). Removing it leaves
+   2.8–10.8° on session 2, the same range as testA (4.5–13°). This is why Rot (21.06°) and Rot calib (6.52°) differ so much.
+4. **Session 2 covers a narrow yaw band at one edge of session 1's range.** Per object, s1 spans about 90° of yaw, s2 about 25°,
+   placed at the low end of the s1 range (e.g. 01_2_lines_angle_1_2: s1 −39.5° … +47.8°, s2 −44.7° … −21.2°). 81 % of s2 frames lie
+   inside the s1 range. Restricting session 2 to those frames barely helps (Labeled only 21.06° → 20.24°, bias +20.3° → +19.9°), so
+   evaluating on the overlap is **not** a fix.
+5. **Decomposition with a yaw-matched session-1 control.** Session-1 frames that fall inside each object's s2 yaw band and were never
+   trained on by either model (testA + val slots, 110 frames), 3 seeds:
+
+   | Model | s1 outside band: bias / rot | **s1 inside s2 band**: bias / rot | s2: bias / rot | session part of the bias |
+   |---|---|---|---|---|
+   | Labeled only | −0.5° / 7.06° | +8.7° ± 1.2 / 11.27° | +20.3° ± 1.2 / 21.06° | ≈ +11.6° |
+   | AlignTac (`rf`) | −0.8° / 6.34° | +4.9° ± 3.0 / 9.33° | +16.4° ± 3.4 / 18.58° | ≈ +11.5° |
+
+   (With 474 band frames unseen by Labeled only, its band bias is +9.4° / 12.76°.) About half of the session-2 rotation bias appears on
+   session 1 at the same yaw: the band is at the edge of the training distribution, where K = 25 gives each object only a few labels.
+   AlignTac roughly halves this edge part (pseudo-labels cover the whole pool), which is all of its session-2 rotation gain; the
+   remaining ≈ +11.5° is a genuine session shift that no session-1-only training touches. The all-labels oracle still has
+   14.66° raw / 6.55° calibrated on session 2.
+6. **Reporting.** Session-2 rotation should be reported next to the yaw-matched session-1 control (same objects, same yaw band) and
+   with Rot calib; otherwise "cross-session" mixes a yaw-coverage effect with the session shift. Old-label P0-3 (top of this file)
+   already showed the method's answer to the session part: AlignTac labels on unlabeled session-2 frames, no recalibration
+   (rot 10.2° → 5.4–7.8° on the old session-2 test half). That experiment has not been re-run on the corrected labels.

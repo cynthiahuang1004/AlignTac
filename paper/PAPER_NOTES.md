@@ -511,3 +511,11 @@ pattern_31_rod, pattern_33: odd frame index = unlabeled pool, even = TEST, roots
 - Roots `gs_blender/real_filtered_kin_plus`, `gs_blender/real_s2_kin_all`; details RSS_ROUND2_RESULTS.md D10. Nothing trained yet; old-label jobs still running.
 
 - 2026-11-13 (evening) RE-RUN ON CORRECTED LABELS STARTED: user decided to use the corrected labels; recovered session-1 presses = unlabeled pool only for now (ask again after the minimal set whether later runs keep this). Old-label fold-2 jobs stopped. Chain `rss2_kin_chain.sh`, runs `rss2_kin_*`, results → `rss2_kin_testA_results.json` / `rss2_kin_s2_results.json`; see RSS_ROUND2_RESULTS.md D11.
+
+## 2026-11-14 CORRECTED-LABEL K=25 RESULTS; SESSION-2 DIAGNOSIS
+- All 21 `rss2_kin_*` runs finished and evaluated (tables in RSS_ROUND2_RESULTS.md D11). Pseudo-label pipeline unchanged from the paper's K=25 chain (only the labeled root and output names differ).
+- With correct GT, AlignTac over Labeled only at K=25: testA IoU 0.909 -> 0.913 (old labels 0.674 -> 0.739); session 2 IoU 0.845 -> 0.853. Rotation gains are inside the seed spread. The old margin was largely the old labels' misplacement.
+- `rfp` (recovered presses as extra pool) is worse than `rf` (session 2 IoU 0.820 vs 0.853). An earlier two-seed report to the user ("depth only slightly worse") was wrong; corrected the same day.
+- The user prefers a single session-1 pool split at even intervals by capture order instead of session_000 / session_001; not built yet (needs a full chain re-run). Decision pending, together with whether the recovered presses enter the pool.
+- Session-2 labels checked against the images (yaw sweep of the mesh footprint vs the measured contact; 24-frame visual check): correct, about twice as noisy as session 1 (mean |offset| 3.18 vs 1.50 deg), no systematic bias. User confirmed visually.
+- Session-2 rotation error (21 deg raw, 6.5 deg calibrated) = per-object constant bias. Session 2 covers a ~25 deg yaw band at the low edge of session 1's ~90 deg range. Yaw-matched session-1 control: about half of the bias already appears on session 1 at the same yaw (edge of the training distribution); AlignTac halves that part (+8.7 -> +4.9 deg) and nothing else; the remaining ~+11.5 deg is a real session shift. Evaluating only on the session-1-range overlap does not help (21.06 -> 20.24 deg). Details D12.
