@@ -696,9 +696,9 @@ real re-placement.** Settling this needs an independent reference (open question
     The user prefers no artificial session_000 / session_001 distinction; decision on the re-split pending.
 13. **Where the method has headroom.** In-session K = 25 is near saturation (Labeled only 0.909, oracle 0.934). Candidates: AlignTac at
     K = 10 / 50 on the corrected labels (Labeled-only teachers `kin_k{10,50}_realonly` exist), and session-2 adaptation (14).
-14. **Cross-session.** The session-2 rotation gap is half yaw coverage, half a real session shift (D12). Report with a yaw-matched
-    session-1 control and Rot calib; re-run the session-2 adaptation (AlignTac labels on unlabeled session-2 frames, no recalibration,
-    old-label P0-3) on the corrected labels? Needs an adapt / test split of the 1,813 session-2 frames.
+14. **Cross-session.** The session-2 rotation gap is a yaw-coverage part plus a larger real session shift (D12, corrected with
+    `best_pose.pt`). Report with a yaw-matched session-1 control and Rot calib. The session-2 adaptation re-run (K = 25) was started on
+    the user's go-ahead (D14), with the paper's press split. Open: also re-run the K = 100 block (needs a corrected-label K = 100 chain)?
 
 ## D11. Re-run on the corrected labels (started 2026-11-13 17:51, in progress)
 
@@ -725,6 +725,20 @@ student training set is the same).
 
 **Results (2026-11-14; all runs finished, 3 seeds mean ± std unless noted).** Rot calib = rotation error after removing a per-object
 constant offset (circular median), as computed by `eval_cross_session.py`. Trans L1 is in normalized units.
+CORRECTION (2026-11-14, later the same day): the two tables below take **every** column from `best_depth.pt`. The paper reports pose
+from `best_pose.pt` (keys `*_bp`). Pose from `best_pose.pt`:
+
+| Pose at `best_pose.pt` | testA Rot (°) | testA Rot calib | testA Trans | s2 Rot (°) | s2 Rot calib | s2 Trans |
+|---|---|---|---|---|---|---|
+| All labels (oracle, 1 seed) | 2.83 | 2.76 | 0.030 | 12.65 | 7.00 | 0.083 |
+| Labeled only | 5.65 ± 0.03 | 5.51 ± 0.02 | 0.055 | 18.95 ± 0.40 | 7.29 ± 0.16 | 0.099 |
+| Teacher-label self-training (`st`) | 7.69 ± 0.07 | 7.53 ± 0.12 | 0.073 | 22.96 ± 1.37 | 8.02 ± 0.96 | 0.111 |
+| Mesh at teacher pose (`rf0`) | 5.69 ± 0.03 | 5.54 ± 0.06 | 0.056 | 18.70 ± 0.36 | 6.96 ± 0.35 | 0.096 |
+| **AlignTac (`rf`)** | **3.12 ± 0.03** | 3.06 ± 0.04 | 0.039 | **13.40 ± 0.21** | 7.12 ± 0.11 | 0.087 |
+| AlignTac + recovered pool (`rfp`) | 2.76 ± 0.03 | 2.72 ± 0.03 | 0.038 | 13.02 ± 0.07 | 8.55 ± 0.16 | 0.084 |
+
+At the pose checkpoint the seed spread is small (≤ 0.4°) and AlignTac's rotation gain is large and clean: testA 5.65° → 3.12°
+(oracle 2.83°, about 90 % of the gap), session 2 18.95° → 13.40°.
 
 Pseudo-label quality (`--eval-gt`, chain log): original pool 3,367 frames, mesh IoU 0.897 / cMAE 0.097 / rot 0.95°; recovered pool
 4,345 frames, mesh IoU 0.765 / cMAE 0.186 / rot 6.72° (teacher alone: 0.641 / 0.151 / 14.74°).
@@ -752,14 +766,16 @@ session 2 (1,813 frames, never trained on)
 | AlignTac + recovered pool (`rfp`) | 0.820 ± 0.019 | 0.145 ± 0.004 | 17.27 ± 2.65 | 7.04 ± 1.15 | 0.098 ± 0.009 |
 
 Reading:
-- The corrected labels remove most of AlignTac's old margin. Old labels (testA): Labeled only → AlignTac IoU 0.674 → 0.739 (+0.066),
-  rot 9.73° → 5.97°. Corrected labels: 0.909 → 0.913 (+0.004), rot 7.55° → 6.91°. The old Labeled-only depth was poor because its GT
+- The corrected labels remove most of AlignTac's old **dense** margin. Old labels (testA): Labeled only → AlignTac IoU 0.674 → 0.739
+  (+0.066). Corrected labels: 0.909 → 0.913 (+0.004). The pose margin stays: corrected labels at `best_pose.pt` 5.65° → 3.12°. The old Labeled-only depth was poor because its GT
   was misplaced; with correct GT, 300 labels already reach IoU 0.909 (oracle 0.934), so there is little in-session headroom at K = 25.
-- The only clean gain of `rf` is IoU (in-session +0.004, session 2 +0.008, both with std ≤ 0.001). Its raw rotation gains are inside
-  the seed spread (rf testA rot per seed 7.19 / 8.86 / 4.67°).
+- Dense: `rf`'s gain over Labeled only is small but clean (IoU in-session +0.004, session 2 +0.008, std ≤ 0.001).
+  Pose (at `best_pose.pt`, table above): large and clean (testA rot 5.65° → 3.12°, trans 0.055 → 0.039; session 2 18.95° → 13.40°).
+  (An earlier version of this bullet said the rotation gains were inside the seed spread; that came from `best_depth.pt`.)
 - `rfp` (recovered presses as extra unlabeled pool) is **worse** than `rf` on dense metrics, most clearly on session 2
-  (IoU 0.820 ± 0.019 vs 0.853 ± 0.001; seed 0 alone 0.797). Its raw rotation looks better but is within the seed spread, and its
-  calibrated rotation on session 2 is worse (7.04° vs 5.98°). The recovered pool's pseudo-labels are worse (mesh IoU 0.765 vs 0.897).
+  (IoU 0.820 ± 0.019 vs 0.853 ± 0.001; seed 0 alone 0.797). At `best_pose.pt` its pose is slightly better than `rf` in session 1
+  (rot 2.76° vs 3.12°) and on session 2 raw (13.02° vs 13.40°), but its calibrated session-2 rotation is worse (8.55° vs 7.12°).
+  So `rfp` trades dense accuracy for a little in-session pose. The recovered pool's pseudo-labels are worse (mesh IoU 0.765 vs 0.897).
   CORRECTION: on 2026-11-14 the assistant first reported rfp from two finished seeds as "depth only slightly worse, pose better";
   the third seed changed this.
 - Split facts (for the allocation decision): the recovered presses are the same capture as `session_000` (identical `session.json`,
@@ -791,6 +807,8 @@ Scripts in the session scratchpad (`s2_label_check.py`, `yaw_bias.py`, `subsess.
    placed at the low end of the s1 range (e.g. 01_2_lines_angle_1_2: s1 −39.5° … +47.8°, s2 −44.7° … −21.2°). 81 % of s2 frames lie
    inside the s1 range. Restricting session 2 to those frames barely helps (Labeled only 21.06° → 20.24°, bias +20.3° → +19.9°), so
    evaluating on the overlap is **not** a fix.
+   NOTE: items 3–5 were computed with `best_depth.pt`. Item 5 was re-run with `best_pose.pt` (the paper's pose checkpoint),
+   which changes the conclusion; see the CORRECTED table at the end of item 5. Items 3–4 were not re-run.
 5. **Decomposition with a yaw-matched session-1 control.** Session-1 frames that fall inside each object's s2 yaw band and were never
    trained on by either model (testA + val slots, 110 frames), 3 seeds:
 
@@ -804,7 +822,78 @@ Scripts in the session scratchpad (`s2_label_check.py`, `yaw_bias.py`, `subsess.
    AlignTac roughly halves this edge part (pseudo-labels cover the whole pool), which is all of its session-2 rotation gain; the
    remaining ≈ +11.5° is a genuine session shift that no session-1-only training touches. The all-labels oracle still has
    14.66° raw / 6.55° calibrated on session 2.
+
+   **CORRECTED with `best_pose.pt`** (same frames, same seeds; `sameband_rf_bp.py`):
+
+   | Model | s1 outside band: bias / rot | s1 inside s2 band: bias / rot | s2: bias / rot | session part of the bias |
+   |---|---|---|---|---|
+   | Labeled only | −0.7° / 5.19° | +3.8° ± 0.1 / 8.18° | +16.1° ± 0.8 / 18.95° | ≈ +12.3° |
+   | AlignTac (`rf`) | 0.0° / 2.89° | +0.9° ± 0.1 / 4.04° | +8.5° ± 0.8 / 13.40° | ≈ +7.6° |
+
+   At the pose checkpoint the yaw-edge part is smaller (+3.8°, about a quarter of Labeled only's session-2 bias) and AlignTac nearly
+   removes it (+0.9°). The session shift is the larger part, and AlignTac **also** reduces it (+12.3° → +7.6°). The statements above
+   ("halves the edge part", "the remaining ≈ +11.5° ... no session-1-only training touches") hold only for `best_depth.pt` and are
+   superseded.
 6. **Reporting.** Session-2 rotation should be reported next to the yaw-matched session-1 control (same objects, same yaw band) and
    with Rot calib; otherwise "cross-session" mixes a yaw-coverage effect with the session shift. Old-label P0-3 (top of this file)
    already showed the method's answer to the session part: AlignTac labels on unlabeled session-2 frames, no recalibration
    (rot 10.2° → 5.4–7.8° on the old session-2 test half). That experiment has not been re-run on the corrected labels.
+   **Update:** re-run started 2026-11-14 on the user's go-ahead, see D14.
+
+## D13. Zero-shot cross-session: old-label vs corrected-label students on the same frames (2026-11-14)
+
+`rss2_zeroshot_c854.json` (the paper's 854 zero-shot frames, corrected GT `real_s2_kin_curated854`) and
+`rss2_zeroshot_oldlabels_s2kin.json` (old-label students on all 1,813 frames; corrected-label students from `rss2_kin_s2_results.json`).
+K = 25, 3 seeds each. Old-label students: `pilot150_T_k25_realonly` + `rss2_T_k25_realonly_seed{1,2}`, `pilot150_T_k25_semipm` +
+`rss2_T_k25_semipm_seed{1,2}`, `pilot150_T_k25_rf{,_seed1,_seed2}`. Dense metrics at `best_depth.pt`, pose at `best_pose.pt`.
+
+Same 854 frames as the paper, corrected GT
+
+| Method | labels | cMAE | IoU | Normal (°) | Rot (°) | Rot calib (°) |
+|---|---|---|---|---|---|---|
+| Labeled only | old | 0.310 | 0.670 | 28.2 | 15.0 | 5.9 |
+| Labeled only | corrected | **0.125** | **0.874** | **11.8** | 16.8 | 6.0 |
+| Self-training | old | 0.277 | 0.610 | 24.1 | 17.7 | 5.8 |
+| Self-training | corrected | **0.126** | **0.757** | **11.5** | 20.0 | 6.1 |
+| AlignTac | old | 0.263 | 0.700 | 25.2 | 10.9 | 6.0 |
+| AlignTac | corrected | **0.123** | **0.876** | **11.9** | 11.9 | 6.1 |
+
+All 1,813 session-2 frames, corrected GT
+
+| Method | labels | cMAE | IoU | Normal (°) | Rot (°) | Rot calib (°) |
+|---|---|---|---|---|---|---|
+| Labeled only | old | 0.329 | 0.669 | 28.3 | 17.0 | 7.2 |
+| Labeled only | corrected | **0.140** | **0.845** | **13.0** | 19.0 | 7.3 |
+| Self-training | old | 0.294 | 0.630 | 23.9 | 20.9 | 7.5 |
+| Self-training | corrected | **0.143** | **0.740** | **12.7** | 23.0 | 8.0 |
+| AlignTac | old | 0.279 | 0.698 | 25.4 | 12.5 | 7.0 |
+| AlignTac | corrected | **0.135** | **0.853** | **12.8** | 13.4 | 7.1 |
+
+For reference, the old-label students scored against the old session-2 GT (854 frames, `cross_session_fv`, seed 0):
+Labeled only 0.344 / 0.608 / 31.3° / rot 16.2°; self-training 0.330 / 0.588 / 28.0° / 18.7°; AlignTac 0.295 / 0.650 / 27.6° / 10.9°.
+
+Reading: on the same frames, judged by the corrected GT (which matches the tactile images better than the old one, D9 / D12), the
+corrected-label students are far better on every dense metric (contact MAE more than halved, IoU +0.17–0.20, normal error halved).
+Rotation is about the same: raw 1–2° worse, calibrated identical (≈ 6° / 7°), so the raw difference sits in the per-object constant
+offset (possibly related: the old label convention carried a dθ of about +2.8° on every object, D9; not tested). AlignTac beats Labeled only on rotation with both
+label sets (corrected: 11.9° vs 16.8° on the 854 frames).
+
+## D14. Label-free cross-session adaptation re-run on the corrected labels (started 2026-11-14 20:51, in progress)
+
+Paper Table "second session" (rows "+ session 2"), K = 25. Same procedure and arguments as the paper's chain
+(`rss2_build_roots.sh`, `real_pseudo_s2_k25_{ng,al}`, `real_merge_k25_{rf,semipm}_s2`), with the corrected-label teacher
+(`rss2_kin_k25_realonly`), renderer (`rss2_tactile_gan_kin_k25`) and aligner (`rss2_aligner_kin_k25`).
+Chain `ablation/pilot_robosoft/rss2_kin_s2adapt.sh` (log `outputs/rss_logs/rss2_kin_s2adapt.log`), split `rss2_kin_s2_split.py`.
+
+- Split: the paper's press split (`s2_pool_presses.json`, presses alternated per object) applied to the corrected session-2 frames.
+  `real_s2_kin_pool` 909 frames (98 presses; images only, poses discarded; 798 pseudo-labeled after the val slots), test
+  `real_s2_kin_testhalf` 904 frames (90 presses) and `real_s2_kin_testhalf_c464` 464 frames (= the paper's 464 test-half frames, curated).
+  Pool and test presses are disjoint; one curated test press has no frame in `real_s2_kin_all` (dropped as background / no ridge).
+  The old pool had 1,208 frames because it still contained the background / no-contact frames dropped on 2026-11-13.
+- Session-2 pool label quality against the corrected GT: teacher IoU 0.637 / cMAE 0.160 / rot 20.09°; aligned mesh IoU 0.740 /
+  cMAE 0.201 / rot 8.94° (798 frames).
+- Students `rss2_kin_k25_{rf,st}_s2{,_seed1,_seed2}` (merged roots `real_merge_kin_k25_{rf,st}_s2`, 4,937 label files each;
+  configs `data_kin_k25_{rf,st}_s2.yaml`), eval mode `kins2` of `rss2_train.sh` -> testA (`rss2_kin_testA_results.json`) and
+  `s2test` / `s2half` (`rss2_kin_s2adapt_results.json`). The zero-shot rows (`kin_k25_{realonly,st,rf}`, 3 seeds) are evaluated on
+  the same test frames by the chain. `rss2_finisher.sh` updated so `kin_*_s2*` runs are evaluated on the test presses only.
+- Not done: the K = 100 block of the paper table (needs a corrected-label K = 100 chain: renderer, aligner, session-1 pool labels).

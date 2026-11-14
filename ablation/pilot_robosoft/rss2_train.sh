@@ -31,6 +31,8 @@ case $EV in
   f2)     ev $G/real_f2_test f2test $P/f2_results.json ;;
   s2half) ev $G/real_s2_testhalf s2half $P/rss2_cross_session_results.json; ev $G/real_filtered_testA testA $P/rss2_testA_results.json ;;
   kin)    ev $G/real_filtered_kin_testA testA $P/rss2_kin_testA_results.json; ev $G/real_s2_kin_all s2kin $P/rss2_kin_s2_results.json ;;   # corrected labels (D8-D10)
+  kins2)  ev $G/real_filtered_kin_testA testA $P/rss2_kin_testA_results.json; ev $G/real_s2_kin_testhalf s2test $P/rss2_kin_s2adapt_results.json
+          ev $G/real_s2_kin_testhalf_c464 s2half $P/rss2_kin_s2adapt_results.json ;;   # session-2 adaptation: test presses only (pool presses are trained on)
   s2all)  ev $G/real_s2_testhalf s2half $P/rss2_cross_session_results.json; ev $G/real_filtered_testA testA $P/rss2_testA_results.json ;;
 esac
 step "done"
