@@ -698,7 +698,11 @@ real re-placement.** Settling this needs an independent reference (open question
     K = 10 / 50 on the corrected labels (Labeled-only teachers `kin_k{10,50}_realonly` exist), and session-2 adaptation (14).
 14. **Cross-session.** The session-2 rotation gap is a yaw-coverage part plus a larger real session shift (D12, corrected with
     `best_pose.pt`). Report with a yaw-matched session-1 control and Rot calib. The session-2 adaptation re-run (K = 25) was started on
-    the user's go-ahead (D14), with the paper's press split. Open: also re-run the K = 100 block (needs a corrected-label K = 100 chain)?
+    the user's go-ahead (D14), with the paper's press split. K = 100 block: user (2026-11-14) wants the K = 25 result first, then decides.
+15. **Paper claim after the label fix.** With correct GT, AlignTac's dense gain over Labeled only is gone (zero-shot 854 frames IoU
+    0.874 vs 0.876); its pose gain stays (rot 16.8° → 11.9° zero-shot, 5.65° → 3.12° in-session, trans −30 %). Controls point to the
+    aligner's corrected poses as the cause (`rf0` 5.69°, `st` 7.69°). Reframe around few-label pose and cross-session pose? K = 10
+    (`kin_k10_realonly` exists) would show whether a dense gain reappears with fewer labels. User raised the question; undecided.
 
 ## D11. Re-run on the corrected labels (started 2026-11-13 17:51, in progress)
 
